@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 1px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+body {
+    background: url('../images/fati.webp');
+    display: flex;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    justify-content: center;
+}
+
+.formBox {
+    margin: 100px 0;
+    width: 85%;
+    height: auto;
+    /* margin: 0 auto; */
+}
+
+@media screen and (min-width: 800px) {
+    .formBox {
+        width: 85%;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .formBox {
+        width: 65%;
+    }
+}
+
+.form-section {
+    box-shadow: 0 0 10px 3px rgba(204, 204, 204, 0.266);
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: #fff;
+    height: auto;
+    padding: 30px;
+
+}
+
+.lead-text {
+    font-weight: 600;
+    margin-bottom: 40px;
+}
+
+.asterisk {
+    font-weight: bold;
+    margin-left: 5px;
+    color: red;
+}
+
+.formInput {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    border-radius: none !important;
+    outline: none;
+    background: #FAFAFA;
+}
+
+.formInput:focus {
+    border-bottom: 2px solid #FF6600 !important;
+    background: #FAFAFA;
+}
+
+.form-control,
+.form-select {
+    border-radius: 0 !important;
+}
+
+.form-control:focus {
+    border-bottom: 1px solid;
+    box-shadow: none;
+}
+
+label {
+    font-size: 12px;
+}
+
+.submitSec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.nextBtn {
+    border: none;
+    padding: 10px 30px;
+    outline: none;
+    width: auto;
+    cursor: pointer;
+    /* font-weight: bold; */
+    background: #FF6600;
+    box-shadow: 0px 6px 12px -1px rgba(6, 25, 56, 0.12);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 12px;
+}
+
+.submitBtn {
+    border: none;
+    padding: 15px 30px;
+    background: #555;
+    outline: none;
+    width: 200px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 7px;
+}
+
+@media screen and (max-width: 700px) {
+    .submitSec {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nextBtn {
+        margin-top: 20px;
+        width: 230px;
+    }
+}
+
+.logo-section {
+    width: 100%;
+    box-shadow: 0 0 10px 3px rgba(204, 204, 204, 0.266);
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: #fff;
+    height: auto;
+    padding: 30px;
+}
+
+.logo-section img {
+    /* width: 100px; */
+    /* margin-left: -30px; */
+    /* margin: 0 auto; */
+    /* height: 100px; */
+}
+
+.img-111 {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.step-100 {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.step-100 .steps {
+    display: flex;
+    align-items: center;
+    /* margin-left: 15px; */
+}
+
+.title-step {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.steps span {
+    margin-left: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border-radius: 50%; */
+    background: #f1f1f1;
+}
+
+.active-step {
+    background: #555 !important;
+    color: #fff;
+    font-weight: bold;
+}
+
+.info-200 {
+    display: block;
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+}
+
+.info-100 {
+    width: 100%;
+    font-weight: bold;
+    font-size: 18px;
+    text-transform: uppercase;
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.form-check {
+    margin-top: 20px;
+}
+
+.form-check-input:focus {
+    box-shadow: none;
+    border: none;
+}
+
+.form-check-input {
+    margin-top: 7px;
+}
+
+.form-floating>.form-control-plaintext:focus,
+.form-floating>.form-control-plaintext:not(:placeholder-shown),
+.form-floating>.form-control:focus,
+.form-floating>.form-control:not(:placeholder-shown) {
+    padding-top: 30px !important;
+}
+
+.form-floating label {
+    font: 20px !important;
+}
+
+.steps-count {
+    font-size: 12px;
+    padding: 7px 20px;
+    color: #08102E;
+    background: rgba(254, 177, 0, 0.5);
+    border-radius: 24px;
+}
