@@ -17,6 +17,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TechincalDeskController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Spatie\FlareClient\View;
 
 /*
 |--------------------------------------------------------------------------
@@ -211,5 +212,27 @@ Route::get('/check/{no}', [App\Http\Controllers\ScheduleController::class, 'chec
 Route::get('/userManagement', [App\Http\Controllers\ScheduleController::class, 'userManagement']);
 
 Route::get('/allvehicle', [App\Http\Controllers\ScheduleController::class, 'allVehicleTask']);
+
+Route::get('/account-officer', function(){
+    return view('account-officer');
+});
+Route::get('/host', function(){
+    return view('host');
+});
+Route::get('/officers', function(){
+    return view('officers');
+});
+Route::get('/finance-report', function(){
+    return view('finance-report');
+});
+Route::get('/fleet', function(){
+    return view('fleet');
+});
+Route::get('/motor-card', function(){
+    return view('motor-card');
+});
+Route::get('/motor-card-user', function(){
+    return view('motor-card-user');
+});
 
 Route::view('map', 'map');

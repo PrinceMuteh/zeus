@@ -14,9 +14,15 @@
                     {{-- <a href="/add-vehicle" class="addBtn addNew">ADD NEW</a> --}}
                 </div>
                 <ul class="sub-tabs">
-                    <li class="vehicle-list-overview bbd">Overview</li>
-                    <li class="vehicle-list-fleet">Fleet Status</li>
-                    <li class="vehicle-list-track"> <a href="track-web">Track Web</a> </li>
+                    <li class="vehicle-list-overview bbd">OVERVIEW</li>
+                    <li class="vehicle-list-fleet">FLEET STATUS</li>
+                    <li class="vehicle-list-fleet">
+                        <a href="technical-desk">TECHNICAL</a>
+                    </li>
+                    <li class="vehicle-list-track"> <a href="track-web">TRACK WEB</a> </li>
+                    <li class="vehicle-list-fleet">
+                        <a href="motor-card">MOTOR CARD</a>
+                    </li>
                 </ul>
 
                 <!-- overview -->

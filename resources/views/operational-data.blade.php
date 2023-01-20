@@ -20,13 +20,6 @@
                     <p class="sectionTitle text-inter pb-0 pl-0 ml-3">
                         Operational Data
                     </p>
-                    {{-- <i class='bx bx-dots-vertical-rounded text-dark' style="font-size:30px"></i> --}}
-                    {{-- <ul class="mobile-link-vehicle">
-                        <li>GPS & ANALYTICS</li>
-                        <li>OPEATIONS DATA</li>
-                        <li>PEOPLE</li>
-                        <li>ALERTS</li>
-                    </ul> --}}
                 </div>
                 <ul class="vehicle-top-list border-bottom-0">
                     <li class="active-top-list gpsBtn">GPS & ANALYTICS</li>
@@ -37,7 +30,6 @@
                      
                
                    <li class="communicationBtn">COMMUNICATION</li> 
-                    {{--    <li class="activityBtn">ACTIVITY LOG</li> --}}
                 </ul>
           
                 @include('components.operational.alert-section')

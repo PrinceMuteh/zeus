@@ -2240,9 +2240,9 @@ body[data-layout=horizontal] .footer {
 }
 
 div.dataTables_wrapper div.dataTables_filter input {
-    height: 50px;
+    height: 40px;
     margin-top: -33px;
-    width: 300px;
+    width: 226px;
 }
 
 .widget-two-default {
@@ -6275,7 +6275,8 @@ thead {
     border-radius: 12px;
 }
 
-.leftBase, .rightBase {
+.leftBase,
+.rightBase {
     display: flex;
     /* padding: 10px 2px; */
     justify-content: center;
@@ -6368,7 +6369,7 @@ thead {
 
 .text-inter {
     font-family: 'Inter', sans-serif;
-    font-weight: bold;
+    /* font-weight: bold; */
     color: var(--deepPurple);
 }
 
@@ -6612,11 +6613,11 @@ thead {
 
 .sectionTitle {
     font-family: var(--text-inter);
-    font-size: 25px;
+    font-size: 20px;
     padding: 10px 15px 15px 15px;
     /* color: var(--deepPurple); */
     color: #08102E !important;
-    font-weight: 400 !important;
+    /* font-weight: bold; */
 }
 
 .sectionTitle img {
@@ -6663,6 +6664,7 @@ thead {
     box-shadow: 0px 20.501px 68.3368px rgba(160, 163, 189, 0.1);
     border-radius: 8px;
 }
+
 .addBtn-200 {
     color: #fff;
     font-family: var(--text-inter);
@@ -6677,6 +6679,7 @@ thead {
     box-shadow: 0px 20.501px 68.3368px rgba(160, 163, 189, 0.1);
     border-radius: 8px;
 }
+
 .addBtn-300 {
     color: #fff;
     font-family: var(--text-inter);
@@ -6742,8 +6745,6 @@ thead {
     width: 100%;
     position: relative;
 }
-
-
 
 .ribbon-area {
     position: fixed;
@@ -6853,17 +6854,6 @@ label {
 
 
 /* vehicle management */
-.sub-tabs {
-    display: flex;
-    width: 100%;
-    border-bottom: 1px solid #C6C2DE;
-    text-align: center;
-    margin-top: 2px;
-    margin-bottom: 20px;
-    /* margin-left: -35px; */
-    padding: 0;
-}
-
 .sub-tabz {
     display: flex;
     width: 100%;
@@ -6872,26 +6862,6 @@ label {
     margin-top: 2px;
     margin-bottom: 20px;
     margin-left: -35px;
-}
-
-.sub-tabs a {
-    color: grey;
-}
-
-.sub-tabs li {
-    margin-right: 5px;
-    list-style: none;
-    width: auto;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-right: 60px;
-    cursor: pointer;
-}
-
-.bbd {
-    font-weight: bolder;
-    border-bottom: 3px solid #08102E;
-    color: #08102E !important;
 }
 
 .border-bottom-0 {

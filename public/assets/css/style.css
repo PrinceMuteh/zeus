@@ -129,6 +129,14 @@ td {
     padding: 10px 20px;
 }
 
+.topSectionBox {
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
 .top-secondBox {
     height: 180px;
     width: 100%;
@@ -408,6 +416,7 @@ td {
 .card-box {
     border-radius: 12px;
     background: #FFFFFF;
+    box-shadow: none;
     border: 1px solid #CCCCCC;
 }
 
@@ -955,6 +964,7 @@ table {
 }
 
 .sub1 {
+    font-size: 10px;
     padding: 9px 0;
     font-weight: bold;
 }
@@ -2010,6 +2020,52 @@ tr {
     border-radius: 8px;
 }
 
+.box_green {
+    background: #28be5a2c;
+    /* opacity: 0.15; */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.box_red {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #ff4a4a21;
+}
+
+.box_blue {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #4a4aff13;
+}
+
+.box_grey {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #88888817;
+}
+
+.grey_text {
+    color: #888888 !important;
+    font-weight: bold;
+}
+
 .softpurse_contribution_section {
     display: none;
     transition: 2s ease;
@@ -2666,15 +2722,27 @@ body {
     margin-bottom: 15px;
 }
 
+.basic-user-photo {
+    margin-bottom: 20px;
+    width: 120px;
+    height: 120px;
+    background: #08102E;
+}
+
+.basic-user-photo img {
+    width: 100%;
+    height: 100%;
+}
+
 .ll-text {
-    font-size: 11px;
+    font-size: 10px;
     color: #888888;
     font-weight: 400;
 }
 
 .lr-text {
     color: #08102E;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
 }
 
@@ -3897,8 +3965,8 @@ select {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
 }
 
 .credit-info-100 {
@@ -3907,7 +3975,7 @@ select {
 }
 
 .credit-info-200 {
-    font-size: 15px;
+    font-size: 12px;
     color: #08102E;
     font-weight: bold;
 }
@@ -4403,7 +4471,7 @@ select {
 
 
 .technical-inner {
-    border: 1.02352px solid #CCCCCC;
+    border: 1px solid #CCCCCC;
     width: 100%;
     background: #FFFFFF;
     border-radius: 8.18814px;
@@ -4521,12 +4589,22 @@ select {
 
 .line-right-100 {
     position: absolute;
-    height: 100px;
+    height: 120px;
     width: 1px;
     background: #ccc;
     content: "";
     right: -20px;
-    top: 5px;
+    top: -5px;
+}
+
+.line-right-200 {
+    position: absolute;
+    height: 95px;
+    width: 1px;
+    background: #ccc;
+    content: "";
+    right: -20px;
+    top: -2px;
 }
 
 @media screen and (max-width: 900px) {
@@ -4585,4 +4663,63 @@ select {
 
 .form-desk {
     position: relative;
+}
+
+.sub-tabs {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.sub-tabs li {
+    margin-right: 30px;
+    list-style: none;
+    width: auto;
+    color: #888888ab;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.sub-tabs a {
+
+    color: #888888ab;
+}
+
+.sub-tabs-100 {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.sub-tabs-100 li {
+    margin-right: 30px;
+    list-style: none;
+    width: auto;
+    color: #888888ab;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.sub-tabs-100 a {
+    color: grey;
+}
+
+.bbd {
+    font-weight: bold;
+    border-bottom: 3px solid #08102E;
+    color: #08102E !important;
+}
+
+.dropdown-item {
+    font-size: 10px;
 }
