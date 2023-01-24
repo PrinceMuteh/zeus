@@ -9,7 +9,7 @@
                     <div class="top-row">
                         <div>
                           {{--  <p class="sectionTitle text-inter pb-0 pl-0">Report Module</p>--}}
-                            <p class="sectionTitle text-inter pb-0 pl-0">Remitances</p>
+                            <p class="sectionTitle text-inter pb-0 pl-0">Remittances</p>
                         </div>
                         <!-- end super filter modal -->
                         <div class="filter-calender reportModuleFilter">

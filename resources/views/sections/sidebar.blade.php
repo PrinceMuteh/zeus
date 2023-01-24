@@ -77,8 +77,8 @@
                         </a>
                     </li>
                 @endif
-
-                @if ($menu->vehicleManagement == 1)
+            
+                @if ($menu->technicalDesk == 1)
                     <li>
                         <a class="sideLink" href="/technical-desk">
                             <span class="mr-2">

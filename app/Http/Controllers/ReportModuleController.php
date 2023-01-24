@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class ReportModuleController extends Controller
 {
-    public function sql2(){
+    public function sql2()
+    {
         return  DB::connection('mysql_2');
     }
 
@@ -41,10 +42,7 @@ class ReportModuleController extends Controller
             foreach ($months as $index => $month) {
                 $paidUserChart[$month] = $users[$index];
             }
-
             // dd($paidUserChart);
-
-
             $paidUsers = DB::table('vms_payments')
                 ->whereBetween('createtime', [$weekstart, $weekend])
                 ->sum('needpayment');
@@ -52,7 +50,13 @@ class ReportModuleController extends Controller
             // $paidUsers = DB::table( 'tella_payment' )->sum( 'amount' );
             $weekstart = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
             $weekend =  Carbon::now()->endOfWeek(Carbon::SATURDAY)->format('Y-m-d');
+            // dd($weekstart);
+
             $projectIncome = DB::table('duepayments')->whereBetween('duetime', [$weekstart, $weekend])->sum('needpayment');
+            // $projectIncome = DB::table('duepayments')->whereBetween('duetime', [$weekstart, $weekend])->get();
+
+            // dd($projectIncome);
+
 
             $date = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
             $depot = DB::table('duepayments')->where('duetime', '<=', $date)->sum('needpayment');
@@ -131,6 +135,8 @@ class ReportModuleController extends Controller
             $unpaid  = $projectIncome - $paidUsers;
         }
         Array_shift($paidUserChart);
+        // dd($projectIncome);
+
         return view('report-module', ['paidUserChart' => $paidUserChart ?? 0, 'paid' => $paidUsers ?? 0, 'unpaid' => $unpaid ?? 0, 'income' => $projectIncome ?? 0, 'depot' => $depot ?? 0]);
     }
 
@@ -139,7 +145,7 @@ class ReportModuleController extends Controller
         $weekstart = Carbon::now()->startOfWeek()->format('Y-m-d H:i:s');
         $date = Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
         if (Auth()->user()->user_type == 'SUPER') {
-            
+
             $result = DB::table('vms_payments')
                 // ->whereBetween( 'vms_payments.createtime', [ $weekstart, $weekend ] )
                 ->whereBetween('vms_payments.createtime', [$weekstart, $date])
@@ -147,7 +153,7 @@ class ReportModuleController extends Controller
                 ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
                 ->orderBy('created_At', 'DESC')
                 ->get();
-                
+
             $totalAmount = $result->sum('needpayment');
         } else if (Auth()->user()->user_type == 'accountOfficer') {
             $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
@@ -183,15 +189,14 @@ class ReportModuleController extends Controller
 
     public function allPaymentFilter(Request $request)
     {
+
         if (Auth()->user()->user_type == 'SUPER') {
 
-            // $result =  ( new ApiController )->post( 'https://tella.envio.africa/api/all-payment-date', array(
-            //     'startDate' => $request->startDate,
-            //     'endDate' => $request->endDate
-            // ) );
-
             $result = DB::table('vms_payments')
-                ->whereBetween('createtime',  [$request->startDate, $request->endDate])
+                ->whereBetween('vms_payments.createtime', [$request->startDate, $request->endDate])
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+                ->orderBy('created_At', 'DESC')
                 ->get();
         } else {
             $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
@@ -199,9 +204,13 @@ class ReportModuleController extends Controller
                 $fleet[] = $value->fleet_name;
             }
 
+
             $result = DB::table('vms_payments')
                 ->whereIn('fleet', $fleet)
-                ->whereBetween('createtime',  [$request->startDate, $request->endDate])
+                ->whereBetween('vms_payments.createtime', [$request->startDate, $request->endDate])
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+                ->orderBy('created_At', 'DESC')
                 ->get();
         }
         $totalAmount = $result->sum('needpayment');
@@ -211,23 +220,29 @@ class ReportModuleController extends Controller
 
     public function allPaymentFilter2($date)
     {
+        $endDate = Carbon::now()->subDays($date)->format('Y-m-d');
+        $startDate =  Carbon::now()->format('Y-m-d');
+
         if (Auth()->user()->user_type == 'SUPER') {
-            // dd( $date );
-            // $result =  ( new ApiController )->post( 'https://tella.envio.africa/api/all-payment-date', array(
-            //     'startDate' => Carbon::now()->subDays( $date )->startOfDay()->format( 'Y-m-d H:i:s' ),
-            //     'endDate' =>Carbon::today()->format( 'Y-m-d H:i:s' ),
-            // ) );
+
             $result = DB::table('vms_payments')
-                ->whereDate('createtime',  $date)
+                ->whereBetween('vms_payments.createtime', [$endDate, $startDate])
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+                ->orderBy('created_At', 'DESC')
                 ->get();
         } else {
             $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
             foreach ($fle as $key => $value) {
                 $fleet[] = $value->fleet_name;
             }
+
             $result = DB::table('vms_payments')
                 ->whereIn('fleet', $fleet)
-                ->whereDate('createtime',  $date)
+                ->whereBetween('vms_payments.createtime', [$endDate, $startDate])
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+                ->orderBy('created_At', 'DESC')
                 ->get();
         }
         $totalAmount = $result->sum('needpayment');
@@ -604,6 +619,12 @@ class ReportModuleController extends Controller
             $income  = $paidUsers + $unpaidAmount;
             $depot =  $depot + $unpaidAmount;
         }
+        
+                $paidUserChart = array_reverse($paidUserChart);
+        array_pop($paidUserChart);
+        $paidUserChart = array_reverse($paidUserChart);
+        
+        
         return view('report-module', ['paid' => $paidUsers, 'paidUserChart' => $paidUserChart, 'unpaid' => $unpaidAmount, 'income' => $income, 'depot' => $depot]);
     }
 
@@ -634,9 +655,11 @@ class ReportModuleController extends Controller
             }
 
             $result = DB::table('vms_payments')
-                ->whereBetween('createtime', [$startDate, $endDate])
+                ->whereBetween('createtime', [$endDate, $startDate])
                 ->get();
+            // dd($result);
             $paidUsers = $result->sum('needpayment');
+
 
             // return $totalAmount;
             $depotx = (new VMSAPI)->getVehicleOverDue($startDate, 300);
@@ -707,6 +730,10 @@ class ReportModuleController extends Controller
             $income  = $paidUsers + $unpaidAmount;
             $depot =  $depot + $unpaidAmount;
         }
+
+        $paidUserChart = array_reverse($paidUserChart);
+        array_pop($paidUserChart);
+        $paidUserChart = array_reverse($paidUserChart);
 
         // dd( $result );
 

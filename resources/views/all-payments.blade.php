@@ -1,6 +1,6 @@
 @extends('main')
 @section('content')
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"></script>
 
     <div class="content-page">
         <div class="content">
@@ -11,7 +11,7 @@
                         <div>
                             <p class="sectionTitle text-inter pb-0 pl-0">
                                 <img src="{{ asset('assets/images/arrow-left.svg') }}" alt="" />
-                                Report Module / Total Payments
+                                Remittances / Total Payments
                                 <span class="ml-2">
                                     ( <span>&#8358;</span> {{ number_format($totalAmount, 2) }} )
                                 </span>
@@ -82,8 +82,8 @@
                     <div class="row pt-2">
                         <div class="col-12">
                             <div class="card-box table-responsive">
-                                
-                              {{--    <button  
+
+                                {{--    <button  
                                     class="btn btn-success" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#mymodal"
@@ -104,66 +104,55 @@
                                             <th>PLATE NO.</th>
                                             <th>DRIVER NAME</th>
                                             <th>PHONE NO.</th>
-                                          {{--  <th>GPS STATUS</th> --}} 
+                                            {{--  <th>GPS STATUS</th> --}}
                                             <th>AMOUNT</th>
                                             <th>TRANS ID</th>
                                             <th>PAYMENT DATE</th>
-                                           {{-- <th>DESCRIPTION</th>--}}
+                                            {{-- <th>DESCRIPTION</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {{-- {{dd($data)}} --}}
                                         @if ($data)
                                             @foreach ($data as $item)
-                                        
                                                 <tr>
                                                     <td> <input type="checkbox" class="check" /></td>
                                                     <td>
-                                                    @if (Auth()->user()->email == "accounts@thankucash.com")
-                                                        {{
-                                                        substr($item->vehno, 0, 3); 
-                                                         }}****
-                                                          @else
-                                                          
-                                                        <a href="" 
-                                                            
-                                                            
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#mymodal"
-                                    data-bs-vehno="{{$item->vehno}}"
-                                    data-bs-fleet="{{$item->fleet}}"
-                                    data-bs-ref="{{ $item->orderid ?? "-" }}"
-                                    data-bs-drivername="{{$item->drivername}}"
-                                    data-bs-amount = "₦ {{ number_format($item->needpayment, 2) }}"
-                                    data-bs-date= "{{ \Carbon\Carbon::parse($item->createtime)->format('Y-m-d: h:i a')   ?? "-" }}"
-                                    data-bs-date2= "{{ \Carbon\Carbon::parse($item->createtime)->format('Y-m-d: h:i a')   ?? "-" }}"
-                                  
-                                                      >
-                                                            
-                                                            {{ $item->vehno  ?? "-" }}
-                                                        </a>
-                                                           @endif
+                                                        @if (Auth()->user()->email == 'accounts@thankucash.com')
+                                                            {{ substr($item->vehno, 0, 3) }}****
+                                                        @else
+                                                            <a href="" data-bs-toggle="modal"
+                                                                data-bs-target="#mymodal"
+                                                                data-bs-vehno="{{ $item->vehno }}"
+                                                                data-bs-fleet="{{ $item->fleet }}"
+                                                                data-bs-ref="{{ $item->orderid ?? '-' }}"
+                                                                data-bs-drivername="{{ $item->drivername ?? '-' }}"
+                                                                data-bs-amount="₦ {{ number_format($item->needpayment, 2) }}"
+                                                                data-bs-date="{{ \Carbon\Carbon::parse($item->createtime)->format('Y-m-d: h:i a') ?? '-' }}"
+                                                                data-bs-date2="{{ \Carbon\Carbon::parse($item->createtime)->format('Y-m-d: h:i a') ?? '-' }}">
+
+                                                                {{ $item->vehno ?? '-' }}
+                                                            </a>
+                                                        @endif
                                                     </td>
                                                     <td>
 
-                                                    @if (Auth()->user()->email == "accounts@thankucash.com")
-                                                        {{ substr($item->drivername, 0, 3); }}****
-                                                          @else
-                                                        
-                                                    {{ $item->drivername ?? "-" }}
-                                                           @endif
+                                                        @if (Auth()->user()->email == 'accounts@thankucash.com')
+                                                            {{ substr($item->drivername, 0, 3) }}****
+                                                        @else
+                                                            {{ $item->drivername ?? '-' }}
+                                                        @endif
                                                     </td>
                                                     <td>
-                                                              @if (Auth()->user()->email == "accounts@thankucash.com")
-                                                        {{ substr($item->driverphone, 0, 4); }}****
-                                                          @else
-                                                        
-                                                    {{ $item->driverphone ?? "-" }}
-                                                           @endif
-                                             
-                                                    
+                                                        @if (Auth()->user()->email == 'accounts@thankucash.com')
+                                                            {{ substr($item->driverphone, 0, 4) }}****
+                                                        @else
+                                                            {{ $item->driverphone ?? '-' }}
+                                                        @endif
+
+
                                                     </td>
-                                                  {{-- <td>
+                                                    {{-- <td>
                                                         @if (!empty($item->time))
                                                             {{ \Carbon\Carbon::parse($item->time)->diffForHumans() }}
                                                         @else
@@ -171,10 +160,12 @@
                                                         @endif
                                                     </td>
                                                     --}}
-                                                    <td><span>&#8358;</span> {{ number_format($item->needpayment, 2) }}</td>
-                                                    <td>{{ $item->orderid ?? "-" }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($item->createtime)->format('Y-m-d: h:i a')   ?? "-" }}</td>
-                                                    {{--<td>{{ $item->note ?? "null" }}</td>--}}
+                                                    <td><span>&#8358;</span> {{ number_format($item->needpayment, 2) }}
+                                                    </td>
+                                                    <td>{{ $item->orderid ?? '-' }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($item->createtime)->format('Y-m-d: h:i a') ?? '-' }}
+                                                    </td>
+                                                    {{-- <td>{{ $item->note ?? "null" }}</td> --}}
                                                 </tr>
                                             @endforeach
                                         @endif
@@ -186,12 +177,12 @@
                         </div>
                     </div>
                 </div>
-                
-             
-                 
+
+
+
 
                 {{-- modal --}}
-                <div class="modal fade" id = "mymodal" id="allPayment" tabindex="-1" aria-labelledby="exampleModalLabel"
+                <div class="modal fade" id="mymodal" id="allPayment" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" style="width: 400px">
                         <div class="modal-content">
@@ -202,8 +193,8 @@
                             </div>
                             <div class="modal-body">
                                 <div class="everyInfo">
-                                    <p class="info-text-top" style = "font-size:11px;">
-                                         Generated from MotorAfrica on <span class = "date"> </span>
+                                    <p class="info-text-top" style="font-size:11px;">
+                                        Generated from MotorAfrica on <span class="date"> </span>
                                     </p>
                                     <div class="formSec container-fluid"
                                         style="background: #fafafa; border-radius: 6px; height: auto">
@@ -212,11 +203,11 @@
                                                 <div class="col-6 side1">Date:</div>
                                                 <div class="col-6 side2 date2">30 Sep, 2021</div>
                                             </div>
-                                             <div class="row mb-3">
+                                            <div class="row mb-3">
                                                 <div class="col-6 side1">Driver Name:</div>
                                                 <div class="col-6 side2 drivername">MyGarage</div>
                                             </div>
-                                             <div class="row mb-3">
+                                            <div class="row mb-3">
                                                 <div class="col-6 side1">Vehno:</div>
                                                 <div class="col-6 side2 vehno">MyGarage</div>
                                             </div>
@@ -228,9 +219,9 @@
                                                 <div class="col-6 side1">Fleet:</div>
                                                 <div class="col-6 side2 fleets">MyGarage</div>
                                             </div>
-                                           
-                                            
-                                            {{--<div class="row mb-3">
+
+
+                                            {{-- <div class="row mb-3">
                                                 <div class="col-6 side1">Package:</div>
                                                 <div class="col-6 side2 packages">Hire Purchase</div>
                                             </div>
@@ -247,7 +238,7 @@
                                                 <div class="col-6 side1">Transaction Id:</div>
                                                 <div class="col-6 side2 ref">3456WTY</div>
                                             </div>
-                                          
+
                                         </div>
                                     </div>
                                 </div>
@@ -283,40 +274,40 @@
         </div>
         <!-- end content -->
     </div>
-     <script>
+    <script>
         const myModal = document.querySelector('#mymodal');
-            myModal.addEventListener('show.bs.modal', function(event) {
-                // Get the reference of the triggering button
-                const button = event.relatedTarget;
-  
-                // Get the data for inserting into modal
-                // const heading = button.getAttribute('data-bs-heading');
-                // const modalcontent = button.getAttribute('data-bs-modalcontent');
-                const amount = button.getAttribute('data-bs-amount');
-                const date = button.getAttribute('data-bs-date');
-                const date2 = button.getAttribute('data-bs-date2');
-           
-                const fleet = button.getAttribute('data-bs-fleet');
-                const ref = button.getAttribute('data-bs-ref');
-                const vehno = button.getAttribute('data-bs-vehno');
-                const drivername = button.getAttribute('data-bs-drivername');
-                // const footercontent = button.getAttribute('data-bs-footercontent');
-  
-                // Set the value in the modal
-                // myModal.querySelector('.modal-title').textContent = heading;
-                // myModal.querySelector('.modal-body').textContent = modalcontent;
-                myModal.querySelector('.amount').textContent = amount;
-                myModal.querySelector('.date').textContent =  date;
-                myModal.querySelector('.date2').textContent =  date2;
-                myModal.querySelector('.fleets').textContent = fleet;
-                myModal.querySelector('.ref').textContent = ref;
-                myModal.querySelector('.vehno').textContent = vehno;
-                myModal.querySelector('.drivername').textContent = drivername;
-                // myModal.querySelector('.modal-footer').textContent = footercontent;
-            });
+        myModal.addEventListener('show.bs.modal', function(event) {
+            // Get the reference of the triggering button
+            const button = event.relatedTarget;
+
+            // Get the data for inserting into modal
+            // const heading = button.getAttribute('data-bs-heading');
+            // const modalcontent = button.getAttribute('data-bs-modalcontent');
+            const amount = button.getAttribute('data-bs-amount');
+            const date = button.getAttribute('data-bs-date');
+            const date2 = button.getAttribute('data-bs-date2');
+
+            const fleet = button.getAttribute('data-bs-fleet');
+            const ref = button.getAttribute('data-bs-ref');
+            const vehno = button.getAttribute('data-bs-vehno');
+            const drivername = button.getAttribute('data-bs-drivername');
+            // const footercontent = button.getAttribute('data-bs-footercontent');
+
+            // Set the value in the modal
+            // myModal.querySelector('.modal-title').textContent = heading;
+            // myModal.querySelector('.modal-body').textContent = modalcontent;
+            myModal.querySelector('.amount').textContent = amount;
+            myModal.querySelector('.date').textContent = date;
+            myModal.querySelector('.date2').textContent = date2;
+            myModal.querySelector('.fleets').textContent = fleet;
+            myModal.querySelector('.ref').textContent = ref;
+            myModal.querySelector('.vehno').textContent = vehno;
+            myModal.querySelector('.drivername').textContent = drivername;
+            // myModal.querySelector('.modal-footer').textContent = footercontent;
+        });
     </script>
-    
-    
+
+
     <script>
         let reportModuleFilter = document.querySelector('.reportModuleFilter');
         let filterModal = document.querySelector('.filterModal');
