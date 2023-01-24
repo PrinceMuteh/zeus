@@ -47,13 +47,22 @@
                                     <div class="form-group">
                                         <label for="">Phone Number <span
                                                 class="text-danger font-weight-bold">*</span></label>
-                                        <input type="text" name="phone" class="form-control" required />
+                                        <input type="tel" name="phone"
+                                            class="form-control" required />
                                     </div>
                                     <div class="form-group">
                                         <label for="">Email <span
                                                 class="text-danger font-weight-bold">*</span></label>
                                         <input type="email" name="email" class="form-control" required />
                                     </div>
+                                    {{-- <div class="form-group">
+                                        <label for="">Gender <span
+                                                class="text-danger font-weight-bold">*</span></label>
+                                        <select name="gender" class = "form-control" id="gender">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Femail</option>
+                                        </select>
+                                    </div> --}}
                                     <div class="form-group">
                                         <label for="">Location</label>
                                         <input type="text" name="location" class="form-control" required />

@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class HomepageController extends Controller
 {
+
+    public function sql2()
+    {
+        return  DB::connection('mysql_2');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -52,10 +58,10 @@ class HomepageController extends Controller
             // dd( $datas );
             // echo array_pop( $datas );
 
-            $totalvehicle = DB::table('all_vehicle')->get();
+            $totalvehicle = DB::table('vehicle_details_vms')->get();
             $nodriver = $totalvehicle->whereNull('drivername');
             // dd( $nodriver );
-            $totalusers = DB::table('user_management')->get();
+            $totalusers = DB::table('users')->get();
             $transaction = DB::table('vms_payments')
                 ->get();
 
@@ -65,7 +71,7 @@ class HomepageController extends Controller
 
         } else if (Auth()->user()->user_type == 'accountOfficer') {
             // dd(Auth()->user()->email);
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             if (count($vehno) < 1) {
                 Auth::logout();
@@ -99,12 +105,12 @@ class HomepageController extends Controller
             $datas = array_reverse($datas);
 
             // dd( $datas );
-            // $totalvehicle = DB::table('all_vehicle')->whereIn('veho', $fleet)->get();
+            // $totalvehicle = DB::table('vehicle_details_vms')->whereIn('veho', $fleet)->get();
             $totalvehicle =  $vehno;
             $nodriver = $totalvehicle->whereNull('drivername');
 
             // $totalusers = 0;
-            $totalusers = DB::table('user_management')->where('accountOfficer', Auth()->user()->user_type)->get();
+            $totalusers = DB::table('users')->where('accountOfficer', Auth()->user()->user_type)->get();
 
             // $totalusers = DB::table('vms_payments')->whereIn('vehno', $vehnos)->get();
             $transaction = DB::table('vms_payments')->whereIn('vehno', $vehnos)->get();
@@ -143,9 +149,9 @@ class HomepageController extends Controller
             $datas = array_reverse($datas);
 
             // dd( $datas );
-            $totalvehicle = DB::table('all_vehicle')->whereIn('bodytypename', $fleet)->get();
+            $totalvehicle = DB::table('vehicle_details_vms')->whereIn('bodytypename', $fleet)->get();
             $nodriver = $totalvehicle->whereNull('drivername');
-            $totalusers = DB::table('user_management')->whereIn('fleet', $fleet)->get();
+            $totalusers = DB::table('users')->whereIn('fleet', $fleet)->get();
             $transaction = DB::table('vms_payments')
                 ->whereIn('fleet', $fleet)
                 ->get();
@@ -162,14 +168,14 @@ class HomepageController extends Controller
     {
         // dd( $phone );
 
-        $user = DB::table('user_management')->where('phone', $phone)->first();
-
+        $user = DB::table('users')->where('phone', $phone)->first();
+        // dd($user);
         // if ( $user->category == 'Driver' ) {
-        $record = DB::table('all_vehicle')->where('driverPhone', $phone)->first();
+        $record = DB::table('vehicle_details_vms')->where('driverPhone', $phone)->first();
         if ($record) {
             $gurantor = DB::table('gurantors_info')->where('plate_number', $record->vehno)->first();
         } else {
-            $record = DB::table('all_vehicle')->where('investorphonenumber', $phone)->first();
+            $record = DB::table('vehicle_details_vms')->where('investorphonenumber', $phone)->first();
             if ($record) {
                 $gurantor = DB::table('gurantors_info')->where('plate_number', $record->vehno)->first();
             } else {
@@ -182,7 +188,7 @@ class HomepageController extends Controller
         // }
 
         // if ( $user->category == 'Driver' ) {
-        //     $record = DB::table( 'all_vehicle' )->where( 'driverPhone', $phone )->first();
+        //     $record = DB::table( 'vehicle_details_vms' )->where( 'driverPhone', $phone )->first();
         //     dd( $record );
         //     if ( $record ) {
         //         $gurantor = DB::table( 'gurantors_info' )->where( 'plate_number', $record->vehno )->first();
@@ -191,7 +197,7 @@ class HomepageController extends Controller
         //     }
         //     // dd( $gurantor );
         // } else {
-        //     $record = DB::table( 'all_vehicle' )->where( 'investorphonenumber', $phone )->first();
+        //     $record = DB::table( 'vehicle_details_vms' )->where( 'investorphonenumber', $phone )->first();
         //     if ( $record ) {
         //         $gurantor = DB::table( 'gurantors_info' )->where( 'plate_number', $record->vehno )->first();
         //     } else {
@@ -200,7 +206,7 @@ class HomepageController extends Controller
         // }
 
         // dd( $gurantor );
-        $allVehicle = DB::table('all_vehicle')->whereNull('drivername')->get();
+        $allVehicle = DB::table('vehicle_details_vms')->whereNull('drivername')->get();
         // dd( $gurantor );
         return view('user', ['phone' => $phone, 'user' => $user, 'gurantor' => $gurantor, 'allVehicle' => $allVehicle]);
     }
@@ -208,6 +214,9 @@ class HomepageController extends Controller
     public function editUserAccount(Request $request)
     {
         // dd( $request->all() );
+        // DB::table('users')
+        //     ->where('email', $request->email)->delete();
+
 
         $content = array(
             'email' =>  $request->email,
@@ -219,34 +228,35 @@ class HomepageController extends Controller
             'nin' =>  $request->nin,
             'dob' =>  $request->dob
         );
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://test.mygarage.africa/api/edit-user-record',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>  $content,
-        ));
-        $response = curl_exec($curl);
-        curl_close($curl);
-        if ($response == 1) {
-            DB::table('user_management')
-                ->where('email', $request->email)
-                ->update([
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'town' => $request->town,
-                    'gender' => $request->gender,
-                    'category' => $request->category,
-                    'address' => $request->address,
-                    'nin' => $request->nin,
-                    'dob' => $request->dob,
-                    'updated_at' =>  now(),
-                ]);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => 'https://test.mygarage.africa/api/edit-user-record',
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS =>  $content,
+        // ));
+        // $response = curl_exec($curl);
+        // curl_close($curl);
+        // if ($ == 1) {
+        $response =  DB::table('users')
+            ->where('email', $request->email)
+            ->update([
+                // 'name' => $request->name,
+                // 'phone' => $request->phone,
+                // 'town' => $request->town,
+                // 'gender' => $request->gender,
+                // 'category' => $request->category,
+                // 'address' => $request->address,
+                // 'nin' => $request->nin,
+                // 'dob' => $request->dob,
+                'updated_at' =>  now(),
+            ]);
+        if ($response) {
             return back()->with('success', 'Profile updated');
         } else {
             return back()->with('Emessage', 'An Error Occured');
@@ -262,3 +272,5 @@ class HomepageController extends Controller
     // }
 
 }
+
+

@@ -4,7 +4,7 @@
             <div class="col-sm-6 col-md-12 col-lg-8">
                 <div class="top-banner-100">
                     <div class="top-row-banner">
-                        <span class="title-100">Hello, {{ auth()->user()->name }} (Operator)</span>
+                        <span class="title-100">Hello, {{ auth()->user()->first_name }} (Operator)</span>
                         {{-- <span class="title-200">Here is a summary of what your fleet currently looks
                             like...</span> --}}
                         <img src="{{ asset('assets/images/computer.png') }}"

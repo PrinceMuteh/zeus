@@ -79,7 +79,7 @@
                                                     <td>New Installation</td>
                                                     <td>{{$item->taskStatus}}</td>
                                                     <td>{{ $item->created_at }}</td>
-                                                    <td>{{ $item->state }}</td>
+                                                    <td></td>
                                                     <td>
                                                         <i class='bx bx-dots-vertical-rounded'></i>
                                                     </td>

@@ -39,7 +39,7 @@ class SettingsController extends Controller {
     public function vehicleManager() {
         $manager = DB::table( 'vehicle_manager' )->get();
         $category = DB::table( 'workshop_category' )->get();
-        $vehicletype = DB::table( 'all_vehicle' )->distinct( 'bodytypename' )->select( 'bodytypename' )->get();
+        $vehicletype = DB::table( 'vehicle_details_vms' )->distinct( 'bodytypename' )->select( 'bodytypename' )->get();
         // dd( $vehicletype );
 
         return view( 'vehicleManager', compact( 'manager', 'vehicletype', 'category' ) );

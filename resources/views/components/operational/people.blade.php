@@ -515,7 +515,7 @@
                                                 </div>
                                                 <div class="row mb-2">
                                                     <div class="col-6 side1 font-weight-bold">Created by</div>
-                                                    <div class="col-6 side3">{{ Auth()->user()->name }}</div>
+                                                    <div class="col-6 side3">{{ Auth()->user()->first_name }}</div>
                                                 </div>
                                                 <div class="row mb-2">
                                                     <div class="col-6 side1 font-weight-bold">Creation Date</div>

@@ -41,7 +41,6 @@ Route::post('UpdateOperatorsPermission', [ControlPanelController::class, 'Update
 Route::get('/settings', [SettingsController::class, 'setting'])->name('settings');
 Route::post('/updateApi', [SettingsController::class, 'apikey'])->name('updateApi');
 
-
 Route::get('/vehicleManager', [SettingsController::class, 'vehicleManager'])->name('vehicleManager');
 Route::Post('/vehicle_manager', [SettingsController::class, 'vehicle_manager'])->name('vehicle_manager');
 Route::Post('/categoryName', [SettingsController::class, 'categoryName'])->name('categoryName');
@@ -56,7 +55,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('track-web/{plateNo}', [TrackWebController::class, 'index2']);
     Route::get('track-search', [TrackWebController::class, 'search']);
     Route::view('track-single', 'track-single')->name('track-single');
-
+    Route::get('track-test/{plateNo}', [TrackWebController::class, 'trackTest'])->name("track-test");
 
     Route::controller(UserManagementController::class)->group(function () {
         Route::get("user-management",  'userMgt');
@@ -84,6 +83,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('delete-maintenance/{id}', [ControlPanelController::class, 'deleteMaintence']);
 
     Route::get('vehicle-management', [VehicleMgtController::class, 'index']);
+    Route::get('getFleet', [VehicleMgtController::class, 'getFleet'])->name('getFleet');
     Route::post('add-vehicles', [VehicleMgtController::class, 'addVehicle2'])->name("add-vehicle");
 
     Route::get('add-vehicle', [VehicleMgtController::class, 'addVehicle']);
@@ -122,6 +122,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('create-fleet', [VehicleMgtController::class, 'createFleet'])->name('createFleet');
     Route::post('assignFleet', [VehicleMgtController::class, 'assignFleet'])->name('assignFleet');
     Route::get('UnAssignFleet/{id}', [VehicleMgtController::class, 'UnAssignFleet'])->name('UnAssignFleet');
+
+
+    Route::get('/motor-card', [VehicleMgtController::class, 'motorCard'])->name('motorCard');
+
+
+    // Route::get('/motor-card', function(){
+    //     return view('motor-card');
+    // });
+    
+
 
     Route::get('technical-desk', [TechincalDeskController::class, 'technicalDesk']);
     Route::get('task-logs', [TechincalDeskController::class, 'taskLogs']);
@@ -213,6 +223,8 @@ Route::get('/userManagement', [App\Http\Controllers\ScheduleController::class, '
 
 Route::get('/allvehicle', [App\Http\Controllers\ScheduleController::class, 'allVehicleTask']);
 
+
+
 Route::get('/account-officer', function(){
     return view('account-officer');
 });
@@ -228,9 +240,7 @@ Route::get('/finance-report', function(){
 Route::get('/fleet', function(){
     return view('fleet');
 });
-Route::get('/motor-card', function(){
-    return view('motor-card');
-});
+
 Route::get('/motor-card-user', function(){
     return view('motor-card-user');
 });

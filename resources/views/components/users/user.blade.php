@@ -7,7 +7,7 @@
                 <div class="col-sm-6 col-md-10 mb-1">
                     <div class="form-group">
                         <label for="">User Account ID:</label>
-                        <input type="text" class="form-control infoInput" value="{{ $user->user_id }}" disabled />
+                        <input type="text" class="form-control infoInput" value="{{ $user->phone }}" disabled />
                     </div>
                 </div>
                 <div class="col-sm-6 col-md-10 mb-1">
@@ -40,20 +40,20 @@
                 <div class="col-sm-6 col-md-10 mb-1">
                     <div class="form-group">
                         <label for="">Email</label>
-                        <input type="text" class="form-control infoInput" value="{{ $user->email }}" />
+                        <input type="text" class="form-control infoInput" value="{{ $user->email }}" disabled />
                     </div>
                 </div>
                 <div class="col-sm-6 col-md-10 mb-1">
                     <div class="form-group">
                         <label for="">Address</label>
-                        <textarea rows="2" class="form-control infoInput">{{ $user->address }}</textarea>
+                        <textarea rows="2" name="address" class="form-control infoInput">{{ $user->address }}</textarea>
                     </div>
                     <div class="form-row">
                         <div class="col-sm-6 col-md-8">
-                            <select class="form-control infoInput">
-                                <option value="">--Select City--</option>
-                                <option value="Lagos">Lagos</option>
-                                <option value="Abuja">Abuja</option>
+                            <select class="form-control infoInput" name="state">
+                                <option value="{{ $user->state }}" selected>{{ $user->state }}</option>
+                                @include('components.state')
+
                             </select>
                         </div>
                         <div class="col-sm-6 col-md-4">
@@ -66,22 +66,30 @@
         <p class="infoForm">Bank Information</p>
         <div class="container">
             <div class="row info-section mt-1">
+
                 <div class="col-sm-6 col-md-10 mb-1">
                     <div class="form-group">
                         <label for="">Bank Name</label>
-                        <input type="text" class="form-control infoInput" value="{{ $user->phone }}" />
+                        <select class="form-control infoInput" name="bank">
+                            <option value="{{ $user->bankName }}" selected>{{ $user->bankName }}</option>
+                            @include('components.bankApi')
+                        </select>
+
                     </div>
                 </div>
+
                 <div class="col-sm-6 col-md-10 mb-1">
                     <div class="form-group">
                         <label for="">Designated Account Number</label>
-                        <input type="text" class="form-control infoInput" value="{{ $user->phone }}" />
+                        <input type="text" class="form-control infoInput" name="accountNumber"
+                            value="{{ $user->accountNumber ?? '' }}" />
                     </div>
                 </div>
                 <div class="col-sm-6 col-md-10 mb-1">
                     <div class="form-group">
                         <label for=""> Account Name</label>
-                        <input type="text" class="form-control infoInput" value="{{ $user->phone }}" />
+                        <input type="text" class="form-control infoInput" name="accountName"
+                            value="{{ $user->accountName }}" />
                     </div>
                 </div>
                 <div class="thirdInfo col-md-6">

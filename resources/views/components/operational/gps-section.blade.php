@@ -77,7 +77,7 @@
                             <span class="ll-text">DEVICE ID:</span>
                         </div>
                         <div class="col-6">
-                            <span class="lr-text">{{ $data['vehicleLocation']->SystemNo ?? "-" }}</span>
+                            <span class="lr-text">{{ $data['vehicleLocation']->SystemNo ?? '-' }}</span>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -85,7 +85,7 @@
                             <span class="ll-text">TIME:</span>
                         </div>
                         <div class="col-6">
-                            <span class="lr-text">{{ $data['vehicleLocation']->Time ?? "-" }}</span>
+                            <span class="lr-text">{{ $data['vehicleLocation']->Time ?? '-' }}</span>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -121,7 +121,8 @@
                             <span class="ll-text">TOTAL MILEAGE (KM):</span>
                         </div>
                         <div class="col-6">
-                            <span class="lr-text">{{ $data['vehicleLocation']->Miles ?? 0 / 1000 }} KM</span>
+                            <span class="lr-text">{{ number_format($data['vehicleLocation']->Miles ?? 0 / 1000) }}
+                                KM</span>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -129,7 +130,7 @@
                             <span class="ll-text">LONGTITUDE:</span>
                         </div>
                         <div class="col-6">
-                            <span class="lr-text deco-blue">{{ $data['vehicleLocation']->Longitude ?? "-" }}</span>
+                            <span class="lr-text deco-blue">{{ $data['vehicleLocation']->Longitude ?? '-' }}</span>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -137,7 +138,7 @@
                             <span class="ll-text">LATITUDE:</span>
                         </div>
                         <div class="col-6">
-                            <span class="lr-text deco-blue">{{ $data['vehicleLocation']->Latitude ?? "-" }}</span>
+                            <span class="lr-text deco-blue">{{ $data['vehicleLocation']->Latitude ?? '-' }}</span>
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -145,7 +146,7 @@
                             <span class="ll-text">ADDRESS:</span>
                         </div>
                         <div class="col-6">
-                            <span class="lr-text">{{ $data['location'] ?? "-" }}</span>
+                            <span class="lr-text">{{ $data['location'] ?? '-' }}</span>
                         </div>
                     </div>
 
@@ -194,7 +195,7 @@
                 </div>
 
                 <span class="status-100 mb-4 ml-2">ACTIVITY LOG</span>
-               {{-- <div class="info-activity border-0 pr-4">
+                {{-- <div class="info-activity border-0 pr-4">
                     <div class="info-info border-0">
                         <div class="info-icon">
                             <div class="icon-notice bg-light-blue">
@@ -239,7 +240,9 @@
 
 
 
-               --}}</div>
+               --}}
+            </div>
         </div>
     </div>
 </div>
+

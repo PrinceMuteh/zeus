@@ -61,7 +61,7 @@
                                             <div class="left-side-commission">Entry Date:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->created_at }}
+                                            <div class="right-side-commission">{{ $data->created_at ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -71,7 +71,7 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="right-side-commission">
-                                                {{ $data->taskStatus == 0 ? 'pending' : 'active' }}</div>
+                                                {{ $data->taskStatus ?? 0 == 0 ? 'pending' : 'active' }}</div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -97,7 +97,7 @@
                                             <div class="left-side-commission">Customer:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission"> {{ $data->name }}
+                                            <div class="right-side-commission"> {{ $data->name ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -106,7 +106,7 @@
                                             <div class="left-side-commission">Email:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->email }}
+                                            <div class="right-side-commission">{{ $data->email ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -115,7 +115,7 @@
                                             <div class="left-side-commission">Phone:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->phone }}</div>
+                                            <div class="right-side-commission">{{ $data->phone ?? "" }}</div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -123,7 +123,7 @@
                                             <div class="left-side-commission">Location:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->state }}</div>
+                                            <div class="right-side-commission">{{ $data->state ?? "" }}</div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -168,7 +168,7 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->vehiclePlateNo }}
+                                            <div class="right-side-commission">{{ $data->vehiclePlateNo ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -177,7 +177,7 @@
                                             <div class="left-side-commission">Type:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->type }}</div>
+                                            <div class="right-side-commission">{{ $data->type ?? "" }}</div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -185,7 +185,7 @@
                                             <div class="left-side-commission">Model:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->model }}</div>
+                                            <div class="right-side-commission">{{ $data->model ?? "" }}</div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -193,7 +193,7 @@
                                             <div class="left-side-commission">Year:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->year }}
+                                            <div class="right-side-commission">{{ $data->year ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -202,7 +202,7 @@
                                             <div class="left-side-commission">Chassis:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->chasis }}
+                                            <div class="right-side-commission">{{ $data->chasis ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -211,7 +211,7 @@
                                             <div class="left-side-commission">Body:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->body }}
+                                            <div class="right-side-commission">{{ $data->body ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -220,7 +220,7 @@
                                             <div class="left-side-commission">Engine:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->engine }}
+                                            <div class="right-side-commission">{{ $data->engine ?? "" }}
                                             </div>
                                         </div>
                                     </div>
@@ -230,7 +230,7 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->transmission }}</div>
+                                            <div class="right-side-commission">{{ $data->transmission ?? "" }}</div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -238,7 +238,7 @@
                                             <div class="left-side-commission">Color:</div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="right-side-commission">{{ $data->colour }}
+                                            <div class="right-side-commission">{{ $data->colour ?? "" }}
 
                                             </div>
                                         </div>

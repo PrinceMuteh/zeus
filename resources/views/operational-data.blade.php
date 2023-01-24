@@ -25,44 +25,85 @@
                     <li class="active-top-list gpsBtn">GPS & ANALYTICS</li>
                     <li class="operationsBtn">OPERATIONS DATA</li>
                     <li class="peopleBtn">PEOPLE</li>
-                    
-                     <li class="alertBtn">ALERT(S)</li>
-                     
-               
-                   <li class="communicationBtn">COMMUNICATION</li> 
+
+                    <li class="alertBtn">ALERT(S)</li>
+
+
+                    <li class="communicationBtn">COMMUNICATION</li>
                 </ul>
-          
+
                 @include('components.operational.alert-section')
 
                 @include('components.operational.gps-section')
                 @include('components.operational.basic-info')
                 @include('components.operational.people')
-                @include('components.operational.communication') 
-                @include('components.operational.activity-log') 
-                
-                
-                
+                @include('components.operational.communication')
+                @include('components.operational.activity-log')
+
+
+
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
         <script src="{{ asset('assets/js/chart.js') }} "></script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-    // In your Javascript (external .js resource or <script> tag)
-    $(document).ready(function() {
-      
-        $('.users').select2({
-            placeholder: 'Select an option'
-        });
-    });
-</script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            // In your Javascript (external .js resource or <script> tag)
+            $(document).ready(function() {
+                $('.users').select2({
+                    placeholder: 'Select an option'
+                });
+            });
+        </script>
 
 
 
 
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+            const ctx = document.getElementById('top_x_divs').getContext('2d');
+            var datas = <?php echo json_encode($chart); ?>
+            // var datas 
+            // console.log(datas);
+
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+
+                    datasets: [{
+                        label: '# of traansactions',
+                        data: datas,
+                        barPercentage: 0.5,
+                        barThickness: 30,
+                        maxBarThickness: 44,
+                        minBarLength: 10,
+                        highlightFill: "rgba((99,102,241)",
+                        highlightStroke: "rgba(220,220,220,1)",
+                        backgroundColor: 'rgba(161,163,247)'
+
+                        // borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                drawOnChartArea: false
+                            }
+                        }],
+                        yAxes: [{
+                            gridLines: {
+                                drawOnChartArea: false
+                            }
+                        }]
+                    }
+                }
+            });
+        </script>
+
 
 
         <script>
@@ -255,49 +296,4 @@
                 chart.draw(data, google.charts.Bar.convertOptions(options));
             };
         </script>
-
-        
-<script>
-    const ctx = document.getElementById('top_x_divs').getContext('2d');
-    var datas = <?php echo json_encode(0); ?>
-
-    const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-
-            datasets: [{
-                label: '# of traansactions',
-                data: datas,
-                barPercentage: 0.5,
-                barThickness: 30,
-                maxBarThickness: 44,
-                minBarLength: 10,
-                highlightFill: "rgba((99,102,241)",
-                highlightStroke: "rgba(220,220,220,1)",
-                backgroundColor: 'rgba(161,163,247)'
-
-                // borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    gridLines: {
-                        drawOnChartArea: false
-                    }
-                }],
-                yAxes: [{
-                    gridLines: {
-                        drawOnChartArea: false
-                    }
-                }]
-            }
-        }
-    });
-</script>
-
-
-
-
     @endsection

@@ -17,6 +17,11 @@ use Exception;
 
 class UserManagementController extends Controller
 {
+    public function sql2()
+    {
+        return  DB::connection('mysql_2');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -30,8 +35,11 @@ class UserManagementController extends Controller
 
     public function getGurantor($plate)
     {
+        $gurantor = DB::table('gurantors_info')->where('plate_number', $plate)->first();
+
         // dd( $plate );
-        return view('getGurantor', ['plate' =>  $plate]);
+
+        return view('getGurantor', ['plate' =>  $plate, 'gurantor' => $gurantor]);
     }
 
     public function uploadGurantor(Request $request)
@@ -88,10 +96,10 @@ class UserManagementController extends Controller
     public function updateConfiguration(Request $request)
     {
         // dd($request->all());
-        $check = DB::table('car_fleet')
+        $check = $this->sql2()->table('car_fleet')
             ->where('vehiclePlateNo', $request->plate)->exists();
         if ($check) {
-            $gurantor = DB::table('car_fleet')
+            $gurantor = $this->sql2()->table('car_fleet')
                 ->where('vehiclePlateNo', $request->plate)
                 ->update([
                     'owner_comm' =>  $request->owner_comm,
@@ -104,8 +112,8 @@ class UserManagementController extends Controller
                     'coupon' =>  $request->coupon,
                 ]);
 
-            $driver = DB::table('user_management')->where('id', $request->driver)->first();
-            $gurantor = DB::table('all_vehicle')
+            $driver = DB::table('users')->where('id', $request->driver)->first();
+            $gurantor = DB::table('vehicle_details_vms')
                 ->where('vehno', $request->plate)
                 ->update([
                     'drivername' =>  $driver->name,
@@ -214,7 +222,7 @@ class UserManagementController extends Controller
                     'GUARANTOR2_COMPANY_ADDRESS' =>  $request->GUARANTOR2_COMPANY_ADDRESS,
                 ]);
 
-            $gurantor = DB::table('all_vehicle')
+            $gurantor = DB::table('vehicle_details_vms')
                 ->where('vehno', $request->plate_number)
                 ->update([
                     // 'driverid' => $request->driverid,
@@ -282,11 +290,12 @@ class UserManagementController extends Controller
         // return view( 'editGurantor', compact( 'gurantor' ) );
     }
 
+
     public function adminInfo($id)
     {
-        $users = DB::table('users')->where('id', $id)->first();
+        $users = DB::table('zeususers')->where('id', $id)->first();
         $vehicletype = DB::table('fleet')->where('assigned_to', $id)->get();
-        $fleet = DB::table('all_vehicle')->distinct('bodytypename')->select('bodytypename')->get();
+        $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->get();
 
         return view('admin-information', ['fleet' => $fleet, 'user' => $users, 'vehicletype' => $vehicletype]);
     }
@@ -294,18 +303,18 @@ class UserManagementController extends Controller
     public function userMgt()
     {
         if (Auth()->user()->user_type == 'SUPER') {
-            $users = DB::table('user_management')->get();
+            $users = DB::table('users')->get();
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            // $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->user_type)->select('vehno')->get();
+            // $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->user_type)->select('vehno')->get();
 
             // foreach ($vehno as $key => $value) {
             //     $fleet[] = $value->vehno;
             // }
             // dd( Auth()->user()->email );
-            $users = DB::table('user_management')
+            $users = DB::table('users')
                 ->where('accountOfficer', Auth()->user()->email)
                 ->get();
-                // dd($users);
+            // dd($users);
 
         } else {
             $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
@@ -313,7 +322,7 @@ class UserManagementController extends Controller
                 $fleet[] = $value->fleet_name;
             }
             // dd( $fleet );
-            $users = DB::table('user_management')
+            $users = DB::table('users')
                 ->whereIn('fleet', $fleet)
                 // ->where( 'creator_id', Auth()->user()->id )
                 ->get();
@@ -325,7 +334,7 @@ class UserManagementController extends Controller
     public function updateProfile(Request $request)
     {
         // dd( $request->all() );
-        DB::table('users')
+        DB::table('zeususers')
             ->where('id', Auth()->user()->id)
             ->update([
                 'first_name' => $request->first_name,
@@ -361,6 +370,7 @@ class UserManagementController extends Controller
             'vehicleManagement' => ($request->vehicleManagement) ? 1 : 0,
             'technicalDesk' => ($request->technicalDesk) ? 1 : 0,
             'financeOffice' => ($request->financeOffice) ? 1 : 0,
+            'accountOfficer' => ($request->accountOfficer) ? 1 : 0,
             'activityLog' => ($request->activityLog) ? 1 : 0,
             'taskManagement' => ($request->taskManagement) ? 1 : 0,
             'workShop' => ($request->workShop) ? 1 : 0,
@@ -388,7 +398,7 @@ class UserManagementController extends Controller
         }
 
 
-        $id = DB::table('users')->where('id', $request->id)->update(
+        $id = DB::table('zeususers')->where('id', $request->id)->update(
             $body
         );
         if ($id) {
@@ -407,11 +417,11 @@ class UserManagementController extends Controller
             'email' => 'required|email',
             'fname' => 'required|string',
             'lname' => 'required|string',
-            'phone' => 'required',
+            'phone' => 'required|numeric',
             'location' => 'required|string',
         ]);
         // dd( $request->all() );
-        $exists = DB::table('user_management')
+        $exists = DB::table('users')
             ->where(['category' => $request->usertype, 'email' => $request->email])
             ->exists();
 
@@ -419,7 +429,7 @@ class UserManagementController extends Controller
             $result = DB::table('user_type')->where('user_type', $request->usertype)
                 ->select('user_type', 'total_users')->first();
 
-            $id =   DB::table('user_management')
+            $id =   DB::table('users')
                 ->where('id', Auth()->user()->id)
                 ->insertGetId([
                     'creator_id' => Auth()->user()->id,
@@ -428,6 +438,8 @@ class UserManagementController extends Controller
                     'email' => $request->email,
                     'address' => $request->location,
                     'category' => ($result->user_type == 'Driver') ? 'Driver' : 'Investor',
+                    'password' => "0000",
+                    'password2' => Hash::make(0000),
                     'created_at' =>  now(),
                 ]);
 
@@ -461,7 +473,7 @@ class UserManagementController extends Controller
 
         $ID = Crypt::decrypt($request->tok);
         // dd( $request->all() );
-        $app = DB::table('users')
+        $app = DB::table('zeususers')
             ->where('user_id', $ID)
             ->update([
                 'status' => '1',
@@ -490,7 +502,7 @@ class UserManagementController extends Controller
         $ID = 4;
 
         dd('hello');
-        $pass = DB::table('users')->where(['user_id' => $ID, 'status' => '1', 'verify' => '0'])->first();
+        $pass = DB::table('zeususers')->where(['user_id' => $ID, 'status' => '1', 'verify' => '0'])->first();
         if ($pass) {
             $user_id =  Crypt::encrypt($ID);
             return view('/change_password', ['pass' => $pass, 'id' => $user_id]);

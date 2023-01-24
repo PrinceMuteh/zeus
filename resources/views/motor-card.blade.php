@@ -21,9 +21,9 @@
                 <ul class="sub-tabs">
                     <li class="vehicle-list-overview">OVERVIEW</li>
                     <li class="vehicle-list-fleet">FLEET STATUS</li>
-                    <li class="vehicle-list-fleet">
+                    {{-- <li class="vehicle-list-fleet">
                         <a href="technical-desk">TECHNICAL</a>
-                    </li>
+                    </li> --}}
                     <li class="vehicle-list-track"> <a href="track-web">TRACK WEB</a> </li>
                     <li class="vehicle-list-fleet bbd">
                         <a href="motor-card">MOTOR CARD</a>
@@ -50,13 +50,15 @@
                                         <th>FLEET OPS</th>
                                         <th>TOTAL LOAN DISBURSED</th>
                                         <th>TOTAL PAID</th>
-                                        <th>TOTAL PENDING</th>
-                                        <th>TENURE UPDATE</th>
+                                        <th>Outstanding</th>
+                                        <th>Payment Cycles</th>
                                         <th>ADDRESS</th>
                                         <th>STATUS</th>
-                                        <th>LAST UPDATE</th>
-                                        <th>PACKAGE</th>
-                                        <th>ADDRESS</th>
+                                        <th>Payment Status</th>
+                                        <th>Vehicle UPDATE</th>
+                                        <th>Date</th>
+                                        {{-- <th>PACKAGE</th>
+                                        <th>ADDRESS</th> --}}
                                         <th>
                                             <i class='bx bx-dots-vertical-rounded'></i>
                                         </th>
@@ -81,7 +83,8 @@
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
-
+                                        {{-- <td>-</td>
+                                        <td>-</td> --}}
                                         <td>
                                             <div class="dropdown">
                                                 <i class='bx bx-dots-vertical-rounded' data-bs-toggle="dropdown"></i>
@@ -102,6 +105,8 @@
 
                                         </td>
                                     </tr>
+
+                                    @include('components.loanCredit')
 
                                 </tbody>
                             </table>

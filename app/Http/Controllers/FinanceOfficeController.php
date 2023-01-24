@@ -224,7 +224,7 @@ class FinanceOfficeController extends Controller
                 ->get()->take(50);
         } else if (Auth()->user()->user_type == 'accountOfficer') {
             // dd(Auth()->user()->email);
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;

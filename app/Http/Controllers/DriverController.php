@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 class DriverController extends Controller
 {
 
+    public function sql2(){
+        return  DB::connection('mysql_2');
+    }
+
     public function loginz(Request $request)
     {
         $this->validate(
@@ -21,7 +25,7 @@ class DriverController extends Controller
                 'password' => 'required',
             ]
         );
-        $user = DB::table('user_management')->where(['email' => $request->email, 'password' => $request->password])->first();
+        $user = DB::table('users')->where(['email' => $request->email, 'password' => $request->password])->first();
         if ($user) {
             session(['email' => $user->email]);
             session(['name' => $user->name]);
@@ -52,7 +56,7 @@ class DriverController extends Controller
             'address' => 'required',
             'country' => 'required',
         ]);
-        $user = DB::table('user_management')->where('email', $request->email)->first();
+        $user = DB::table('users')->where('email', $request->email)->first();
         // dd($user);
         if ($user) {
             session(['email' => $user->email]);
@@ -86,7 +90,7 @@ class DriverController extends Controller
         // dd($body);
 
         // insert in database
-        $users =   DB::table('user_management')->insertGetId($body);
+        $users =   DB::table('users')->insertGetId($body);
         DB::table('gurantors_info')->insertGetId([
             'Driver_FIRST_NAME'    =>  $request->fname,
             'Driver_LAST_NAME'   =>  $request->lname,
@@ -153,7 +157,7 @@ class DriverController extends Controller
             $body = $body + array('UniversityCert' => $imageName);
         }
         // dd($body);
-        $app = DB::table('user_management')
+        $app = DB::table('users')
             ->where('id', session('DriverId'))
             ->update($body);
         // proceed to step 3
@@ -193,7 +197,7 @@ class DriverController extends Controller
                 'updated_at' =>  Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
             ]);
 
-        $app = DB::table('user_management')
+        $app = DB::table('users')
             ->where('id', session('DriverId'))
             ->update([
                 'last_link' => "workExperience",
@@ -237,7 +241,7 @@ class DriverController extends Controller
                 'supervisorPhone' => $request->referenceNumber,
                 'updated_at' =>  Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
             ]);
-        $app = DB::table('user_management')
+        $app = DB::table('users')
             ->where('id', session('DriverId'))
             ->update([
                 'last_link' => "driverReferences",
@@ -274,7 +278,7 @@ class DriverController extends Controller
                 'REFRENCES_CITY' => $request->city,
                 'updated_at' =>  Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
             ]);
-        $app = DB::table('user_management')
+        $app = DB::table('users')
             ->where('id', session('DriverId'))
             ->update([
                 'last_link' => "bankDetails",
@@ -302,7 +306,7 @@ class DriverController extends Controller
 
         // dd($sortCode);
 
-        $app = DB::table('user_management')
+        $app = DB::table('users')
             ->where('id', session('DriverId'))
             ->update([
                 "bankName" => $bankName,
@@ -326,7 +330,7 @@ class DriverController extends Controller
             'hobby' => 'required',
         ]);
 
-        $app = DB::table('user_management')
+        $app = DB::table('users')
             ->where('id', session('DriverId'))
             ->update([
                 "hobby" => $request->hobby,
@@ -372,7 +376,7 @@ class DriverController extends Controller
         $ID = Crypt::encrypt(session('DriverId'));
         $link = url('') . "/driver" . "/". "guarantor-registration/" . $ID . "/" . $request->email;
         if ((new MailerController)->sendGurantorEmail($Gname, $Dname, $link, $request->email)) {
-            $app = DB::table('user_management')
+            $app = DB::table('users')
                 ->where('id', session('DriverId'))
                 ->update([
                     'last_link' => "guarnatorTwoBio",
@@ -424,7 +428,7 @@ class DriverController extends Controller
         $link = url('')  . "/driver" . "/".  "guarantor-registration/" . $ID . "/" . $request->email;
         if ((new MailerController)->sendGurantorEmail($Gname, $Dname, $link, $request->email)) {
             (new MailerController)->sendDriverEmail($Dname,  session('email'));
-            $app = DB::table('user_management')
+            $app = DB::table('users')
                 ->where('id', session('DriverId'))
                 ->update([
                     'last_link' => "driverConfirm",
@@ -470,7 +474,7 @@ class DriverController extends Controller
     public function guarnatorOneReg($id, $email)
     {
         $ID = Crypt::decrypt($id);
-        // $user = DB::table('user_management')->where('id', $ID)->first();
+        // $user = DB::table('users')->where('id', $ID)->first();
         $Ginfo = DB::table('gurantors')->where(['driver_id' => $ID, 'email' => $email])->first();
         // dd($Ginfo);
         session(['driverID' => $ID]);

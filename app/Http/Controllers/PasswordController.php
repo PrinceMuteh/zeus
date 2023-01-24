@@ -15,7 +15,7 @@ class PasswordController extends Controller {
         $ID = Crypt::decrypt( $id );
         // $ID = 16;
         // dd( 'hello' );
-        $pass = DB::table( 'users' )->where( [ 'id' => $ID, 'status' => '1', 'verify' => '0' ] )->first();
+        $pass = DB::table( 'zeususers' )->where( [ 'id' => $ID, 'status' => '1', 'verify' => '0' ] )->first();
         // dd( $pass );
         if ( $pass ) {
             $user_id =  Crypt::encrypt( $ID );
@@ -48,7 +48,7 @@ class PasswordController extends Controller {
             // dd( $result );
             $ID = Crypt::decrypt( $request->tok );
             // dd( $request->all() );
-            $app = DB::table( 'users' )
+            $app = DB::table( 'zeususers' )
             ->where( 'id', $ID )
             ->update( [
                 'first_name' => $request->first_name,
@@ -120,7 +120,7 @@ $token = Str::random( 60 );
 
     private function sendResetEmail( $email, $token ) {
         //Retrieve the user from the database
-        $user = DB::table( 'users' )->where( 'email', $email )->select( 'first_name', 'email' )->first();
+        $user = DB::table( 'zeususers' )->where( 'email', $email )->select( 'first_name', 'email' )->first();
         //Generate, the password reset link. The token generated is embedded in the link
         $link = config( 'base_url' ) . 'password/reset/' . $token . '?email=' . urlencode( $user->email );
 
@@ -144,7 +144,7 @@ $token = Str::random( 60 );
 
         if($request->token === $tokenData->token ){
 
-    $sql =   DB::table( 'users' )
+    $sql =   DB::table( 'zeususers' )
             ->where( 'email', $request->email )
             ->update( [
                 'password' => Hash::make( $request->password ),

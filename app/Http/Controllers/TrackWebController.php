@@ -35,8 +35,8 @@ class TrackWebController extends Controller
     public function index()
     {
         if (Auth()->user()->user_type == 'SUPER') {
-            $cars = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get();
-            $cars3 = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get()->toArray();
+            $cars = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
+            $cars3 = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
             if ($cars[0]->latitude != 0.0) {
                 $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
                 if ($response == null) {
@@ -76,7 +76,7 @@ class TrackWebController extends Controller
             );
         } else if (Auth()->user()->user_type == 'accountOfficer') {
             // dd(Auth()->user()->email);
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             if (count($vehno) < 1) {
                 Auth::logout();
@@ -86,11 +86,11 @@ class TrackWebController extends Controller
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
             }
-            // $cars = DB::table( 'all_vehicle' )->orderBy( 'vehno', 'DESC' )->get();
-            $cars = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get();
+            // $cars = DB::table( 'vehicle_details_vms' )->orderBy( 'vehno', 'DESC' )->get();
+            $cars = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
             //   dd( $cars );
 
-            $cars3 = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get()->toArray();
+            $cars3 = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
             if ($cars[0]->latitude != 0.0) {
                 $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
                 if ($response == null) {
@@ -134,11 +134,11 @@ class TrackWebController extends Controller
             foreach ($fle as $key => $value) {
                 $fleet[] = $value->fleet_name;
             }
-            // $cars = DB::table( 'all_vehicle' )->orderBy( 'vehno', 'DESC' )->get();
-            $cars = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get();
+            // $cars = DB::table( 'vehicle_details_vms' )->orderBy( 'vehno', 'DESC' )->get();
+            $cars = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
             //   dd( $cars );
 
-            $cars3 = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get()->toArray();
+            $cars3 = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
             if ($cars[0]->latitude != 0.0) {
                 $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
                 if ($response == null) {
@@ -187,8 +187,8 @@ class TrackWebController extends Controller
 
     public function index2($plateNo)
     {
-        $cars = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plateNo)->get();
-        $cars3 = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get()->toArray();
+        $cars = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plateNo)->get();
+        $cars3 = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
         if ($cars[0]->latitude != 0.0) {
             $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
             if ($response == null) {
@@ -213,12 +213,12 @@ class TrackWebController extends Controller
         $driverphone = $cars[0]->driverphone;
         $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
         // dd($vehicleDetails);
-        
+
         if (empty($vehicleDetails->Data->vehno)) {
-                Alert::toast('Couldnt Fetch Record', 'failed');
+            Alert::toast('Couldnt Fetch Record', 'failed');
             return back()->with("Emessage", "Couldnt Fetch Complete record");
         }
-        
+
         if (!empty($vehicleDetails)) {
             $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno ?? "00000000");
         }
@@ -236,13 +236,65 @@ class TrackWebController extends Controller
         return view('track-single', compact('cars', 'data', 'cars3', 'otherDetails', 'placeAddress', 'single'));
     }
 
+    public function trackTest($plateNo)
+    {
+        $cars = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plateNo)->get();
+        $cars3 = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
+        if ($cars[0]->latitude != 0.0) {
+            $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
+            if ($response == null) {
+                $placeAddress = 'not available';
+                $label = '-';
+                $single = 'singles';
+            } else {
+                $placeAddress = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
+                $label = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
+                $single = 'single';
+            }
+        } else {
+            $placeAddress = '-';
+            $label = '-';
+            $single = 'singles';
+        }
+        //details from mygarage
+        $otherDetails = (new ApiController)->get('https://test.mygarage.africa/api/other-details/' . $plateNo);
+
+        $plate = $cars[0]->vehno;
+        $investorphone = $cars[0]->investorphonenumber;
+        $driverphone = $cars[0]->driverphone;
+        $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
+        // dd($vehicleDetails);
+
+        if (empty($vehicleDetails->Data->vehno)) {
+            Alert::toast('Couldnt Fetch Record', 'failed');
+            return back()->with("Emessage", "Couldnt Fetch Complete record");
+        }
+
+        if (!empty($vehicleDetails)) {
+            $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno ?? "00000000");
+        }
+        $driverDetails = (new VMSAPI)->getDriverInfo($driverphone);
+        $investorInfo = (new VMSAPI)->getInvestorInfo($investorphone);
+        $data = array(
+            'cars' => $cars,
+            'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
+            'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
+            'vehicleLocation' => (!empty($vehicleLocation->Data[0])) ? $vehicleLocation->Data[0] : 'null',
+            'investorInfo' => (!empty($investorInfo)) ? $investorInfo->Data : 'null',
+
+        );
+
+        $single = 'single';
+        return view('track-test', compact('cars', 'data', 'cars3', 'otherDetails', 'placeAddress', 'single'));
+    }
+
     public function search(Request $req)
     {
         $plateNo = $req->plateNo;
         // $mapKey = $this->gogleApi();
-        // $cars = DB::table( 'all_vehicle' )->orderBy( 'vehno', 'DESC' )->get();
-        $cars = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plateNo)->get();
-        $cars3 = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get()->toArray();
+        // $cars = DB::table( 'vehicle_details_vms' )->orderBy( 'vehno', 'DESC' )->get();
+        $cars = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plateNo)->get();
+        $cars3 = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
 
 
         $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());

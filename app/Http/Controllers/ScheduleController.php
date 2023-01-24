@@ -18,6 +18,10 @@ class ScheduleController extends Controller
         set_time_limit(800);
     }
 
+    public function sql2()
+    {
+        return  DB::connection('mysql_2');
+    }
 
     // public  $maptiller_key;
 
@@ -36,22 +40,21 @@ class ScheduleController extends Controller
         // $this->diff( $time );userManagement
         $now = Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString();
         //    $this->();
-
-        $this->reportTask();
+       $this->reportTask();
         $this->allVehicleTask();
         $this->TellaPayment();
         //  $this->vehicleStatusTask();
         // $this->userManagement();
-        //  $sql = DB::table('user_management')->where('id', '>=' ,"1500")->delete();
+        //  $sql = DB::table('users')->where('id', '>=' ,"1500")->delete();
     }
 
     public function reportTask()
     {
-        $sql = DB::table('duepayments')->truncate();
+        // $sql = DB::table('duepayments')->truncate();
         // $date = Carbon::tomorrow()->startOfDay();
         $date = Carbon::now()->endOfWeek(Carbon::SATURDAY);
         $page = 10000;
-        $result = (new VMSAPI)->getVehicleOverDue($date->format('Y-m-d'), $page);
+       $result = (new VMSAPI)->getVehicleOverDue($date->format('Y-m-d'), $page);
         foreach ($result->Data as $value) {
             if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
                 if ($value->Vehicle->drivername != '' || $value->Vehicle->investorname != '0000000000') {
@@ -101,12 +104,12 @@ class ScheduleController extends Controller
     }
     public function getVehiclewithnoDriver()
     {
-        return $sql = DB::table('all_vehicle')->whereNull('driverid')->get();
+        return $sql = DB::table('vehicle_details_vms')->whereNull('driverid')->get();
     }
 
     public function allVehicleTask()
     {
-        // $sql = DB::table( 'all_vehicle' )->truncate();
+        // $sql = DB::table( 'vehicle_details_vms' )->truncate();
 
         $result = (new VMSAPI)->All_record();
         return $result;
@@ -116,7 +119,7 @@ class ScheduleController extends Controller
                 if ($value->drivername != '' || $value->investorname != '0000000000') {
                     // if ( $value->driverphone != '' || $value->driverphone != null ) {
                     if ($value->systemno != '0000000000') {
-                        DB::table('all_vehicle')->upsert(
+                        DB::table('vehicle_details_vms')->upsert(
                             [
                                 'vehno' => $value->vehno,
                                 'systemno' => $value->systemno,
@@ -157,8 +160,8 @@ class ScheduleController extends Controller
                                 // 'price' => $value->price,
                                 // 'status' => $value->status,
                                 // 'brandname' => $value->brandname,
-                                // 'createtime' => $value->createtime,
-                                // 'expirdate' => $value->expirdate,
+                                'createtime' => $value->createtime,
+                                'expirdate' => $value->expirdate,
                                 // 'investorid' => $value->investorid,
                                 // 'investorname' => $value->investorname,
                                 // 'investorphonenumber' => $value->investorphonenumber,
@@ -180,10 +183,10 @@ class ScheduleController extends Controller
     public function vehicleStatusTask()
     {
         // $sql = DB::table( 'vehicle_status' )->truncate();
-        // $result = DB::table( 'all_vehicle' )->get();
-        // $result = DB::table( 'all_vehicle' )->where( 'id', '<=', '500' )->get();
+        // $result = DB::table( 'vehicle_details_vms' )->get();
+        // $result = DB::table( 'vehicle_details_vms' )->where( 'id', '<=', '500' )->get();
 
-        DB::table('all_vehicle')->where('id', '<=', '300')->orderBy('created_at')->chunk(50, function ($result) {
+        DB::table('vehicle_details_vms')->where('id', '<=', '300')->orderBy('created_at')->chunk(50, function ($result) {
             foreach ($result as $value) {
                 $vehicleLocation = (new VMSAPI)->getVehiclePosition($value->systemno);
                 if ($vehicleLocation != '' || $vehicleLocation != null) {
@@ -283,8 +286,8 @@ class ScheduleController extends Controller
 
     public function vehicleStatusTask2()
     {
-        //   return  DB::table('all_vehicle')->where( 'id', '=', '928' )->orderBy('created_at', "desc")->get();
-        DB::table('all_vehicle')->where('id', '>=', '300')->orderBy('created_at', 'desc')->chunk(50, function ($result) {
+        //   return  DB::table('vehicle_details_vms')->where( 'id', '=', '928' )->orderBy('created_at', "desc")->get();
+        DB::table('vehicle_details_vms')->where('id', '>=', '300')->orderBy('created_at', 'desc')->chunk(50, function ($result) {
             foreach ($result as $value) {
                 $vehicleLocation = (new VMSAPI)->getVehiclePosition($value->systemno);
                 if ($vehicleLocation != '' || $vehicleLocation != null) {
@@ -383,9 +386,9 @@ class ScheduleController extends Controller
 
     public function vehicleStatusTask3()
     {
-        //   return  DB::table('all_vehicle')->where( 'id', '>=', '800' )->orderBy('created_at', "desc")->get();
+        //   return  DB::table('vehicle_details_vms')->where( 'id', '>=', '800' )->orderBy('created_at', "desc")->get();
 
-        DB::table('all_vehicle')->where('id', '>=', '900')->orderBy('created_at', 'desc')->chunk(100, function ($result) {
+        DB::table('vehicle_details_vms')->where('id', '>=', '900')->orderBy('created_at', 'desc')->chunk(100, function ($result) {
             foreach ($result as $value) {
                 $vehicleLocation = (new VMSAPI)->getVehiclePosition($value->systemno);
                 if ($vehicleLocation != '' || $vehicleLocation != null) {
@@ -528,10 +531,10 @@ class ScheduleController extends Controller
     public function userManagement()
     {
         return "hello";
-        // DB::table('user_management')->truncate();
+        // DB::table('users')->truncate();
         $users = (new ApiController)->get('http://test.mygarage.africa/api/user-record');
         foreach ($users as $value) {
-            DB::table('user_management')->insert(
+            DB::table('users')->insert(
                 [
                     'user_id' => $value->id,
                     'name' => $value->name,
@@ -790,10 +793,10 @@ class ScheduleController extends Controller
             ->where('api', 'vms')
             ->select('lastnumber')
             ->first();
-        $result = DB::table('all_vehicle')->where('id', '>=', $result->lastnumber)->select('vehno')->get();
+        $result = DB::table('vehicle_details_vms')->where('id', '>=', $result->lastnumber)->select('vehno')->get();
         foreach ($result as $item) {
             $results = (new VMSAPI)->get_pay_bill($item->vehno);
-            
+
             // $results = ( new VMSAPI )->get_pay_bill( 'EFR882SN' );
             // $results = json_decode( $results );
             // return $results;
@@ -841,13 +844,13 @@ class ScheduleController extends Controller
         // dispatch( new ScheduleJobs() );
         $todayDay = Carbon::parse(now())->format('Y-m-d H:i:s');
         // $date = Carbon::now()->subDays( 2 )->startOfDay()->format( 'Y-m-d H:i:s' );
-        // DB::table( 'all_vehicle' )
+        // DB::table( 'vehicle_details_vms' )
         // ->update( [
         //     'updated_at' => $date,
         // ] );
 
         //   return ( new VMSAPI )->get_pay_bill( "MUS73FX" );
-        //  $result = DB::table( 'all_vehicle' ) 
+        //  $result = DB::table( 'vehicle_details_vms' ) 
         // ->whereDate( 'updated_at', '<', $todayDay )
         // ->select( 'id', 'vehno' )
         // // ->inRandomOrder()
@@ -855,7 +858,7 @@ class ScheduleController extends Controller
         // ->get();
         // // dd( $result );
 
-        DB::table('all_vehicle')
+        DB::table('vehicle_details_vms')
             ->whereDate('updated_at', '<', $todayDay)
             // ->select( 'id', 'vehno' )
             ->where('id', '<=', '500')->orderBy('created_at')->chunk(50, function ($result) {
@@ -907,7 +910,7 @@ class ScheduleController extends Controller
                             }
                         }
 
-                        DB::table('all_vehicle')
+                        DB::table('vehicle_details_vms')
                             ->where('id', $item->id)
                             ->update([
                                 'updated_at' => Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
@@ -924,12 +927,12 @@ class ScheduleController extends Controller
         $todayDay = Carbon::parse(now())->format('Y-m-d H:i:s');
 
         // $date = Carbon::now()->subDays( 2 )->startOfDay()->format( 'Y-m-d H:i:s' );
-        // DB::table( 'all_vehicle' )
+        // DB::table( 'vehicle_details_vms' )
         // ->update( [
         //     'updated_at' => $date,
         // ] );
 
-        // $result = DB::table( 'all_vehicle' )
+        // $result = DB::table( 'vehicle_details_vms' )
         // ->whereDate( 'updated_at', '<', $todayDay )
         // ->select( 'id', 'vehno' )
         // // ->inRandomOrder()
@@ -937,7 +940,7 @@ class ScheduleController extends Controller
         // ->get();
 
         // // dd( $result );
-        DB::table('all_vehicle')
+        DB::table('vehicle_details_vms')
             ->whereDate('updated_at', '<', $todayDay)
             // ->select( 'id', 'vehno' )
             ->where('id', '>=', '500')->orderBy('created_at')->chunk(50, function ($result) {
@@ -989,7 +992,7 @@ class ScheduleController extends Controller
                             }
                         }
 
-                        DB::table('all_vehicle')
+                        DB::table('vehicle_details_vms')
                             ->where('id', $item->id)
                             ->update([
                                 'updated_at' => Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
@@ -1005,18 +1008,18 @@ class ScheduleController extends Controller
 
         $todayDay = Carbon::parse(now())->format('Y-m-d H:i:s');
         //     $date = Carbon::now()->subDays( 2 )->startOfDay()->format( 'Y-m-d H:i:s' );
-        //  return   DB::table( 'all_vehicle' )
+        //  return   DB::table( 'vehicle_details_vms' )
         //     ->update( [
         //         'updated_at' => $date,
         // ] );
         // return 'done';
-        // $result = DB::table( 'all_vehicle' )
+        // $result = DB::table( 'vehicle_details_vms' )
         // ->whereDate( 'updated_at', '<', $todayDay )
         // ->select( 'id', 'vehno' ,'bodytypename')
         // // ->inRandomOrder()
         // // ->limit( 5 )
         // ->get();
-        DB::table('all_vehicle')
+        DB::table('vehicle_details_vms')
             // ->whereDate( 'updated_at', '<', $todayDay )
             ->where('id', '<=', '400')
             ->select('id', 'vehno', 'bodytypename')
@@ -1052,7 +1055,7 @@ class ScheduleController extends Controller
                             }
                         }
 
-                        DB::table('all_vehicle')
+                        DB::table('vehicle_details_vms')
                             ->where('id', $item->id)
                             ->update([
                                 'updated_at' => Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
@@ -1065,18 +1068,18 @@ class ScheduleController extends Controller
     {
         $todayDay = Carbon::parse(now())->format('Y-m-d H:i:s');
         //     $date = Carbon::now()->subDays( 2 )->startOfDay()->format( 'Y-m-d H:i:s' );
-        //  return   DB::table( 'all_vehicle' )
+        //  return   DB::table( 'vehicle_details_vms' )
         //     ->update( [
         //         'updated_at' => $date,
         // ] );
         // return 'done';
-        // $result = DB::table( 'all_vehicle' )
+        // $result = DB::table( 'vehicle_details_vms' )
         // ->whereDate( 'updated_at', '<', $todayDay )
         // ->select( 'id', 'vehno' ,'bodytypename')
         // // ->inRandomOrder()
         // // ->limit( 5 )
         // ->get();
-        DB::table('all_vehicle')
+        DB::table('vehicle_details_vms')
             // ->whereDate( 'updated_at', '<', $todayDay )
             ->where('id', '>=', '400')
             ->select('id', 'vehno', 'bodytypename')
@@ -1112,7 +1115,7 @@ class ScheduleController extends Controller
                             }
                         }
 
-                        DB::table('all_vehicle')
+                        DB::table('vehicle_details_vms')
                             ->where('id', $item->id)
                             ->update([
                                 'updated_at' => Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
@@ -1125,18 +1128,18 @@ class ScheduleController extends Controller
     {
         $todayDay = Carbon::parse(now())->format('Y-m-d H:i:s');
         //     $date = Carbon::now()->subDays( 2 )->startOfDay()->format( 'Y-m-d H:i:s' );
-        //  return   DB::table( 'all_vehicle' )
+        //  return   DB::table( 'vehicle_details_vms' )
         //     ->update( [
         //         'updated_at' => $date,
         // ] );
         // return 'done';
-        // $result = DB::table( 'all_vehicle' )
+        // $result = DB::table( 'vehicle_details_vms' )
         // ->whereDate( 'updated_at', '<', $todayDay )
         // ->select( 'id', 'vehno' ,'bodytypename')
         // // ->inRandomOrder()
         // // ->limit( 5 )
         // ->get();
-        DB::table('all_vehicle')
+        DB::table('vehicle_details_vms')
             // ->whereDate( 'updated_at', '<', $todayDay )
             ->where('id', '>=', '800')
             ->select('id', 'vehno', 'bodytypename')
@@ -1172,7 +1175,7 @@ class ScheduleController extends Controller
                             }
                         }
 
-                        DB::table('all_vehicle')
+                        DB::table('vehicle_details_vms')
                             ->where('id', $item->id)
                             ->update([
                                 'updated_at' => Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString(),
@@ -1185,18 +1188,18 @@ class ScheduleController extends Controller
     public function vms_fleet()
     {
 
-        // DB::table( 'all_vehicle' )
+        // DB::table( 'vehicle_details_vms' )
         //     ->update( [
         //         'updated_at' =>  null,
         //     ] );
         //     die();
         $result = DB::table('vms_payments')
-            ->join('all_vehicle', 'vms_payments.vehno', 'all_vehicle.vehno')
+            ->join('vehicle_details_vms', 'vms_payments.vehno', 'vehicle_details_vms.vehno')
             ->whereNull("fleet")
             ->get();
         // dd($result);
         foreach ($result as $results) {
-            // $result = DB::table( 'all_vehicle' )->where('vehno', $results->vehno)->first();
+            // $result = DB::table( 'vehicle_details_vms' )->where('vehno', $results->vehno)->first();
             DB::table('vms_payments')
                 ->where('vehno', $results->vehno)
                 ->update([
@@ -1204,49 +1207,43 @@ class ScheduleController extends Controller
                 ]);
         }
     }
-    
+
     public function user_fleet()
     {
-        $result = DB::table('user_management')
-            ->join('all_vehicle', 'user_management.phone', 'all_vehicle.investorphonenumber')
-            // ->join('all_vehicle', 'user_management.phone', 'all_vehicle.driverphone')
-            // ->WhereNotNull ("all_vehicle.accountOfficer")
+        $result = DB::table('users')
+            ->join('vehicle_details_vms', 'users.phone', 'vehicle_details_vms.investorphonenumber')
+            // ->join('vehicle_details_vms', 'user_management.phone', 'vehicle_details_vms.driverphone')
+            // ->WhereNotNull ("vehicle_details_vms.accountOfficer")
             ->get();
         // dd($result);
         // foreach ($result as $results) {
-        //     $result = DB::table('all_vehicle')->where('vehno', $results->vehno)->first();
-        //     DB::table('user_management')
+        //     $result = DB::table('vehicle_details_vms')->where('vehno', $results->vehno)->first();
+        //     DB::table('users')
         //         ->where('phone', $results->phone)
         //         ->update([
         //             'fleet' =>  $results->bodytypename,
         //         ]);
         // }
         foreach ($result as $results) {
-            $result = DB::table('all_vehicle')->where('vehno', $results->vehno)->first();
-            DB::table('user_management')
+            $result = DB::table('vehicle_details_vms')->where('vehno', $results->vehno)->first();
+            DB::table('users')
                 ->where('phone', $results->phone)
                 ->update([
                     'accountOfficer' =>  $results->accountOfficer,
                 ]);
         }
     }
-    
+
     public function update_allVehicle()
     {
-
-
-        $result = DB::table('all_vehicle')
-            ->join('all_vehicle', 'user_management.vehno', 'all_vehicle.vehno')
+        $result = DB::table('vehicle_details_vms')
+            ->join('vehicle_details_vms', 'user_management.vehno', 'vehicle_details_vms.vehno')
             ->whereNull("user_management.fleet")
             ->get();
-
-
-
         // dd($result);
-
         foreach ($result as $results) {
-            $result = DB::table('all_vehicle')->where('vehno', $results->vehno)->first();
-            DB::table('user_management')
+            $result = DB::table('vehicle_details_vms')->where('vehno', $results->vehno)->first();
+            DB::table('users')
                 ->where('phone', $results->phone)
                 ->update([
                     'fleet' =>  $results->bodytypename,
@@ -1264,7 +1261,7 @@ class ScheduleController extends Controller
 
     public function car_fleet()
     {
-        $sql = DB::table('all_vehicle')->get();
+        $sql = DB::table('vehicle_details_vms')->get();
 
         foreach ($sql as $value) {
             if ($value->status == 0) {
@@ -1335,7 +1332,7 @@ class ScheduleController extends Controller
         dd($res);
 
         $plate_no = "RBC530XD";
-        $d2 = DB::table('all_vehicle')->where('vehno', $plate_no)->first();
+        $d2 = DB::table('vehicle_details_vms')->where('vehno', $plate_no)->first();
         $bills = (new VMSAPI)->get_pay_bill($plate_no);
         $totalContributed = 0;
         $recentBills = (new VMSAPI)->get_vehicle_recent_payment($plate_no);
@@ -1456,42 +1453,42 @@ class ScheduleController extends Controller
     public function assignAccountOfficer()
     {
         // Group A
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
                 ["BWR47XE", "ABC07ZY", "KUJ784XC", "KUJ319XC", "ABC802XD", "ABC803XD", "ABC804XD", "RBC758XD", "KWL386XB", "BWR261XB", "BWR945XB", "KUJ746XC", "KUJ749XC", "KUJ507XC", "KWL832XB", "BWR280XB", "ABC22XD", "ABC23XD", "BWR615XE", "KUJ221XC", "BWR668XB", "KWL660XB", "BWR143XB", "RSH562XD", "RSH480XD", "KUJ451XC", "KUJ452XC", "KUJ831XC", "RSH854XD", "RSH425XD", "BWR768YL", "RBC229YL", "RBC530XE", "RBC531XE", "BWR710YL", "ABC457XD", "KUJ915XC", "RSH992XD", "KWL892XB", "RBC451YL", "ABC454XD", "BWR816XE", "BWR817XE", "BWR819XE", "RSH989XD", "RSH862XD", "RSH654XD", "KWL385XB", "BWR858YL", "BWR859YL", "BWR696YL", "BWR697YL", "BWR698YL", "BWR767YL", "ABC79ZY", "KUJ780XC", "RBC703XD", "RSH807XD", "RSH806XD", "BWR145XB", "KUJ501XC", "KUJ990XC", "RBC305XD", "BWR48XB", "RSH397XC", "KWL783XB", "RBC369XD", "RBC370XD", "BWR150XB", "BWR18XB", "KUJ459XC", "KWL389XB", "KWL390XB", "ABJ988XB", "KUJ744XC", "KWL387XB", "KWL802XB", "RBC982XD", "ABC816XD", "RSH233XD", "ABJ332XV", "RSH235XD", "RSH236XD", "RBC529XD", "RSH552XD", "RBC530XD", "KUJ750XC", "RSH553XD", "RBC866XD", "RBC867XD", "ABC669ZW", "ABC670ZW", "RSH940XC", "KWL581XB", "KWL52XB", "ABJ239XV", "KUJ798XC", "BWR609XB", "KWL376XB", "BWR657XE", "RBC225YD", "ABC671XF", "ABC738ZY", "BWR441XB", "BWR380XB", "BWR423XE", "BWR424XE", "BWR422XE", "KUJ287XC", "RSH551XD", "RBC688XC", "RBC690XC", "BWR702YL", "KWL779XB", "ABJ131XB", "ABJ537XB", "ABJ942XB", "RBC518XD", "ABC361XD", "RBC452YL", "RBC865XD", "BWR20XB", "RSH994XD", "RSH141XD", "RSH557XD", "RSH559XD", "RSH558XD", "BWR265XB", "KUJ454XC", "KUJ460XC", "RSH477XD", "BWR620XE", "RBC313YL", "RSH983XC", "RSH561XD", "KUJ115XC", "BWR655XE", "KWL422ZY", "RSH861XD", "ABC303ZY", "KUJ461XC", "BWR881XE", "RBC902XD", "KUJ224XC", "BWR703YL", "KWL831XB", "RBC101YL", "RBC448YL", "ABJ243XV", "ABC810XD", "ABJ835XV", "RBC870XD", "RBC871XD", "RSH234XD", "RBC868XD", "KUJ360XC", "RSH76XD", "BWR239XB", "RSH109XD", "RSH110XD", "BWR861YL", "RBC880YL", "KUJ219XC", "ABC783XD", "KWL995XB", "RBC565XD", "KUJ315XC", "KUJ464XC", "BWR704YL", "BWR856YL", "BWR857YL", "KWL373XB", "KUJ502XC", "GWA376YL", "BWR288XB", "RBC307XD", "ABC384XF"]
             )->select('vehno', 'id')
             ->get();
         foreach ($account as  $value) {
-            $sql =   DB::table('all_vehicle')
+            $sql =   DB::table('vehicle_details_vms')
                 ->where('vehno', $value->vehno)
                 ->update([
                     'accountOfficer' => "Alpha@teamenvio.com",
                 ]);
         }
         // Group B
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
                 ["ABC567ZW", "BWR974XE", "BWR294XB", "KUJ745XC", "ABC819XD", "RBC787YD", "ABJ237XV", "ABJ240XV", "GWA238YL", "ABC672XF", "RSH656XD", "ABC83ZW", "BWR373XB", "BWR474XB", "RBC983XD", "BWR442XB", "RBC533XD", "BWR473XB", "KWL834XB", "RBC561XD", "RBC562XD", "RBC91YD", "ABC365XD", "KWL785XB", "KUJ509XC", "BWR435YL", "ABC429ZY", "KUJ620XC", "RBC984XD", "ABC818XD", "ABC314XD", "ABC313XD", "BWR403YL", "BWR404YL", "BRW650XE", "BWR658XE", "BWR282XE", "ABJ134XB", "ABC536XD", "KUJ950XC", "RSH898XC", "RSH899XC", "RSH750XD", "KWL787XB", "BWR148XB", "RBC344YL", "RSH139XD", "RSH963XD", "KUJ120XC", "BWR501XE", "ABC72ZW", "BWR480XB", "RBC565YD", "ABC312XD", "ABJ492XV", "RBC217YL", "KWL833XB", "KUJ465XC", "KUJ552XC", "KUJ556XC", "BWR757XE", "KUJ550XC", "KUJ551XC", "RBC693YD", "ABJ857XV", "RBC614XD", "RBC12YL", "KUJ08XC", "ABC814XD", "ABC317XD", "RBC115XD", "KUJ285XC", "RBC704XD", "RBC705XD", "ABC315XD", "BWR776XB", "RBC96XD", "ABJ859XV", "RBC563XD", "ABC452XD", "BWR295XB", "BWR296XB", "KWL121ZY", "RBC445XD", "KWL601ZY", "RSH264XD", "KUJ504XC", "RBC879YL", "KUJ316XC", "KUJ317XC", "ABC901XD", "ABC902XD", "BWR149XB", "BWR436YL", "ABC307ZW", "ABC321ZW", "RBC532XD", "RBC707XD", "RBC709XD", "RBC711XD", "RBC712XD", "RBC710XD", "BWR262XB", "BWR263XB", "RBC872XD", "ABC820XD", "BWR651XE", "BWR99YL", "RSH810XD", "RBC121XD", "BWR279XB", "RBC759XD", "KWL835XB", "BWR402YL", "BWR135YL", "RBC802XE", "RBC218YL", "RBC176XE", "ABC720XF", "ABC721XF", "ABC722XF", "RBC173XE", "RBC527XE", "RBC174XE", "BWR405YL", "ABJ856XV", "ABJ132XB", "KWL116ZY", "KUJ288XC", "ABC849ZW", "ABC304ZY", "ABC305ZY", "BWR289XB", "BWR622XE", "ABC302ZY", "BWR860YL", "ABC417XF", "ABC384XF", "RBC535XD", "BWR144XB", "ABC364XD", "RBC246XC", "RSH653XC", "RBC497XD", "KUJ783XC", "RBC364YL", "BWR240XB", "BWR19XB", "KUJ218XC", "KUJ216XC", "KUJ217XC", "RSH947XD", "RSH948XD", "ABC458XD", "KWL661XB", "RBC368XD", "ABC181XF", "BWR139XE", "ABC67XF", "RBC897XC", "ABC61XD", "ABC665XF", "BWR971XE", "BWR701YL", "BWR699YL", "KWL781XB", "ABC357XD", "ABC359XD", "ABC360XD", "KUJ453XC", "KUJ455XC", "ABC453XD", "KUJ145XC"]
             )->select('vehno', 'id')
             ->get();
         foreach ($account as  $value) {
-            $sql =   DB::table('all_vehicle')
+            $sql =   DB::table('vehicle_details_vms')
                 ->where('vehno', $value->vehno)
                 ->update([
                     'accountOfficer' => "Beta@teamenvio.com",
                 ]);
         }
         // Group C
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
                 ["ABC579ZW", "BWR818XE", "ABJ538XB", "BWR972XE", "ABJ855XV", "RBC411XD", "RBC412XD", "RBC383XF", "ABC418XF", "RSH439XD", "KUJ618XC", "KUJ619XC", "KUJ621XC", "KUJ622XC", "KWL388XB", "RBC85YL", "RBC498XD", "BWR544XE", "RSH991XD", "BWR829XE", "ABJ856XE", "RSH995XD", "RSH996XD", "RSH997XD", "RSH998XD", "ABC884ZY", "ABJ977XV", "KUJ503XC", "GWA211YL", "RBC570XD", "KWL382XB", "BWR232XB", "KUJ225XC", "RBC443XD", "RSH746XD", "ABC93ZW", "RBC309XD", "KUJ785XC", "BWR931XE", "RSH267XD", "RBC904YD", "KUJ508XC", "BWR406YL", "RSH934XC", "ABC354XD", "BWR649XE", "RSH613XC", "ABJ869XV", "RSH554XD", "RSH556XD", "ABC455XD", "ABJ57XB", "RBC728XD", "ABC356XD", "BWR370XB", "KUJ782XC", "RBC878YL", "RSH238XD", "RSH801XD", "KUJ10XC", "RSH479XD", "ABC460ZW", "ABC351XD", "RBC336YD", "RBC977YD", "RBC123XD", "BWR104XB", "KUJ223XC", "RSH481XD", "BWR147XB", "ABJ83XB", "ABJ84XB", "ABJ81XB", "ABJ82XB", "ABC746ZW", "ABC811XD", "BWR475XB", "RBC390YD", "MNA475ZY", "KWL379XB", "ABJ943XB", "BWR399XB", "ABJ133XB", "RBC981XD", "BWR616XE", "RBC495XD", "RBC499XD", "RBC757XD", "KWL450ZY", "KWL452ZY", "BWR48XE", "BWR49XE", "KWL780XB", "ABJ838XV", "GWA583YL", "KUJ510XC", "BWR973XE", "KUJ781XC", "RSH172XD", "BWR168XB", "RBC312XC", "GWA229YL", "GWA787YL", "KUJ06XC", "KUJ09XC", "BWR440XB", "BWR821XE", "RSH805XD", "RSH156XD", "BWR427XE", "ABJ858XV", "RSH159XD", "RSH748XD", "RSH749XD", "KUJ830XC", "BWR408YL", "RBC252YD", "ABC739ZY", "RSH232XD", "ABC506ZY", "BWR705YL", "GWA19YL", "RBC706XD", "RBC92YL", "RBC93YL", "KUJ625XC", "KUJ320XC", "KWL384XB", "KUJ284XC", "RSH142XD", "RBC580XD", "KWL391XB", "RSH738XD", "BWR822XE", "KWL786XB", "BWR655XB", "BWR656XB", "BWR657XB", "BWR660XB", "BWR661XB", "BWR659XB", "ABJ854XV", "KUJ862XC", "RSH863XD", "KUJ286XC", "KUJ821XC", "KUJ820XC", "RBC566XD", "RBC567XD", "RBC568XD", "BWR731XE", "ABC310ZW", "BWR943XB", "RSH564XD", "RSH563XD", "RBC901XD", "BWR46XB", "RBC346XD", "ABC956XB", "ABC745ZY", "BWR425XE", "BWR264XB", "KWL993XB", "RSH803XD", "RSH804XD", "BWR942XB", "RBC496XD", "RBC528XD", "RSH40XD", "BWR472XB", "BWR941XB", "BWR590XB", "BWR237XB", "BWR238XB"]
             )->select('vehno', 'id')
             ->get();
         foreach ($account as  $value) {
-            $sql =   DB::table('all_vehicle')
+            $sql =   DB::table('vehicle_details_vms')
                 ->where('vehno', $value->vehno)
                 ->update([
                     'accountOfficer' => "Omega@teamenvio.com",
@@ -1504,7 +1501,7 @@ class ScheduleController extends Controller
     public function assignAccountOfficer2()
     {
         // FRAnk
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
                 ["RBC867XD", "ABC669ZW", "ABC670ZW", "RSH940XC", "KWL581XB", "KWL52XB", "ABJ239XV", "KUJ798XC", "BWR609XB", "KWL376XB", "BWR657XE", "RBC225YD", "ABC671XF", "ABC738ZY", "BWR441XB", "BWR380XB", "BWR423XE", "BWR424XE", "BWR422XE", "KUJ287XC", "RSH551XD", "RBC688XC", "RBC690XC", "BWR702YL", "KWL779XB", "ABJ131XB", "ABJ537XB", "ABJ942XB", "RBC518XD", "ABC361XD", "RBC452YL", "RBC865XD", "BWR20XB", "RSH994XD", "RSH141XD", "RSH557XD", "RSH559XD", "RSH558XD", "BWR265XB", "KUJ454XC", "KUJ460XC", "RSH477XD", "BWR620XE", "RBC313YL", "RSH983XC", "RSH561XD", "KUJ115XC", "BWR655XE", "KWL422ZY", "RSH861XD", "ABC303ZY", "KUJ461XC", "BWR881XE", "RBC902XD", "KUJ224XC", "BWR703YL", "KWL831XB", "RBC101YL", "RBC448YL", "ABJ243XV", "ABC810XD", "ABJ835XV", "RBC870XD", "RBC871XD", "RSH234XD", "RBC868XD", "KUJ360XC", "RSH76XD", "BWR239XB", "RSH109XD", "RSH110XD", "BWR861YL", "RBC880YL", "KUJ219XC", "ABC783XD", "KWL995XB", "RBC565XD", "KUJ315XC", "KUJ464XC", "BWR704YL", "BWR856YL", "BWR857YL", "KWL373XB", "KUJ502XC", "GWA376YL", "BWR288XB", "RBC307XD", "ABC384XF"]
@@ -1512,7 +1509,7 @@ class ScheduleController extends Controller
             ->get();
 
         foreach ($account as  $value) {
-            $sql =   DB::table('all_vehicle')
+            $sql =   DB::table('vehicle_details_vms')
                 ->where('vehno', $value->vehno)
                 ->update([
                     'accountOfficer' => "frank@teamenvio.com",
@@ -1520,7 +1517,7 @@ class ScheduleController extends Controller
         }
 
         // solomon
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 'vehno',
                 [
@@ -1530,7 +1527,7 @@ class ScheduleController extends Controller
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('all_vehicle')
+            DB::table('vehicle_details_vms')
                 ->where('id', $value->id)
                 ->update([
                     'accountOfficer' => "solomonstevens8@gmail.com",
@@ -1538,7 +1535,7 @@ class ScheduleController extends Controller
         }
 
         // Joshua
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 'vehno',
                 [
@@ -1548,7 +1545,7 @@ class ScheduleController extends Controller
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('all_vehicle')
+            DB::table('vehicle_details_vms')
                 ->where('id', $value->id)
                 ->update([
                     'accountOfficer' => "Joshua@teamenvio.com",
@@ -1556,7 +1553,7 @@ class ScheduleController extends Controller
         }
 
         // Kelly
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 'vehno',
                 [
@@ -1566,7 +1563,7 @@ class ScheduleController extends Controller
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('all_vehicle')
+            DB::table('vehicle_details_vms')
                 ->where('id', $value->id)
                 ->update([
                     'accountOfficer' => "Knwabundo@gmail.com",
@@ -1574,7 +1571,7 @@ class ScheduleController extends Controller
         }
 
         // Ayomide
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 'vehno',
                 ["ABC567ZW", "BWR974XE", "BWR294XB", "KUJ745XC", "ABC819XD", "RBC787YD", "ABJ237XV", "ABJ240XV", "GWA238YL", "ABC672XF", "RSH656XD", "ABC83ZW", "BWR373XB", "BWR474XB", "RBC983XD", "BWR442XB", "RBC533XD", "BWR473XB", "KWL834XB", "RBC561XD", "RBC562XD", "RBC91YD", "ABC365XD", "KWL785XB", "KUJ509XC", "BWR435YL", "ABC429ZY", "KUJ620XC", "RBC984XD", "ABC818XD", "ABC314XD", "ABC313XD", "BWR403YL", "BWR404YL", "BRW650XE", "BWR658XE", "BWR282XE", "ABJ134XB", "ABC536XD", "KUJ950XC", "RSH898XC", "RSH899XC", "RSH750XD", "KWL787XB", "BWR148XB", "RBC344YL", "RSH139XD", "RSH963XD", "KUJ120XC", "BWR501XE", "ABC72ZW", "BWR480XB", "RBC565YD", "ABC312XD", "ABJ492XV", "RBC217YL", "KWL833XB", "KUJ465XC", "KUJ552XC", "KUJ556XC", "BWR757XE", "KUJ550XC", "KUJ551XC", "RBC693YD", "ABJ857XV", "RBC614XD", "RBC12YL", "KUJ08XC", "ABC814XD", "ABC317XD", "RBC115XD", "KUJ285XC", "RBC704XD", "RBC705XD", "ABC315XD", "BWR776XB", "RBC96XD", "ABJ859XV", "RBC563XD", "ABC452XD", "BWR295XB", "BWR296XB", "KWL121ZY", "RBC445XD", "KWL601ZY", "RSH264XD"]
@@ -1582,7 +1579,7 @@ class ScheduleController extends Controller
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('all_vehicle')
+            DB::table('vehicle_details_vms')
                 ->where('id', $value->id)
                 ->update([
                     'accountOfficer' => "ayomideolaoluwa19@gmail.com",
@@ -1590,7 +1587,7 @@ class ScheduleController extends Controller
         }
 
         // Jemila
-        $account = DB::table('all_vehicle')
+        $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 'vehno',
                 ["BWR47XE", "ABC07ZY", "KUJ784XC", "KUJ319XC", "ABC802XD", "ABC803XD", "ABC804XD", "RBC758XD", "KWL386XB", "BWR261XB", "BWR945XB", "KUJ746XC", "KUJ749XC", "KUJ507XC", "KWL832XB", "BWR280XB", "ABC22XD", "ABC23XD", "BWR615XE", "KUJ221XC", "BWR668XB", "KWL660XB", "BWR143XB", "RSH562XD", "RSH480XD", "KUJ451XC", "KUJ452XC", "KUJ831XC", "RSH854XD", "RSH425XD", "BWR768YL", "RBC229YL", "RBC530XE", "RBC531XE", "BWR710YL", "ABC457XD", "KUJ915XC", "RSH992XD", "KWL892XB", "RBC451YL", "ABC454XD", "BWR816XE", "BWR817XE", "BWR819XE", "RSH989XD", "RSH862XD", "RSH654XD", "KWL385XB", "BWR858YL", "BWR859YL", "BWR696YL", "BWR697YL", "BWR698YL", "BWR767YL", "ABC79ZY", "KUJ780XC", "RBC703XD", "RSH807XD", "RSH806XD", "BWR145XB", "KUJ501XC", "KUJ990XC", "RBC305XD", "BWR48XB", "RSH397XC", "KWL783XB", "RBC369XD", "RBC370XD", "BWR150XB", "BWR18XB", "KUJ459XC", "KWL389XB", "KWL390XB", "ABJ988XB", "KUJ744XC", "KWL387XB", "KWL802XB", "RBC982XD", "ABC816XD", "RSH233XD", "ABJ332XV", "RSH235XD", "RSH236XD", "RBC529XD", "RSH552XD", "RBC530XD", "KUJ750XC", "RSH553XD"]
@@ -1598,7 +1595,7 @@ class ScheduleController extends Controller
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('all_vehicle')
+            DB::table('vehicle_details_vms')
                 ->where('id', $value->id)
                 ->update([
                     'accountOfficer' => "jemilatu25@gmail.com",

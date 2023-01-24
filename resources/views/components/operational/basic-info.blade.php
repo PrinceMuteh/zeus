@@ -384,11 +384,19 @@
                         <div class="form-group">
                             <label for="">Fleet</label>
                             <select name="fleet" id="" class="form-control fleet" required>
-                                @foreach ($fleet as $item)
+                                {{-- @foreach ($fleet as $item)
                                     <option value="{{ $item->fleet_id }}">{{ $item->fleet_name }}</option>
-                                @endforeach
+                                @endforeach --}}
+
+                                @foreach ($fleet as $item)
+                                <option value="{{ $item->bodytypename }}">
+                                    {{ $item->bodytypename }}</option>
+                            @endforeach
                             </select>
                         </div>
+
+
+                      
                         <div class="form-group">
                             <label for="">Font Image</label>
                             <input type="file" name="frontImage" id="" class="form-control" accept="image/*">

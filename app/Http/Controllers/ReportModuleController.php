@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class ReportModuleController extends Controller
 {
+    public function sql2(){
+        return  DB::connection('mysql_2');
+    }
+
     private function maptiller()
     {
         $result = DB::table('api_details')
@@ -55,7 +59,7 @@ class ReportModuleController extends Controller
 
             $unpaid  = $projectIncome - $paidUsers;
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
@@ -139,14 +143,14 @@ class ReportModuleController extends Controller
             $result = DB::table('vms_payments')
                 // ->whereBetween( 'vms_payments.createtime', [ $weekstart, $weekend ] )
                 ->whereBetween('vms_payments.createtime', [$weekstart, $date])
-                ->leftjoin('all_vehicle', 'all_vehicle.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'all_vehicle.drivername', 'all_vehicle.driverphone', 'all_vehicle.driveremail')
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
                 ->orderBy('created_At', 'DESC')
                 ->get();
                 
             $totalAmount = $result->sum('needpayment');
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
@@ -154,8 +158,8 @@ class ReportModuleController extends Controller
             $result = DB::table('vms_payments')
                 ->whereIn('vms_payments.vehno', $fleet)
                 ->whereBetween('vms_payments.createtime', [$weekstart, $date])
-                ->leftjoin('all_vehicle', 'all_vehicle.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'all_vehicle.drivername', 'all_vehicle.driverphone', 'all_vehicle.driveremail')
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
                 ->orderBy('created_At', 'DESC')
                 ->get();
             $totalAmount = $result->sum('needpayment');
@@ -167,8 +171,8 @@ class ReportModuleController extends Controller
             $result = DB::table('vms_payments')
                 ->whereIn('fleet', $fleet)
                 ->whereBetween('vms_payments.createtime', [$weekstart, $date])
-                ->leftjoin('all_vehicle', 'all_vehicle.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'all_vehicle.drivername', 'all_vehicle.driverphone', 'all_vehicle.driveremail')
+                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
                 ->orderBy('created_At', 'DESC')
                 ->get();
             $totalAmount = $result->sum('needpayment');
@@ -244,7 +248,7 @@ class ReportModuleController extends Controller
                 ->select('duepayments.*', 'vehicle_status.time')
                 ->get();
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
@@ -285,7 +289,7 @@ class ReportModuleController extends Controller
                 ->select('duepayments.*', 'vehicle_status.time')
                 ->get();
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
@@ -323,7 +327,7 @@ class ReportModuleController extends Controller
                 ->select('duepayments.*', 'vehicle_status.time')
                 ->get();
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
@@ -360,7 +364,7 @@ class ReportModuleController extends Controller
                 ->select('duepayments.*', 'vehicle_status.time')
                 ->get();
         } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('all_vehicle')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
+            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
 
             foreach ($vehno as $key => $value) {
                 $fleet[] = $value->vehno;
@@ -716,11 +720,11 @@ class ReportModuleController extends Controller
         // $investorphone = $request->investorphone;
         // $phone = '08134988013';
         // $plate = 'BWR971XE';
-        // dd( $phone );
+        // dd( $plate );
 
         $str = ltrim($phone, '0');
         $grantor = DB::table('gurantors_info')->where('plate_number', $plate)->first();
-        $driverInfo = DB::table('user_management')->where('phone', $phone)->first();
+        $driverInfo = DB::table('users')->where('phone', $phone)->first();
 
         // dd( $driverInfo );
         $driverDetails = (new VMSAPI)->getDriverInfo($phone);
@@ -754,13 +758,12 @@ class ReportModuleController extends Controller
         }
 
         // dd( $vehicleLocation );
-        $sql2 = DB::connection('mysql_2');
 
-        $car_fleet = $sql2->table('car_fleet')->where('vehiclePlateNo', $plate)->first();
+        $car_fleet = DB::table('car_fleet')->where('vehiclePlateNo', $plate)->first();
 
-        $allVehicle = DB::table('all_vehicle')->where('vehno', $plate)->first();
+        $allVehicle = DB::table('vehicle_details_vms')->where('vehno', $plate)->first();
 
-        $mangement = DB::table('user_management')->where('phone', $phone)->first();
+        $mangement = DB::table('users')->where('phone', $phone)->first();
         $payments = DB::table('vms_payments')->where('vehno', $plate)->orderBy('createtime', 'DESC')->get();
 
         $latitude = $vehicleLocation->Data[0]->Latitude;
@@ -798,9 +801,9 @@ class ReportModuleController extends Controller
             'recentPayment' => (!empty($recentPayment)) ? $recentPayment->Data : 'null',
             'payments' =>   $payments  ?? 'null',
         );
-        $cars = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plate)->get();
+        $cars = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plate)->get();
 
-        $cars3 = DB::table('vehicle_status')->join('all_vehicle', 'all_vehicle.vehno', 'vehicle_status.vehno')->get()->toArray();
+        $cars3 = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
 
         // dd( $data );
         $single = 'single';

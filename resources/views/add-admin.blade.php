@@ -121,6 +121,13 @@
                                 </label>
                             </div>
                             <div class="form-check">
+                                <input class="form-check-input checkInput" name="accountOfficer" type="checkbox"
+                                    @if ($menu->accountOfficer ?? 0 == 1) checked @endif>
+                                <label class="form-check-label" for="">
+                                    Account Officer
+                                </label>
+                            </div>
+                            <div class="form-check">
                                 <input class="form-check-input checkInput" name="technicalDesk" type="checkbox"
                                     @if ($menu->technicalDesk == 1) checked @endif>
                                 <label class="form-check-label" for="">

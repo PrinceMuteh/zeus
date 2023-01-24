@@ -180,6 +180,13 @@
                                         </label>
                                     </div>
                                     <div class="form-check">
+                                        <input class="form-check-input checkInput" name="accountOfficer" type="checkbox"
+                                            @if ($menu->accountOfficer ?? 0 == 1) checked @endif id="flexCheckChecked">
+                                        <label class="form-check-label" for="flexCheckChecked">
+                                            Account Officer
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
                                         <input class="form-check-input checkInput" name="activityLog" type="checkbox"
                                             @if ($menu->activityLog == 1) checked @endif id="flexCheckChecked">
                                         <label class="form-check-label" for="flexCheckChecked">

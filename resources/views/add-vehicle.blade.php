@@ -21,11 +21,10 @@
                             </div>
                             <div class="form-area">
                                 {{-- <form action="/add-vehicle" method="post"> --}}
-                                <form action="{{ route('add-vehicle') }}" method="post">
+                                <form action="{{ route('add-vehicle') }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     <div class="form-group">
                                         <label for="">Add Vehicle Owner </label>
-
                                         <select name="vehicleOwner" class="vehicleOwner form-control">
                                             @foreach ($vehicleOwner as $item)
                                                 <option value="{{ $item->id }}">
@@ -41,6 +40,22 @@
                                     <div class="form-group">
                                         <label for="">Liecense Plate *</label>
                                         <input type="text" class="form-control" name="plate" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Chasis</label>
+                                        <input type="text" class="form-control" name="chasis" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Engine Cap.</label>
+                                        <input type="text" class="form-control" name="capacity" placeholder="4cyL" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Model *</label>
+                                        <input type="text" class="form-control" name="model" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Location *</label>
+                                        <input type="text" class="form-control" name="location" required />
                                     </div>
                                     <div class="form-group">
                                         <label for="">Vehicle Type (Brand) *</label>
@@ -87,13 +102,9 @@
                                         </select>
                                         {{-- <input type="text" class="form-control" name="type" required /> --}}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="">Model *</label>
-                                        <input type="text" class="form-control" name="model" required />
-                                    </div>
+
                                     <div class="form-group">
                                         <label for="">Year *</label>
-
                                         <select class="form-control year" name="year">
                                             <?php
                                             for ($year = (int)date('Y'); 1900 <= $year; $year--): ?>
@@ -103,10 +114,7 @@
 
                                         {{-- <input type="date" date="year" class="form-control" name="year" required /> --}}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="">Chasis</label>
-                                        <input type="text" class="form-control" name="chasis" />
-                                    </div>
+
                                     <div class="form-group">
                                         <label for="">Body</label>
                                         <select name="body" id="" class="body form-control">
@@ -126,10 +134,7 @@
                                         </select>
                                         {{-- <input type="text" class="form-control" name="body" /> --}}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="">Engine Cap.</label>
-                                        <input type="text" class="form-control" name="capacity" />
-                                    </div>
+
                                     <div class="form-group">
                                         <label for="">Transmission</label>
                                         <select name="transmission" class="form-control transmission" id="">
@@ -140,9 +145,6 @@
                                             <option value="Semi-Automatic"> Semi-Automatic Transmission</option>
                                             <option value="Dual-Clutch"> Dual-Clutch Transmission</option>
                                         </select>
-
-
-
                                         {{-- <input type="text" class="form-control" name="transmission" /> --}}
                                     </div>
                                     <div class="form-group">
@@ -186,6 +188,33 @@
                                         </select>
                                         {{-- <input type="text" class="form-control" name="package" /> --}}
                                     </div>
+
+
+                                    <div class="form-group">
+                                        <label for="">Font Image</label>
+                                        <input type="file" name="frontImage" id="" class="form-control"
+                                            accept="image/*">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Interoir Image</label>
+                                        <input type="file" name="interiorImage" id="" class="form-control"
+                                            accept="image/*">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Back Image</label>
+                                        <input type="file" name="backImage" id="" class="form-control"
+                                            accept="image/*">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=""> Diagonal Image</label>
+                                        <input type="file" name="diagonalImage" id="" class="form-control"
+                                            accept="image/*">
+                                    </div>
+
+
+
+
+
                                     <div class="text-left">
                                         <b>Vehicle Management *</b>
                                         <span>All new Vehicle must be assign to a fleet and workshop on the database before
@@ -195,8 +224,14 @@
                                     <div class="form-group">
                                         <label for="">Assign fleet *</label>
                                         <select name="fleet" id="" class="form-control fleet" required>
-                                            @foreach ($fleet as $item)
+                                            {{-- @foreach ($fleet as $item)
                                                 <option value="{{ $item->fleet_id }}">{{ $item->fleet_name }}</option>
+                                            @endforeach --}}
+
+
+                                            @foreach ($fleet as $item)
+                                                <option value="{{ $item->bodytypename }}">
+                                                    {{ $item->bodytypename }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -204,7 +239,7 @@
                                         <label for="">Service Center *</label>
                                         <select name="serviceCenter" class="form-control serviceCenter" id="">
                                             @foreach ($service as $item)
-                                            <option value="{{$item->center_id}}">{{$item->center_name}}</option>
+                                                <option value="{{ $item->center_id }}">{{ $item->center_name }}</option>
                                             @endforeach
 
                                         </select>
