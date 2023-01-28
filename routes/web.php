@@ -116,7 +116,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('update-account-permissions', [ControlPanelController::class, 'UpdateNewAcctPermission'])->name("UpdateNewAcctPermission");
     Route::get('vehicle-profile', [VehicleMgtController::class, 'VehicleProfile']);
     Route::get('fleet-operator-permission/{id}', [VehicleMgtController::class, 'fleetOperatorPermission'])->name('fleet-operator-permission');
-    Route::get('operational-data/{plate}', [VehicleMgtController::class, 'operational'])->name('operational');
+    Route::get('operational-data/{plate}}', [VehicleMgtController::class, 'operational'])->name('operational');
 
     Route::post('updatefleet', [VehicleMgtController::class, 'updatefleet'])->name('updatefleet');
     Route::post('create-fleet', [VehicleMgtController::class, 'createFleet'])->name('createFleet');
@@ -125,6 +125,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::get('/motor-card', [VehicleMgtController::class, 'motorCard'])->name('motorCard');
+    Route::get('/motor-card-user/{plate}/{phone}/{reference}', [VehicleMgtController::class, 'motorCardUser'])->name('motorCardUser');
+
+  
 
 
     // Route::get('/motor-card', function(){
@@ -168,7 +171,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 // driver
-Route::group(['prefix' => 'driver'], function () {
+Route::group(['prefix' => 'driver'], function () { 
     Route::Post('/driverlogin', [DriverController::class, 'loginz'])->name('driverlogin');
 
     Route::get('/home', [DriverController::class, 'driverRegistration'])->name("driverRegistration");
@@ -241,8 +244,6 @@ Route::get('/fleet', function(){
     return view('fleet');
 });
 
-Route::get('/motor-card-user', function(){
-    return view('motor-card-user');
-});
+
 
 Route::view('map', 'map');

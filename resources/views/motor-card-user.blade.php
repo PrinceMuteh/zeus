@@ -24,7 +24,7 @@
                                 <path d="M8.04659 14.9813L1 7.99066M1 7.99066L8.04659 1M1 7.99066L24.2527 7.99072"
                                     stroke="#08102E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-                        </span> ABC123YZ / Mazda 323F
+                        </span> {{ $vehicle->vehno }} / {{ $vehicle->bodytypename }}
                     </a>
                 </div>
                 <div class="row justify-content-center g-0 border-top-line">
@@ -53,7 +53,7 @@
                             </div>
                             <div class="baseInfo p-0">
                                 <div class="topSectionBox">
-                                    <span class="sub1 text-inter">ACTIVE LOAN COMPONENT</span>
+                                    <span class="sub1 text-inter">ACTIVE Loan COMPONENT</span>
                                     <span>
                                         <svg width="13" height="7" viewBox="0 0 18 8" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -65,10 +65,10 @@
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <span class="ll-text">LOAN AMOUNT</span>
+                                        <span class="ll-text">loan AMOUNT</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{ $lastloan->amount ?? '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -76,15 +76,15 @@
                                         <span class="ll-text">INTEREST RATE</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{ $lastloan->interest ?? '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <span class="ll-text">LOAN TENURE</span>
+                                        <span class="ll-text">Payment Circle</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{ $lastloan->paymentCircle ?? '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -92,7 +92,7 @@
                                         <span class="ll-text">REPAYMENT FREQUENCY</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{ $lastloan->amount ?? '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -100,7 +100,7 @@
                                         <span class="ll-text">OUTSTANDING</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{ $lastloan->outstanding ?? '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -108,17 +108,17 @@
                                         <span class="ll-text">START DATE</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{ $lastloan->created_at ?? '-' }}</span>
                                     </div>
                                 </div>
-                                <div class="row mb-2">
+                                {{-- <div class="row mb-2">
                                     <div class="col-md-6">
                                         <span class="ll-text">TOTAL PAID</span>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="lr-text">-</span>
+                                        <span class="lr-text">{{$lastloan->amount ?? 0  -  $lastloan->outstanding ?? 0}}</span>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <span class="ll-text">DATE DUE</span>
@@ -130,22 +130,6 @@
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <span class="ll-text">NUMBER OF PAYMENT</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <span class="lr-text">-</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <span class="ll-text">TOTAL PAYMENT</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <span class="lr-text">-</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <span class="ll-text">TOTAL INTEREST</span>
                                     </div>
                                     <div class="col-md-6">
                                         <span class="lr-text">-</span>
@@ -174,20 +158,18 @@
                                         data-bs-ride="carousel">
                                         <div class="carousel-inner">
                                             <div class="carousel-item active">
-                                                <img src="{{ asset('images/front.jpg') }}" class="d-block w-100"
-                                                    alt="...">
+                                                <img src="{{ $vehicle->front }}" class="d-block w-100" alt="...">
                                             </div>
                                             <div class="carousel-item active">
-                                                <img src="{{ asset('images/side_1.jpg') }}" class="d-block w-100"
-                                                    alt="...">
+                                                <img src="{{ $vehicle->back }}" class="d-block w-100" alt="...">
                                             </div>
 
                                             <div class="carousel-item active">
-                                                <img src="{{ asset('images/back.jpg') }}" class="d-block w-100"
+                                                <img src="{{ $vehicle->diagonal }}" class="d-block w-100"
                                                     alt="...">
                                             </div>
                                             <div class="carousel-item active">
-                                                <img src="{{ asset('images/rear.jpg') }}" class="d-block w-100"
+                                                <img src="{{ $vehicle->interior }}" class="d-block w-100"
                                                     alt="...">
                                             </div>
 
@@ -202,7 +184,7 @@
                                     <span class="ll-text">LICENSE PLATE</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->vehno }}</span>
                                 </div>
                             </div>
 
@@ -211,16 +193,15 @@
                                     <span class="ll-text">TYPE</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->type ?? '-' }}</span>
                                 </div>
                             </div>
-
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <span class="ll-text">MODEL</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->model ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -228,7 +209,7 @@
                                     <span class="ll-text">YEAR</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->year ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -236,7 +217,7 @@
                                     <span class="ll-text">CHASIS</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->chasis ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -244,7 +225,7 @@
                                     <span class="ll-text">BODY</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->body ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -252,7 +233,7 @@
                                     <span class="ll-text">ENGINE</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->engine ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -260,7 +241,7 @@
                                     <span class="ll-text">TRANSMISSION</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $ehicle->transmission ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -268,7 +249,7 @@
                                     <span class="ll-text">DATE ADDED</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->created_at ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -276,7 +257,7 @@
                                     <span class="ll-text">FLEET</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->type ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -284,7 +265,7 @@
                                     <span class="ll-text">SUPPORT CENTER</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $vehicle->serviceCenterName ?? '-' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -294,17 +275,9 @@
                         <div class="operation-data-section">
                             <div class="topSectionBox">
                                 <span class="sub1 text-inter">BASIC USER DETAILS</span>
-                                <span>
-                                    <svg width="13" height="7" viewBox="0 0 18 8" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1 1L9 7L17 1" stroke="#888888" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                            </div>
-                            <div class="basic-user-photo">
 
                             </div>
+
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <span class="ll-text">ORDER ID</span>
@@ -318,7 +291,7 @@
                                     <span class="ll-text">CUSTOMER NAME</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $user->name ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -326,7 +299,7 @@
                                     <span class="ll-text">DATE OF BIRTH</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $user->dob ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -334,7 +307,7 @@
                                     <span class="ll-text">GENDER</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $user->gender ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -342,7 +315,7 @@
                                     <span class="ll-text">PHONE NUMBER</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $user->phone ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -350,7 +323,7 @@
                                     <span class="ll-text">EMAIL ADDRESS</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $user->email ?? '-' }}</span>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -358,7 +331,7 @@
                                     <span class="ll-text">LOCATION</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="lr-text">-</span>
+                                    <span class="lr-text">{{ $user->address ?? '-' }}</span>
                                 </div>
                             </div>
 
@@ -372,29 +345,38 @@
                                     </svg>
                                 </span>
                             </div>
-                            <div class="transaction-history text-left">
-                                <div class="shape-arrow-down">
-                                    <div class="arrow-green-down bg-light-green200">
-                                        <svg width="30" height="30" viewBox="0 0 54 55" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <rect y="0.871094" width="53.5312" height="53.5312" rx="8.92187"
-                                                fill="#E6FFCC" />
-                                            <path d="M19.1953 28.9863L26.7657 36.5568L34.3362 28.9863" stroke="#27B235"
-                                                stroke-width="3.56875" stroke-linecap="round" stroke-linejoin="round" />
-                                            <path d="M26.7656 18.7148V36.5586" stroke="#27B235" stroke-width="3.56875"
-                                                stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
+                            @if ($loan)
+                                @foreach ($loan as $item)
+                                    <div class="transaction-history text-left">
+                                        <div class="shape-arrow-down">
+                                            <div class="arrow-green-down bg-light-green200">
+                                                <svg width="30" height="30" viewBox="0 0 54 55" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <rect y="0.871094" width="53.5312" height="53.5312" rx="8.92187"
+                                                        fill="#E6FFCC" />
+                                                    <path d="M19.1953 28.9863L26.7657 36.5568L34.3362 28.9863"
+                                                        stroke="#27B235" stroke-width="3.56875" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path d="M26.7656 18.7148V36.5586" stroke="#27B235"
+                                                        stroke-width="3.56875" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="credit-detail">
+                                            <span
+                                                class="credit-info-200">{{ $item->vehiclePlateNo }}/{{ $item->loanType }}</span>
+                                            <span class="credit-info-100">{{ $item->created_at }}</span>
+                                        </div>
+                                        <div class="credit-value">
+                                            <span class="credit-info-200">₦ {{ $item->amount ?? 0 }}</span>
+                                            <span></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="credit-detail">
-                                    <span class="credit-info-200">ABC123XYZ/REPAIR</span>
-                                    <span class="credit-info-100">21 AUG 2021</span>
-                                </div>
-                                <div class="credit-value">
-                                    <span class="credit-info-200">₦ 0</span>
-                                    <span></span>
-                                </div>
-                            </div>
+                                @endforeach
+                            @endif
+
+
                         </div>
                     </div>
 

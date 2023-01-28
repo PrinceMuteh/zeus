@@ -23,6 +23,8 @@
         foreach ($data as $key) {
             // $cars[] = $key['vehiclePlateNo'];
             $plate = $key['vehiclePlateNo'];
+            $phone = $key['phone'];
+            $reference = $key['reference'];
     
             $cars = $car->where('vehno', $plate)->first();
             // $cars = $car->where('vehno', 'YAB452SK')->first();
@@ -30,7 +32,7 @@
             echo '<tr>';
             echo '<td><input type="checkbox" class="form-check"></td>';
             echo '<td>';
-            echo '<a href="' . route('operational', ['plate' => $plate]) . '">';
+            echo '<a href=' . route('motorCardUser', ['plate' => $plate, 'phone' => $phone, 'reference' => $reference]) . '>';
             echo $key['vehiclePlateNo'];
             echo '</a>';
             echo '</td>';
@@ -41,10 +43,9 @@
             echo '<td> ₦ ' . number_format($key['amount']) . '  </td>';
             echo '<td> ₦ ' . number_format($key['amount'] - $key['outstanding']) . '  </td>';
             echo '<td>₦ ' . number_format($key['outstanding']) . '</td>';
-
-            echo '<td>' . $key['paymentCircle'] - $key['remainingCircle'] . ' / '.  $key['paymentCircle'] .'</td>';
-
-
+    
+            echo '<td>' . $key['paymentCircle'] - $key['remainingCircle'] . ' / ' . $key['paymentCircle'] . '</td>';
+    
             echo '<td>';
             // echo $cars->address ?? '';
             echo '</td>';

@@ -26,7 +26,6 @@ Route::get('/updateYesterdayMiles2', [App\Http\Controllers\ScheduleController::c
 Route::get('/status', [App\Http\Controllers\ScheduleController::class, 'vehicleStatusTask']);
 Route::get('/status2', [App\Http\Controllers\ScheduleController::class, 'vehicleStatusTask2']);
 Route::get('/status3', [App\Http\Controllers\ScheduleController::class, 'vehicleStatusTask3']);
-Route::get('/get-address/{lat}/{long}', [App\Http\Controllers\ExternalController::class, 'getAddress']);
 Route::get('/fetch-maintenance/{package}', [App\Http\Controllers\ControlPanelController::class, 'fetchMaintenance']);
 
 
@@ -55,13 +54,9 @@ Route::get('/nodriver', [App\Http\Controllers\ScheduleController::class, 'getVeh
 Route::get('/secondary', [App\Http\Controllers\ScheduleController::class, 'secondary']);
 Route::get('/officers', [App\Http\Controllers\ScheduleController::class, 'assignAccountOfficer']);
 
+Route::get('/get-address/{lat}/{long}', [App\Http\Controllers\ExternalController::class, 'getAddress']);
 
-
-
-
-
-
-
-
-
-
+Route::group(['prefix' => 'workforce'], function () {
+    Route::get('/login', [App\Http\Controllers\WorkForceController::class, 'login']);
+    Route::get('/update-password', [App\Http\Controllers\WorkForceController::class, 'updatePassword']);
+});

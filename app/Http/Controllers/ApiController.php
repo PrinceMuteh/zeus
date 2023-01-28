@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
-    public function post($url,$content){
+    public function post($url, $content)
+    {
         $curl = curl_init();
-        curl_setopt_array( $curl, array(
+        curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
@@ -17,15 +18,15 @@ class ApiController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>json_encode($content),
+            CURLOPT_POSTFIELDS => json_encode($content),
             CURLOPT_HTTPHEADER => array(
                 'Accept: application/json',
                 'Content-Type: application/json'
             ),
-        ) );
+        ));
 
-        $response = curl_exec( $curl );
-        curl_close( $curl );
+        $response = curl_exec($curl);
+        curl_close($curl);
         return json_decode($response);
     }
 
@@ -45,5 +46,19 @@ class ApiController extends Controller
         $response = curl_exec($curl);
         curl_close($curl);
         return json_decode($response);
+    }
+    public static function upload(Request $request, $file, $location)
+    {
+        $file = $request->file($file);
+        $filename = time() . '_' . $file->getClientOriginalName();
+        // File extension
+        $extension = $file->getClientOriginalExtension();
+        // File upload location
+        $locate = $location;
+        // Upload file
+        $file->move($location, strtolower($filename));
+        // File path
+        $filepath = url($location . $filename);
+        return $filename;
     }
 }

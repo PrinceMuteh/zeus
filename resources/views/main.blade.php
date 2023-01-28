@@ -523,7 +523,5 @@
 
         window.initMap = initMap;
     </script>
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDhGe6x_ij_ivUkQTmsXGIZVHegzig1JBk&callback=initMap&v=weekly"
-        defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDhGe6x_ij_ivUkQTmsXGIZVHegzig1JBk&callback=initMap&v=weekly" defer></script>
 @endif

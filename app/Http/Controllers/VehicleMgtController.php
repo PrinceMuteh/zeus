@@ -254,10 +254,10 @@ class VehicleMgtController extends Controller
         $sql2 = DB::connection('mysql_2');
         // dd($request->all());
         if (DB::table('car_fleet')->where('vehiclePlateNo', $request->plate)->exists()) {
-            Alert::toast('Plate Number already exist', 'failed');
+            toast('Plate Number already exist', 'error');
             return back()->with("Emessage", "Plate Number already exist");
         }
-        
+
         $arr = array(
             'userId' =>  $request->vehicleOwner,
             'model' =>  $request->model,
@@ -317,12 +317,14 @@ class VehicleMgtController extends Controller
             $sql  = DB::table('car_fleet')
                 ->where('vehiclePlateNo', $request->vehno)
                 ->update($arr);
-            Alert::toast('Successful Added', 'success');
+            toast('Successful Added', 'success');
+
             return back()->with("success", "successful added");
         } else {
             $arr = $arr + array('vehiclePlateNo' => $request->vehno, 'created_at' => now(),);
             $sql  = DB::table('car_fleet')->insert($arr);
-            Alert::toast('Successful Added', 'success');
+            toast('Successful Added', 'success');
+
             return back()->with("success", "successful updated");
         }
     }
@@ -382,12 +384,13 @@ class VehicleMgtController extends Controller
         // dd($vehicleDetails);
 
         if ($vehicleDetails == null) {
-            Alert::toast('Couldnt Fetch Vehicle Details', 'failed');
-            return back()->with('Emessaage', "Couldnt Fetch Vehicle Details");
+            toast('Couldnt Fetch Vehicle Details', 'error');
+            return back()->with('error', "Couldnt Fetch Vehicle Details");
         }
         if ($vehicleDetails->Data->systemno == null) {
-            Alert::toast('Couldnt Fetch Vehicle Details', 'failed');
-            return back()->with('Emessaage', "Couldnt Fetch Vehicle Details");
+            toast('Couldnt Fetch Vehicle Details', 'error');
+
+            return back()->with('error', "Couldnt Fetch Vehicle Details");
         }
 
         $getBill = (new VMSAPI)->get_pay_bill($plate);
@@ -553,7 +556,8 @@ class VehicleMgtController extends Controller
 
             ]);
         }
-        Alert::toast('You\'ve Successfully Updated ', 'success');
+        toast('You\'ve Successfully Updated ', 'success');
+
         return back()->with('success', 'Successful');
     }
 
@@ -561,7 +565,7 @@ class VehicleMgtController extends Controller
     {
         // dd( $id );
         if (DB::table('fleet')->where('fleet_id', $id)->delete()) {
-            Alert::toast('You\'ve Successfully Deleted ', 'success');
+            toast('You\'ve Successfully Deleted', 'success');
             return back()->with('success', 'Successful');
         } else {
             return back()->with('Emessaage', 'REcord Already exist');
@@ -623,7 +627,8 @@ class VehicleMgtController extends Controller
 
 
         if ($sql) {
-            Alert::toast('You\'ve Successfully Updated ', 'success');
+            toast('You\'ve Successfully Deleted', 'success');
+
             return back()->with('success', 'Successful');
         } else {
             return back()->with('Emessaage', 'REcord Already exist');
@@ -649,5 +654,21 @@ class VehicleMgtController extends Controller
         $sql  = DB::table('vehicle_status')->get();
 
         return view('motor-card', ['car' => $sql]);
+    }
+
+    public function motorCardUser($plate, $phone, $reference)
+    {
+        $user = DB::table('users')->where('phone', $phone)->first();
+        $vehicle = DB::table('vehicle_details_vms')
+            ->join('car_fleet', 'car_fleet.vehiclePlateNo', "vehicle_details_vms.vehno")
+            ->where('vehno', $plate)->first();
+        $loan = DB::table('loan_history')->where('vehiclePlateNo', $plate)->get();
+        $lastloan = $loan->last();
+        if (!$loan) {
+            $loan = "Null";
+            // toast("Cannot Locate Loan", "error");
+            // return back()->with('failed', "Cannot Locate Loan");
+        }
+        return view('motor-card-user', ['user' => $user, 'vehicle' => $vehicle, 'loan' => $loan, 'lastLoan' => $lastloan]);
     }
 }

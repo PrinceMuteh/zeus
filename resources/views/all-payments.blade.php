@@ -204,7 +204,7 @@
                                                 <div class="col-6 side2 date2">30 Sep, 2021</div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-6 side1">Driver Name:</div>
+                                                <div class="col-6 side1">Driver Name:</div>#mymodal
                                                 <div class="col-6 side2 drivername">MyGarage</div>
                                             </div>
                                             <div class="row mb-3">
