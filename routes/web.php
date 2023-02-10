@@ -127,13 +127,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/motor-card', [VehicleMgtController::class, 'motorCard'])->name('motorCard');
     Route::get('/motor-card-user/{plate}/{phone}/{reference}', [VehicleMgtController::class, 'motorCardUser'])->name('motorCardUser');
 
-  
+
 
 
     // Route::get('/motor-card', function(){
     //     return view('motor-card');
     // });
-    
+
 
 
     Route::get('technical-desk', [TechincalDeskController::class, 'technicalDesk']);
@@ -171,7 +171,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 // driver
-Route::group(['prefix' => 'driver'], function () { 
+Route::group(['prefix' => 'driver'], function () {
     Route::Post('/driverlogin', [DriverController::class, 'loginz'])->name('driverlogin');
 
     Route::get('/home', [DriverController::class, 'driverRegistration'])->name("driverRegistration");
@@ -228,19 +228,19 @@ Route::get('/allvehicle', [App\Http\Controllers\ScheduleController::class, 'allV
 
 
 
-Route::get('/account-officer', function(){
+Route::get('/account-officer', function () {
     return view('account-officer');
 });
-Route::get('/host', function(){
+Route::get('/host', function () {
     return view('host');
 });
-Route::get('/officers', function(){
+Route::get('/officers', function () {
     return view('officers');
 });
-Route::get('/finance-report', function(){
+Route::get('/finance-report', function () {
     return view('finance-report');
 });
-Route::get('/fleet', function(){
+Route::get('/fleet', function () {
     return view('fleet');
 });
 

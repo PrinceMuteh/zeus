@@ -19,6 +19,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+Route::get('/due-email', [App\Http\Controllers\ScheduleController::class, 'sendDuePayment']);
+Route::get('/overdue-email', [App\Http\Controllers\ScheduleController::class, 'sendOverDuePayment']);
+
+// Route::get('/overdue-email', [App\Http\Controllers\MailerController::class, 'OverDuePayment']);
+// Route::get('/payment-receipt', [App\Http\Controllers\MailerController::class, 'DriverPaymentReceipt']);
+
+
 Route::get('/schudule', [App\Http\Controllers\ScheduleController::class, 'all']);
 Route::get('/updateAllVehicle', [App\Http\Controllers\ScheduleController::class, 'updateAllVehicle']);
 Route::get('/updateYesterdayMiles', [App\Http\Controllers\ScheduleController::class, 'updateYesterdayMiles']);
@@ -56,7 +63,33 @@ Route::get('/officers', [App\Http\Controllers\ScheduleController::class, 'assign
 
 Route::get('/get-address/{lat}/{long}', [App\Http\Controllers\ExternalController::class, 'getAddress']);
 
+
+
+
+
 Route::group(['prefix' => 'workforce'], function () {
-    Route::get('/login', [App\Http\Controllers\WorkForceController::class, 'login']);
-    Route::get('/update-password', [App\Http\Controllers\WorkForceController::class, 'updatePassword']);
+    Route::post('/login', [App\Http\Controllers\WorkForceController::class, 'login']);
+    Route::post('/update-password', [App\Http\Controllers\WorkForceController::class, 'updatePassword']);
+    Route::post('/update-bank', [App\Http\Controllers\WorkForceController::class, 'updateBank']);
+    
+    Route::post('/update-profile', [App\Http\Controllers\WorkForceController::class, 'updateProfile']);
+    
+    Route::post('/register-account', [App\Http\Controllers\WorkForceController::class, 'registerAccount']);
+    Route::post('/register-account2', [App\Http\Controllers\WorkForceController::class, 'registerAccount2']);
+    Route::post('/register-account3', [App\Http\Controllers\WorkForceController::class, 'registerAccount3']);
+    Route::post('/register-account4', [App\Http\Controllers\WorkForceController::class, 'registerAccount4']);
+    
+    
+    Route::post('/step1-profile', [App\Http\Controllers\WorkForceController::class, 'step1profile']);
+    Route::post('/step2-profile', [App\Http\Controllers\WorkForceController::class, 'step2profile']);
+    Route::post('/step3-relative', [App\Http\Controllers\WorkForceController::class, 'step3relative']);
+    Route::post('/step4-work', [App\Http\Controllers\WorkForceController::class, 'step4work']);
+    Route::post('/step5-reference', [App\Http\Controllers\WorkForceController::class, 'step5reference']);
+    Route::post('/step6-bank', [App\Http\Controllers\WorkForceController::class, 'step6bank']);
+    Route::post('/step7-skills', [App\Http\Controllers\WorkForceController::class, 'step7skills']); 
+    
+    Route::post('/image_upload', [App\Http\Controllers\WorkForceController::class, 'uploadImage']);
+
 });
+
+

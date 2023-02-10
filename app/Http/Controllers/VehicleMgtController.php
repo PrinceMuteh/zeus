@@ -234,10 +234,19 @@ class VehicleMgtController extends Controller
             $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->get();
             $service = DB::table('service_center')->get();
         } else {
-            // $vehicleOwner = DB::table('users')->where('creator_id', Auth()->user()->id)->get();
+            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+            if (count($fle) < 1) {
+                Auth::logout();
+                return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+            }
+            foreach ($fle as $key => $value) {
+                $fleet[] = $value->fleet_name;
+            }
+ 
             $vehicleOwner = DB::table('users')->where('creator_id', Auth()->user()->id)->get();
-            // $fleet = DB::table('fleet')->where('creator_id', Auth()->user()->id)->get();
-            $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->get();
+            $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->whereIn('bodytypename', $fleet)->get();
+            // dd($fleet);.
+            
             $service = DB::table('service_center')->where('creator_id', Auth()->user()->id)->get();
         }
 

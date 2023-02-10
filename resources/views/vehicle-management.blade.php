@@ -1,5 +1,33 @@
 @extends('main')
 @section('content')
+    @php
+        if (Auth()->user()->user_type_name == 'Demo') {
+          
+            $maintenaceActive = 2011;
+            $maintenanceDue = 705;
+            $overDue = 43;
+        
+            $documentExpired = 540;
+            $documentDue = 1700;
+            $documentActive = 6033;
+             $totalAssigned = $allVehicle->count() - $noDriver + 991;
+             $unAssigned = $noDriver - 276;
+        $totalFuel = $totalAssigned * 9 * ($totalMiles / 1000) * 120;
+ 
+        } else {
+        
+            $maintenaceActive = 1;
+            $maintenanceDue = 1;
+            $overDue = 1;
+         $unAssigned = $noDriver;
+            $documentExpired = 0;
+            $documentDue = 0;
+            $documentActive = 0;
+            $totalAssigned = $allVehicle->count() - $noDriver;
+             $totalFuel = 0;
+        }
+    @endphp
+    
     <div class="content-page" style="background: #fff;">
         <div class="content">
             <!-- Start Content-->
@@ -271,7 +299,7 @@
 
 
             <script>
-                var yValues = [80, 49, 14];
+                var yValues = [{{$maintenaceActive}}, {{$maintenanceDue}}, {{$overDue}}];
                 var barColors = [
                     "#87DE79",
                     "#FFB619",
@@ -295,7 +323,7 @@
             </script>
 
             <script>
-                var yValues = [70, 49, 44];
+                var yValues = [{{$documentActive}}, {{$documentDue}}, {{$documentExpired}}];
                 var barColors = [
                     "#79D2DE",
                     "#FFB619",

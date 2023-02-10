@@ -31,20 +31,20 @@ class MailerController extends Controller {
             //  sender username
             // $mail->Password = '@noreply100%';
 
-            $mail->Host = 'teamenvio.com';
+            $mail->Host = 'premium190.web-hosting.com';
             //  smtp host
             $mail->SMTPAuth = true;
-            $mail->Username = 'alpha@teamenvio.com';
-            $mail->Password = '@teamalpha100%';
+            $mail->Username = 'support@motorafrica.co';
+            $mail->Password = '@support100%';
 
             $mail->Mailer = 'smtp';
             // sender password
             // sender password
-            $mail->setFrom( 'alpha@teamenvio.com', 'Motor Africa' );
+            $mail->setFrom( 'support@motorafrica.co', 'Motor Africa' );
             $mail->addAddress( $email );
             // $mail->addCC( $request->emailCc );
             // $mail->addBCC( $request->emailBcc );
-            $mail->addReplyTo( 'alpha@teamenvio.com', 'No reply' );
+            $mail->addReplyTo( 'support@motorafrica.co', 'No reply' );
 
             $mail->isHTML( true );
             // Set email content format to HTML
@@ -58,7 +58,7 @@ class MailerController extends Controller {
                 return true;
             }
         } catch ( Exception $e ) {
-            dd( $mail->ErrorInfo );
+            // dd( $mail->ErrorInfo );
             return false;
             //  return back()->with( 'error', 'Message could not be sent.' );
         }
@@ -282,7 +282,7 @@ class MailerController extends Controller {
                                                             <div
                                                                 style="color:#000000;font-size:14px;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;font-weight:400;line-height:120%;text-align:center;direction:ltr;letter-spacing:0px;mso-line-height-alt:16.8px;">
                                                                 <p style="margin: 0; margin-bottom: 16px;">
-                                                                    <em>Copyright © Motor Africa 2022. All rights
+                                                                    <em>Copyright © Motor Africa 2023. All rights
                                                                         reserved.</em></p>
 
                                                             </div>
@@ -543,7 +543,7 @@ class MailerController extends Controller {
     }
 
     public function userEmail( $name, $email,  $id, $usertype ) {
-        if ( $usertype == 'fleetoperator' ) {
+        if ( $usertype == 'Fleet Operator' ) {
             $this->fleetoperator( $name, $email, $id );
         } elseif ( $usertype == 'Driver' ) {
             $this->driver( $name, $email, $id );
@@ -559,7 +559,7 @@ class MailerController extends Controller {
         <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
         serif; mso-line-height-alt: 18px; color: #393d47; line-height: 1.5;">
         <p style="margin: 0; font-size: 20px; mso-line-height-alt: 30px;">
-            <span style="font-size:20px;">Hello ' . $name . ',</span>
+            <span style="font-size:20px;"> Hello  <b>  ' . $name . ', </b></span>
         </p>
         <p style="margin: 0; font-size: 20px; mso-line-height-alt: 18px;">
             </p>
@@ -594,7 +594,7 @@ class MailerController extends Controller {
         <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
         serif; mso-line-height-alt: 18px; color: #393d47; line-height: 1.5;">
         <p style="margin: 0; font-size: 20px; mso-line-height-alt: 30px;">
-            <span style="font-size:20px;">Hello ' . $name . ',</span>
+            <span style="font-size:20px;">Hello <b> ' . $name . ',</b></span>
         </p>
         <p style="margin: 0; font-size: 20px; mso-line-height-alt: 18px;">
             </p>
@@ -630,7 +630,7 @@ class MailerController extends Controller {
         <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
         serif; mso-line-height-alt: 18px; color: #393d47; line-height: 1.5;">
         <p style="margin: 0; font-size: 20px; mso-line-height-alt: 30px;">
-            <span style="font-size:20px;">Hello ' . $name . ',</span>
+            <span style="font-size:20px;">Hello <b>' . $name . ',</b></span>
         </p>
         <p style="margin: 0; font-size: 20px; mso-line-height-alt: 18px;">
             </p>
@@ -689,7 +689,7 @@ class MailerController extends Controller {
         return $this->composeEmail( $email, 'Zeus - Password Reset ', $body );
     }
     
-       public function sendGurantorEmail($Gname, $Dname, $link, $email)
+    public function sendGurantorEmail($Gname, $Dname, $link, $email)
     {
         $title = 'Gurantors Installation';
 
@@ -697,7 +697,7 @@ class MailerController extends Controller {
             <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
             serif; mso-line-height-alt: 18px;  line-height: 1.5;">
             <p style="margin: 0; font-size: 16px; mso-line-height-alt: 30px;">
-                <span style="font-size:16px;">Hello Mr/Mrs ' . $Gname . ',</span>
+                <span style="font-size:16px;">Hello Mr/Mrs <b> ' . $Gname . ', </b></span>
             </p>
             <br>
             <p style="margin: 0; font-size: 16px; mso-line-height-alt: 18px;">
@@ -744,7 +744,7 @@ class MailerController extends Controller {
             <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
             serif; mso-line-height-alt: 18px;  line-height: 1.5;">
             <p style="margin: 0; font-size: 16px; mso-line-height-alt: 30px;">
-                <span style="font-size:16px;">Hello ' . $Dname . ',</span>
+                <span style="font-size:16px;">Hello <b> ' . $Dname . ', </b> </span>
             </p>
             <br>
             <p style="margin: 0; font-size: 16px; mso-line-height-alt: 18px;">
@@ -771,4 +771,130 @@ class MailerController extends Controller {
         // return $body;
         return $this->composeEmail($email, 'Motor Africa', $body);
     }
+    
+     public function DuePayment($name, $email, $date) {
+        //  $name = "Prince Muteh";
+        //  $email = "prince.muteh@gmail.com";
+        //  $date = "wed. 26 januray 2022";
+         
+        $body = $this->header( 'Due invoice notice' ) . '
+            <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
+            serif; mso-line-height-alt: 18px; color: #393d47; line-height: 1.5;">
+            <p style="margin: 0; font-size: 20px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">Hello <b>' . $name . ', </b></span>
+            </p>
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+                    Greetings from Motor Africa. <br>
+                    An invoice will be due on '. $date.'
+                </span>
+            </p>
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+                How to make payment:
+                </span>
+            </p>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 18px;">
+            1. Open your Motot Africa App <br>
+            2. Top up your wallet <br>
+            3. Open the due invoice <br>
+            4. Click to pay <br>
+            </p>
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+               <b> Drive safely <br>
+                Motor Africa Collection Team </b>  <br>
+                <a href = "https://www.motorafrica.co" ?> Motor Africa </a>
+                </span>
+            </p>
+            </div>
+            '
+        . $this->footer();
+        return $this->composeEmail( $email, ' [Motor Africa] Due invoice notice', $body );
+    }
+    
+    
+     public function OverDuePayment($name, $email) {
+        //  $name = "Prince Muteh";
+        //  $email = "prince.muteh@gmail.com";
+        //  $date = "wed. 26 januray 2022";
+        $body = $this->header( 'Overdue invoice' ) . '
+            <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
+            serif; mso-line-height-alt: 18px; color: #393d47; line-height: 1.5;">
+            <p style="margin: 0; font-size: 20px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">Hello  <b>' . $name . ',</b></span>
+            </p> 
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+                  We noticed your last invoice is unpaid. <br>
+                  Kindly make payments before the close of the day so the engine  <br>
+                  functionality of your vehicle can be restored.
+                </span>
+            </p>
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+                <b>
+                Drive safely <br>
+                Motor Africa Collection Team </b> <br>
+                <a href = "https://www.motorafrica.co" ?> Overdue invoice </a>
+                </span>
+            </p>
+            </div>
+            '
+        . $this->footer();
+        return $this->composeEmail( $email, ' [Motor Africa] Due invoice notice', $body );
+    }
+    
+    // $name, $email, $date
+     public function DriverPaymentReceipt() {
+         $name = "Prince Muteh";
+         $email = "prince.muteh@gmail.com";
+         $date = "wed. 26 januray 2022";
+         $nextPaymentDate = "wed. 29 januray 2022";
+         $paidAmount = 20000;
+         $nextAmount = 20000;
+         
+        $body = $this->header( 'Payment receipt' ) . '
+            <div class="txtTinyMce-wrapper" style="font-size: 12px; font-family: " Droid Serif", Georgia, Times, "Times New Roman" ,
+            serif; mso-line-height-alt: 18px; color: #393d47; line-height: 1.5;">
+            <p style="margin: 0; font-size: 20px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">Hello  <b>' . $name . ',</b></span>
+            </p>
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+                    Thank you for your patronage. <br>
+                    This is to confirm that your invoice due on
+                    ' . $date. ' has successfully been processed.
+                </span>
+            </p>
+            <br>
+      
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 18px;">
+            Amount paid : '.$paidAmount.' <br>
+            Next due payment : ' . $nextAmount .  '<br>
+            Next payment Date : ' . $nextPaymentDate .  '<br>
+            </p>
+            <br>
+            <p style="margin: 0; font-size: 18px; mso-line-height-alt: 30px;">
+                <span style="font-size:20px;">
+                <b>
+                Drive safely <br> Motor Africa Collection Team </b> <br>
+                <a href = "https://www.motorafrica.co" ?> Motor Africa </a>
+                </span>
+            </p>
+            </div>
+            '
+        . $this->footer();
+        return $this->composeEmail( $email, ' [Motor Africa] Payment receipt', $body );
+    }
+    
+    
+    
+    
 }

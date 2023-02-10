@@ -109,15 +109,20 @@ class AdminController extends Controller
             'created_at' => now(),
         ]);
         if ($id) {
-            DB::table('user_type')
-                ->where('user_type_id', $request->usertype)
-                ->update([
-                    'total_users' => $result->total_users + 1,
-                    'updated_at' => now(),
-                ]);
-            dispatch(new SendEmailJob($request->email, $result->user_type, $request->usertype, $id));
-
-            return back()->with('success', 'User Added success');
+             DB::table('user_type')
+                                ->where('user_type_id', $request->usertype)
+                                ->update([
+                                    'total_users' => $result->total_users + 1,
+                                    'updated_at' => now(),
+                                ]);
+              $mail =   ( new MailerController )->userEmail( $request->email,  $request->usertype , $id, $result->user_type);
+                if($mail){
+                            // dispatch(new SendEmailJob($request->email, $result->user_type, $request->usertype, $id));
+                           return back()->with('Emessage', 'User Added success and Email Sent'); 
+                }
+            
+        
+            return back()->with('success', 'User Added success But email is not sent');
         } else {
             return back()->with('Emessage', 'An Error Occured While Adding User');
         }

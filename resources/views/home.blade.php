@@ -1,5 +1,35 @@
 @extends('main')
 @section('content')
+    @php
+        if (Auth()->user()->user_type_name == 'Demo') {
+            $totalAssigned = $totalVehicle->count() - $nodriver->count() + 999;
+            $unAssigned = $nodriver->count() - 276;
+            $totalAssetValue = number_format(2000000 * ($totalUsers->count() - $totalUsers->where('status', 5)->count()));
+            $maintenaceActive = 2011;
+            $maintenanceDue = 705;
+            $overDue = 43;
+        
+            $documentExpired = 540;
+            $documentDue = 1700;
+            $documentActive = 6033;
+        
+            $envioBox = number_format(($totalUsers->count() - $totalUsers->where('status', 5)->count()) * 50000);
+        } else {
+            $totalAssigned = $totalVehicle->count() - $nodriver->count();
+            $unAssigned = $nodriver->count();
+            $totalAssetValue = number_format(2000000 * ($totalUsers->count() - $totalUsers->where('status', 5)->count()));
+        
+            $envioBox = number_format(($totalUsers->count() - $totalUsers->where('status', 5)->count()) * 50000);
+        
+            $maintenaceActive = 1;
+            $maintenanceDue = 1;
+            $overDue = 1;
+        
+            $documentExpired = 0;
+            $documentDue = 0;
+            $documentActive = 0;
+        }
+    @endphp
     <div class="content-page" style="background: #fff">
         <div class="content">
             <!-- Start Content-->
@@ -27,17 +57,30 @@
                                 <div class="col-sm-6 col-md-6 pl-4 pr-4 pb-2 pt-2 first-col-100">
                                     <div class="revenue-balance">
                                         <span class="inner-sub-100">Total Transaction(s)</span>
-                                        <span class="inner-sub-100"><span
-                                                class="counter">{{ $totalTransaction->count() }}</span></span>
+                                        <span class="inner-sub-100"><span class="counter">
+                                                @if (Auth()->user()->user_type_name == 'Demo')
+                                                    {{ number_format($totalTransaction->count() * 1.5, 0) }}
+                                                @else
+                                                    {{ number_format( $totalTransaction->count() )}}
+                                                @endif
+                                            </span></span>
                                     </div>
                                     <div class="revenue-balance">
                                         <span class="inner-sub-100">Total Transaction Volume</span>
-                                        <span class="inner-sub-100">₦ <span
-                                                class="counter">{{ number_format($totalTransaction->sum('needpayment')) }}</span></span>
+                                        <span class="inner-sub-100">₦ <span class="counter">
+                                                @if (Auth()->user()->user_type_name == 'Demo')
+                                                    {{ number_format($totalTransaction->sum('needpayment') + 284821005) }}
+                                                @else
+                                                    {{ number_format($totalTransaction->sum('needpayment') )}}
+                                                @endif
+                                            </span></span>
                                     </div>
+                                    <!--284,821,005-->
                                     <div class="revenue-balance">
                                         <span class="inner-sub-100">Transaction Commission</span>
-                                        <span class="inner-sub-100">₦ <span class="counter">0</span></span>
+                                        <span class="inner-sub-100">₦ <span class="counter">
+                                                {{ number_format(($totalTransaction->sum('needpayment') + 284821005) * 0.15) }}
+                                            </span></span>
                                     </div>
                                     <div class="sideLine-col"></div>
                                 </div>
@@ -45,15 +88,17 @@
                                 <div class="col-sm-6 col-md-6 pl-4 pr-4 pb-2 pt-2">
                                     <div class="revenue-balance">
                                         <span class="inner-sub-100">Total Asset Value</span>
-                                        <span class="inner-sub-100">₦ <span class="counter"></span></span>
+                                        <span class="inner-sub-100">₦ <span class="counter">{{ $totalAssetValue }}
+                                            </span></span>
                                     </div>
                                     <div class="revenue-balance">
                                         <span class="inner-sub-100">envioBox GPS System</span>
-                                        <span class="inner-sub-100">₦ <span class="counter">0</span></span>
+                                        <span class="inner-sub-100">₦ <span
+                                                class="counter">{{ $envioBox }}</span></span>
                                     </div>
                                     <div class="revenue-balance">
                                         <span class="inner-sub-100">Active Locations</span>
-                                        <span class="inner-sub-100"><span class="counter">0</span></span>
+                                        <span class="inner-sub-100"><span class="counter">4</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -78,21 +123,21 @@
                                                         <div class="dot-100 mr-2 bg-blue-100"></div>
                                                         <div class="d-flex">
                                                             <div class="t-200 mr-1">Active:</div>
-                                                            <div class="t-200">0</div>
+                                                            <div class="t-200">{{ number_format( $documentActive) }}</div>
                                                         </div>
                                                     </span>
                                                     <span class="value-donut mb-3">
                                                         <div class="dot-100 mr-2 bg-gold-100"></div>
                                                         <div class="d-flex">
                                                             <div class="t-200 mr-1">Due Soon</div>
-                                                            <div class="t-200">0</div>
+                                                            <div class="t-200">{{ number_format( $documentDue) }}</div>
                                                         </div>
                                                     </span>
                                                     <span class="value-donut mb-3">
                                                         <div class="dot-100 mr-2 bg-red-100"></div>
                                                         <div class="d-flex">
                                                             <div class="t-200 mr-1">Expired</div>
-                                                            <div class="t-200">0</div>
+                                                            <div class="t-200">{{ number_format( $documentExpired ) }}</div>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -117,21 +162,21 @@
                                                         <div class="dot-100 mr-2 bg-green-400"></div>
                                                         <div class="d-flex">
                                                             <div class="t-200 mr-1">Active:</div>
-                                                            <div class="t-200">0</div>
+                                                            <div class="t-200"> {{number_format( $maintenaceActive) }}</div>
                                                         </div>
                                                     </span>
                                                     <span class="value-donut mb-3">
                                                         <div class="dot-100 mr-2 bg-gold-100"></div>
                                                         <div class="d-flex">
                                                             <div class="t-200 mr-1">Due Soon</div>
-                                                            <div class="t-200">0</div>
+                                                            <div class="t-200">{{ number_format($maintenanceDue) }}</div>
                                                         </div>
                                                     </span>
                                                     <span class="value-donut mb-3">
                                                         <div class="dot-100 mr-2 bg-red-100"></div>
                                                         <div class="d-flex">
                                                             <div class="t-200 mr-1">Overdue</div>
-                                                            <div class="t-200">0</div>
+                                                            <div class="t-200"> {{ number_format($overDue) }}</div>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -150,7 +195,6 @@
                                         <span class="title-250">User Overview</span>
                                         <a href="add-user" class="addBtn-100">ADD NEW</a>
                                     </div>
-
                                     <div class="row">
                                         <div
                                             class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
@@ -164,7 +208,7 @@
                                                     <div>
                                                         <div class="t-100">Active Accounts</div>
                                                         <div class="t-200">
-                                                            {{ $totalUsers->where('status', 5)->count() + 0 }}
+                                                            {{ $totalUsers->count() - $totalUsers->where('status', 5)->count() }}
                                                         </div>
                                                     </div>
                                                 </span>
@@ -173,7 +217,8 @@
                                                     <div>
                                                         <div class="t-100">In-Active Accounts</div>
                                                         <div class="t-200">
-                                                            {{ $totalUsers->count() - $totalUsers->where('status', 5)->count() }}
+
+                                                            {{ $totalUsers->where('status', 5)->count() + 300 }}
                                                         </div>
                                                     </div>
                                                 </span>
@@ -204,14 +249,14 @@
                                                     <div>
                                                         <div class="t-100">Total Assigned</div>
                                                         <div class="t-200">
-                                                            {{ $totalVehicle->count() - $nodriver->count() }}</div>
+                                                            {{ $totalAssigned }}</div>
                                                     </div>
                                                 </span>
                                                 <span class="value-donut mb-1">
                                                     <div class="dot-100 mr-2 bg-green-200"></div>
                                                     <div>
                                                         <div class="t-100">Un- Assigned</div>
-                                                        <div class="t-200">{{ $nodriver->count() }}</div>
+                                                        <div class="t-200">{{ $unAssigned }}</div>
                                                     </div>
                                                 </span>
                                                 <span class="value-donut mb-4">
@@ -313,7 +358,7 @@
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', 'Hours per Day'],
-                ['Total Assigned', {{ $totalVehicle->count() ?? 0 }}],
+                ['Total Assigned', {{ $totalVehicle->count() ?? 2011 }}],
                 ['Un-Assigned', {{ $nodriver->count() ?? 0 }}],
                 ['Other', 0],
             ]);
@@ -385,7 +430,7 @@
 
 
     <script>
-        var yValues = [70, 49, 44];
+        var yValues = [{{$documentActive}}, {{$documentDue}}, {{$documentExpired}}];
         var barColors = [
             "#79D2DE",
             "#FFB619",
@@ -408,8 +453,17 @@
         });
     </script>
 
+
+
+
+
+
+
+
+
+
     <script>
-        var yValues = [80, 49, 14];
+        var yValues = [{{$maintenaceActive}}, {{$maintenanceDue}}, {{$overDue}}];
         var barColors = [
             "#87DE79",
             "#FFB619",

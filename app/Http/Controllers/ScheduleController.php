@@ -40,17 +40,19 @@ class ScheduleController extends Controller
         // $this->diff( $time );userManagement
         $now = Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString();
         //    $this->();
-       $this->reportTask();
+        
+        $this->reportTask();
         $this->allVehicleTask();
         $this->TellaPayment();
+        
         //  $this->vehicleStatusTask();
-        // $this->userManagement();
+        //  $this->userManagement();
         //  $sql = DB::table('users')->where('id', '>=' ,"1500")->delete();
     }
 
     public function reportTask()
     {
-        // $sql = DB::table('duepayments')->truncate();
+        $sql = DB::table('duepayments')->truncate();
         // $date = Carbon::tomorrow()->startOfDay();
         $date = Carbon::now()->endOfWeek(Carbon::SATURDAY);
         $page = 10000;
@@ -112,7 +114,7 @@ class ScheduleController extends Controller
         // $sql = DB::table( 'vehicle_details_vms' )->truncate();
 
         $result = (new VMSAPI)->All_record();
-        return $result;
+        // return $result;
 
         foreach ($result->Data as $value) {
             if ($value->investorname != '' || $value->investorname != null) {
@@ -126,7 +128,7 @@ class ScheduleController extends Controller
                                 'simid' => $value->simid,
                                 'bodytypename' => $value->bodytypename,
                                 'colorname' => $value->colorname,
-                                'price' => $value->price,
+                                // 'price' => $value->price,
                                 'status' => $value->status,
                                 'brandname' => $value->brandname,
                                 'createtime' => $value->createtime,
@@ -155,7 +157,7 @@ class ScheduleController extends Controller
                                 // if u are having dificulit with updating a record delete that record and run this code without uncommenting it 
                                 // thank u
 
-                                // 'bodytypename' => $value->bodytypename,
+                                'bodytypename' => $value->bodytypename,
                                 // 'colorname' => $value->colorname,
                                 // 'price' => $value->price,
                                 // 'status' => $value->status,
@@ -1446,7 +1448,6 @@ class ScheduleController extends Controller
     public function secondary()
     {
         return $products = DB::connection('mysql_2')->table("users")->get();
-
         print_r($products);
     }
 
@@ -1601,5 +1602,58 @@ class ScheduleController extends Controller
                     'accountOfficer' => "jemilatu25@gmail.com",
                 ]);
         }
+    }
+    
+    
+    public function sendDuePayment(){
+        $date = Carbon::now()->addDays(1)->format('Y-m-d H:i:s');
+        $result = DB::table('duepayments')
+            ->where('duepayments.duetime', '>=', $date)->select('driveremail','vehno', 'drivername','duetime')
+            ->get();
+            // return $result;
+            foreach ($result as $item){
+               if(strpos($item->driveremail, '@')){
+                    $headers = explode('@', $item->driveremail);
+                    if($headers[1] == "gmail.com" || $headers[1] == "yahoo.com"){
+                        $sql = (new MailerController)->DuePayment($item->drivername, $item->driveremail, $item->duetime);
+                        DB::table('all_Email_Log')->insert([
+                            'vehno' => $item->vehno,
+                            'email' => $item->driveremail,
+                            'message' => "payment will be due on ". $item->duetime,
+                            'status' => $sql,
+                            'trail' => "1",
+                            'created_at' => now(),
+                        ]);
+                    }
+                 
+                }
+            }
+            // return $email;
+    }
+    public function sendOverDuePayment(){
+        $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d H:i:s');
+        $date2 = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
+        
+        $result = DB::table('duepayments')
+        ->whereBetween('duepayments.duetime', [$date2, $date])->get();
+            foreach ($result as $item){
+               if(strpos($item->driveremail, '@')){
+                    $headers = explode('@', $item->driveremail);
+                    if($headers[1] == "gmail.com" || $headers[1] == "yahoo.com"){
+                        // $email[] = $item->driveremail;
+                        $sql = (new MailerController)->OverDuePayment($item->drivername, $item->driveremail);
+                        DB::table('all_Email_Log')->insert([
+                            'vehno' => $item->vehno,
+                            'email' => $item->driveremail,
+                            'message' => "payment will be Over due on ". $item->duetime,
+                            'status' => $sql,
+                            'trail' => "1",
+                            'created_at' => now(),
+                        ]);
+                    }
+                 
+                }
+            }
+            // return $email;
     }
 }

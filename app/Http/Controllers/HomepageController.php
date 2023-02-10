@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class HomepageController extends Controller
 {
-
+  public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function sql2()
     {
         return  DB::connection('mysql_2');

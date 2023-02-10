@@ -65,7 +65,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                  {{--  <tr>
                                         <td>
                                             <input type="checkbox" class="form-check">
                                         </td>
@@ -83,8 +83,7 @@
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
-                                        {{-- <td>-</td>
-                                        <td>-</td> --}}
+                                        
                                         <td>
                                             <div class="dropdown">
                                                 <i class='bx bx-dots-vertical-rounded' data-bs-toggle="dropdown"></i>
@@ -104,7 +103,7 @@
                                             </div>
 
                                         </td>
-                                    </tr>
+                                    </tr> --}}
 
                                     @include('components.loanCredit')
 

