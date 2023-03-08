@@ -59,10 +59,10 @@
                                             </span>
                                         </div>
                                         <span class="deposit_amount">
-                                            0
+                                            65
                                         </span>
                                         <span class="total_info">
-                                            LAST UPDATED:23 AUG, 2022
+                                            LAST UPDATED:14 FEB, 2023
                                         </span>
                                         <div class="line-right-100"></div>
                                     </div>
@@ -84,10 +84,10 @@
                                             </span>
                                         </div>
                                         <span class="deposit_amount">
-                                            0
+                                            26
                                         </span>
                                         <span class="total_info">
-                                            LAST UPDATED:23 AUG, 2022
+                                            LAST UPDATED:13 FEB, 2023
                                         </span>
                                     </div>
                                 </div>
@@ -108,10 +108,10 @@
                                             </span>
                                         </div>
                                         <span class="deposit_amount">
-                                            0
+                                            13
                                         </span>
                                         <span class="total_info">
-                                            LAST UPDATED:23 AUG, 2022
+                                            LAST UPDATED:16 FEB, 2023
                                         </span>
                                         <div class="line-right-100"></div>
                                     </div>
@@ -133,10 +133,10 @@
                                             </span>
                                         </div>
                                         <span class="deposit_amount">
-                                            0
+                                            36
                                         </span>
                                         <span class="total_info">
-                                            LAST UPDATED:23 AUG, 2022
+                                            LAST UPDATED:15 FEB, 2023
                                         </span>
                                     </div>
                                 </div>
@@ -224,18 +224,18 @@
                                         <div class="supervisor-main">
                                             <div class="supervisor-info">
                                                 <span class="circle-supervisor"></span>
-                                                <span class="supervisors-desc">supervisors</span>
-                                                <span class="supervisor-count">0</span>
+                                                <span class="supervisors-desc">Managers</span>
+                                                <span class="supervisor-count">4</span>
                                             </div>
                                             <div class="supervisor-info">
                                                 <span class="circle-supervisor"></span>
-                                                <span class="supervisors-desc">supervisors</span>
-                                                <span class="supervisor-count">0</span>
+                                                <span class="supervisors-desc">Supervisors</span>
+                                                <span class="supervisor-count">12</span>
                                             </div>
                                             <div class="supervisor-info">
                                                 <span class="circle-supervisor"></span>
-                                                <span class="supervisors-desc">supervisors</span>
-                                                <span class="supervisor-count">0</span>
+                                                <span class="supervisors-desc">Offices</span>
+                                                <span class="supervisor-count">45</span>
                                             </div>
                                         </div>
                                     </div>
@@ -258,10 +258,10 @@
                                         </div>
                                         <div class="est-value">
                                             <span class="est-1">
-                                                ₦ 0
+                                                ₦ {{number_format(305000)}}
                                             </span>
                                             <span class="est-2">
-                                                LAST UPDATED:23 AUG, 2022
+                                                LAST UPDATED:15 FEB, 2023
                                             </span>
                                         </div>
                                     </div>
@@ -288,7 +288,7 @@
                                             </div>
                                             <div>
                                                 <div class="t-100">NEW INSTALLATION</div>
-                                                <div class="t-200">0</div>
+                                                <div class="t-200">15</div>
                                             </div>
                                         </span>
                                     </div>
@@ -298,7 +298,7 @@
                                             </div>
                                             <div>
                                                 <div class="t-100">OFFLINE CARS</div>
-                                                <div class="t-200">0</div>
+                                                <div class="t-200">06</div>
                                             </div>
                                         </span>
                                     </div>
@@ -308,7 +308,7 @@
                                             </div>
                                             <div>
                                                 <div class="t-100">WITHDRAWALS</div>
-                                                <div class="t-200">0</div>
+                                                <div class="t-200">7</div>
                                             </div>
                                         </span>
                                     </div>
@@ -321,7 +321,7 @@
                                             </div>
                                             <div>
                                                 <div class="t-100">RESET</div>
-                                                <div class="t-200">0</div>
+                                                <div class="t-200">7</div>
                                             </div>
                                         </span>
                                     </div>
@@ -331,7 +331,7 @@
                                             </div>
                                             <div>
                                                 <div class="t-100">SUPPORT</div>
-                                                <div class="t-200">0</div>
+                                                <div class="t-200">57</div>
                                             </div>
                                         </span>
                                     </div>
@@ -403,10 +403,10 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
                 datasets: [{
                     label: 'TASK TREND',
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    data: [40, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     borderWidth: 1,
                     minBarLength: 10,
                     highlightFill: "green",

@@ -176,7 +176,7 @@
                     <li class="list-due-payment">
                         <a href="{{ route('due-payments') }}">Due Payments</a>
                     </li>
-                    <li class="list-overdue-payment bbd">
+                    <li class="list-overdue-payment ">
                         <a href="{{ route('overdue-payments') }}">Overdue Payments</a>
                     </li>
                     <li class="list-critical-payment">

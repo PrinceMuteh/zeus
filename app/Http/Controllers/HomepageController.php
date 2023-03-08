@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class HomepageController extends Controller
 {
-  public function __construct()
+    public function __construct()
     {
         $this->middleware('auth');
     }
-    
+
     public function sql2()
     {
         return  DB::connection('mysql_2');
@@ -39,132 +39,76 @@ class HomepageController extends Controller
 
     public function index()
     {
+        $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        if (Auth()->user()->user_type == 'SUPER') {
+        if (Auth()->user()->user_type == 'SUPER' || Auth()->user()->user_type == 'Workshop Administrator') {
             $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
+                ->whereYear('createtime', date('Y'))->groupBy(DB::raw('Month(createtime)'))->pluck('count');
 
             $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
-
-            $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $datas[$month] = $users[$index];
-            }
-            $datas = array_reverse($datas);
-            array_pop($datas);
-            $datas = array_reverse($datas);
-
-            // dd( $datas );
-            // echo array_pop( $datas );
-
+                ->whereYear('createtime', date('Y'))->groupBy(DB::raw('Month(createtime)'))->pluck('month');
             $totalvehicle = DB::table('vehicle_details_vms')->get();
             $nodriver = $totalvehicle->whereNull('drivername');
-            // dd( $nodriver );
             $totalusers = DB::table('users')->get();
-            $transaction = DB::table('vms_payments')
-                ->get();
-
+            $transaction = DB::table('vms_payments')->get();
             $totalTransaction = DB::table('vms_payments')->get();
-
-            // dd( $totalTransaction );
-
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            // dd(Auth()->user()->email);
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            if (count($vehno) < 1) {
-                Auth::logout();
-                return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
-            }
-
-            foreach ($vehno as $key => $value) {
-                $vehnos[] = $value->vehno;
-            }
-            // dd($vehnos);
-
-            $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
-                ->whereIn('vehno', $vehnos)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
-
-            $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
-                ->whereIn('vehno', $vehnos)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
-
-            $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $datas[$month] =  $users[$index];
-            }
-
-            $datas = array_reverse($datas);
-            array_pop($datas);
-            $datas = array_reverse($datas);
-
-            // dd( $datas );
-            // $totalvehicle = DB::table('vehicle_details_vms')->whereIn('veho', $fleet)->get();
-            $totalvehicle =  $vehno;
-            $nodriver = $totalvehicle->whereNull('drivername');
-
-            // $totalusers = 0;
-            $totalusers = DB::table('users')->where('accountOfficer', Auth()->user()->user_type)->get();
-
-            // $totalusers = DB::table('vms_payments')->whereIn('vehno', $vehnos)->get();
-            $transaction = DB::table('vms_payments')->whereIn('vehno', $vehnos)->get();
-            $totalTransaction =    $transaction;
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                if (count($fle) < 1) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+                }
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+              
+                
+                $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
+                    ->whereIn('fleet', $fleet)->whereYear('createtime', date('Y'))->groupBy(DB::raw('Month(createtime)'))->pluck('count');
+                $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
+                    ->whereIn('fleet', $fleet)->whereYear('createtime', date('Y'))->groupBy(DB::raw('Month(createtime)'))->pluck('month');
+                $totalvehicle = DB::table('vehicle_details_vms')->whereIn('bodytypename', $fleet)->get();
+                $nodriver = $totalvehicle->whereNull('drivername');
+                $totalusers = DB::table('users')->whereIn('fleet', $fleet)->get();
+                $transaction = DB::table('vms_payments')->whereIn('fleet', $fleet)->get();
+                $totalTransaction = DB::table('vms_payments')->whereIn('fleet', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                if (count($vehno) < 1) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+                }
+                foreach ($vehno as $key => $value) {
+                    $vehnos[] = $value->vehno;
+                }
+               
+                $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
+                    ->whereIn('vehno', $vehnos)
+                    ->whereYear('createtime', date('Y'))
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('count');
+                $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
+                    ->whereIn('vehno', $vehnos)
+                    ->whereYear('createtime', date('Y'))
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('month');
+                $totalvehicle =  $vehno;
 
-            if (count($fle) < 1) {
-                Auth::logout();
-                return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+                $nodriver = $totalvehicle->whereNull('drivername');
+                $totalusers = DB::table('users')->where('accountOfficer', Auth()->user()->user_type)->get();
+                $transaction = DB::table('vms_payments')->whereIn('vehno', $vehnos)->get();
+                $totalTransaction =    $transaction;
             }
-
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-
-            $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
-                ->whereIn('fleet', $fleet)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
-
-            $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
-                ->whereIn('fleet', $fleet)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
-
-            $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $datas[$month] =  $users[$index];
-            }
-
-            $datas = array_reverse($datas);
-            array_pop($datas);
-            $datas = array_reverse($datas);
-
-            // dd( $datas );
-            $totalvehicle = DB::table('vehicle_details_vms')->whereIn('bodytypename', $fleet)->get();
-            $nodriver = $totalvehicle->whereNull('drivername');
-            $totalusers = DB::table('users')->whereIn('fleet', $fleet)->get();
-            $transaction = DB::table('vms_payments')
-                ->whereIn('fleet', $fleet)
-                ->get();
-            $totalTransaction = DB::table('vms_payments')
-                ->whereIn('fleet', $fleet)
-                ->get();
         }
 
-        // dd( auth()->user()->menu_permission );
+        foreach ($months as $index => $month) {
+            $datas[$month] = $users[$index];
+        }
+        $datas = array_reverse($datas);
+        array_pop($datas);
+        $datas = array_reverse($datas);
+
         return view('home', ['totalTransaction' => $totalTransaction, 'transaction' => $transaction, 'datas' => $datas, 'totalVehicle' => $totalvehicle, 'totalUsers' => $totalusers, 'nodriver' => $nodriver]);
     }
 
@@ -173,6 +117,14 @@ class HomepageController extends Controller
         // dd( $phone );
 
         $user = DB::table('users')->where('phone', $phone)->first();
+        // dd($user);
+        if ($user ==  null) {
+            toast('Driver not found', 'error');
+            return redirect()->back();
+        }
+
+        $acctDetails =  (new OnePipeController)->getBalance($user->id);
+
         // dd($user);
         // if ( $user->category == 'Driver' ) {
         $record = DB::table('vehicle_details_vms')->where('driverPhone', $phone)->first();
@@ -208,11 +160,10 @@ class HomepageController extends Controller
         //         $gurantor = DB::table( 'gurantors_info' )->where( 'Driver_PHONE', $user->phone )->first();
         //     }
         // }
-
         // dd( $gurantor );
         $allVehicle = DB::table('vehicle_details_vms')->whereNull('drivername')->get();
         // dd( $gurantor );
-        return view('user', ['phone' => $phone, 'user' => $user, 'gurantor' => $gurantor, 'allVehicle' => $allVehicle]);
+        return view('user', ['phone' => $phone, 'user' =>  $acctDetails['user'], 'acctBal' =>  $acctDetails['balance'], 'bank' => $acctDetails['bank'], 'gurantor' => $gurantor, 'allVehicle' => $allVehicle]);
     }
 
     public function editUserAccount(Request $request)
@@ -276,5 +227,3 @@ class HomepageController extends Controller
     // }
 
 }
-
-

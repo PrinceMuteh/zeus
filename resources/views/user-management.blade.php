@@ -108,18 +108,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                               
                                     @foreach ($users as $user)
                                         <tr>
                                             <td>
                                                 <input type="checkbox" class="check" />
                                             </td>
                                             <td>
-                                                {{-- <a href="/user/{{ $user->phone }}">
-                                                    ENV/{{ $user->id }}
-                                                </a> --}}
-                                                <a href="{{ route('user', ['phone' => $user->phone]) }}">
-                                                    ENV/{{ $user->id }}
-                                                </a>
+                                                 <a href="{{ route('userz', ['phone' => $user->phone ?? 0]) }}">
+                                                    ENV/{{ $user->name  }}
+                                                </a> 
                                             </td>
                                             <td>{{ $user->category }}</td>
                                             <td>{{ $user->name }}</td>

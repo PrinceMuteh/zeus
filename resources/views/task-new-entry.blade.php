@@ -257,6 +257,7 @@
                                     accusamus. Commodi reprehenderit.
                                 </span>
                             </div>
+                            
                             <form method="post" action="{{route('taskCreate')}}">
                                 @csrf
                                 <input type="hidden" name="id" value = "{{$data->taskId}}">
@@ -266,7 +267,7 @@
                                         <div class="form-group form-desk">
                                             <label for="">Assign Installer
                                                 (Technician)*</label>
-                                                <select name="insaller" id="" class = "form-control users">
+                                                <select name="installer" id="" class = "form-control users">
                                                     @foreach ($installer as $item)
                                                         <option value = "{{$item->id}}"> {{$item->first_name}}</option>
                                                     @endforeach
@@ -299,9 +300,10 @@
                                         <div class="form-group">
                                             <label for="">Status</label>
                                             <select name = "status" class="form-select inputCommission">
-                                                <option value="closing">CLOSING</option>
-                                                <option value="processing">PROCESSING</option>
-                                                <option value="new">NEW</option>
+                                                <option value="Closing">CLOSING</option>
+                                                <option value="Processing">PROCESSING</option>
+                                                <option value="Completed">COMPLETED</option>
+                                                <option value="New">NEW</option>
                                             </select>
                                         </div>
 

@@ -53,64 +53,6 @@ class TrackWebController extends Controller
                 $label = '-';
                 $single = 'singles';
             }
-
-            $plate = $cars[0]->vehno;
-            $investorphone = $cars[0]->investorphonenumber;
-            $driverphone = $cars[0]->driverphone;
-            $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
-            if (!empty($vehicleDetails)) {
-                $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno);
-            }
-            // dd($vehicleLocation);
-
-            $driverDetails = (new VMSAPI)->getDriverInfo($driverphone);
-            $investorInfo = (new VMSAPI)->getInvestorInfo($investorphone);
-            //    $cars3 =  $cars->toArray();
-            $data = array(
-                'cars' => $cars,
-                // 'otherDetails'=> $otherDetails,
-                'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
-                'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
-                'vehicleLocation' => (!empty($vehicleLocation->Data)) ? $vehicleLocation->Data[0] : 'null',
-                'investorInfo' => (!empty($investorInfo)) ? $investorInfo->Data : 'null',
-            );
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            // dd(Auth()->user()->email);
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            if (count($vehno) < 1) {
-                Auth::logout();
-                return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
-            }
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
-            }
-            // $cars = DB::table( 'vehicle_details_vms' )->orderBy( 'vehno', 'DESC' )->get();
-            $cars = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
-            //   dd( $cars );
-
-            $cars3 = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
-            if ($cars[0]->latitude != 0.0) {
-                $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
-                if ($response == null) {
-                    $placeAddress = 'not available';
-                    $label = '-';
-                    $single = 'singles';
-                } else {
-                    $placeAddress = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
-                    $label = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
-                    $single = 'single';
-                }
-            } else {
-                $placeAddress = '-';
-                $label = '-';
-                $single = 'singles';
-            }
-            // $placeAddress = $response->results[ 0 ]->formatted_address;
-            //details from mygarage
-            // $otherDetails = ( new ApiController )->get( 'https://test.mygarage.africa/api/other-details/bwr749fd' );
-            // $otherDetails->remittanceAmount;
             $plate = $cars[0]->vehno;
             $investorphone = $cars[0]->investorphonenumber;
             $driverphone = $cars[0]->driverphone;
@@ -120,63 +62,98 @@ class TrackWebController extends Controller
             }
             $driverDetails = (new VMSAPI)->getDriverInfo($driverphone);
             $investorInfo = (new VMSAPI)->getInvestorInfo($investorphone);
-            //    $cars3 =  $cars->toArray();
             $data = array(
                 'cars' => $cars,
-                //  'otherDetails'=> $otherDetails,
                 'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
                 'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
                 'vehicleLocation' => (!empty($vehicleLocation->Data)) ? $vehicleLocation->Data[0] : 'null',
                 'investorInfo' => (!empty($investorInfo)) ? $investorInfo->Data : 'null',
             );
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            // $cars = DB::table( 'vehicle_details_vms' )->orderBy( 'vehno', 'DESC' )->get();
-            $cars = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
-            //   dd( $cars );
-
-            $cars3 = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
-            if ($cars[0]->latitude != 0.0) {
-                $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
-                if ($response == null) {
-                    $placeAddress = 'not available';
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $cars = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
+                $cars3 = DB::table('vehicle_status')->whereIn('fleet', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
+                if ($cars[0]->latitude != 0.0) {
+                    $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
+                    if ($response == null) {
+                        $placeAddress = 'not available';
+                        $label = '-';
+                        $single = 'singles';
+                    } else {
+                        $placeAddress = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
+                        $label = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
+                        $single = 'single';
+                    }
+                } else {
+                    $placeAddress = '-';
                     $label = '-';
                     $single = 'singles';
-                } else {
-                    $placeAddress = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
-                    $label = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
-                    $single = 'single';
                 }
+                $plate = $cars[0]->vehno;
+                $investorphone = $cars[0]->investorphonenumber;
+                $driverphone = $cars[0]->driverphone;
+                $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
+                if (!empty($vehicleDetails)) {
+                    $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno);
+                }
+                $driverDetails = (new VMSAPI)->getDriverInfo($driverphone);
+                $investorInfo = (new VMSAPI)->getInvestorInfo($investorphone);
+                $data = array(
+                    'cars' => $cars,
+                    'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
+                    'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
+                    'vehicleLocation' => (!empty($vehicleLocation->Data)) ? $vehicleLocation->Data[0] : 'null',
+                    'investorInfo' => (!empty($investorInfo)) ? $investorInfo->Data : 'null',
+                );
             } else {
-                $placeAddress = '-';
-                $label = '-';
-                $single = 'singles';
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                if (count($vehno) < 1) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+                }
+                foreach ($vehno as $key => $value) {
+                    $fleet[] = $value->vehno;
+                }
+                $cars = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get();
+                $cars3 = DB::table('vehicle_status')->whereIn('vehicle_status.vehno', $fleet)->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
+                if ($cars[0]->latitude != 0.0) {
+                    $response =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $cars[0]->longitude . ',' . $cars[0]->latitude . '.json?key=' . $this->maptiller());
+                    if ($response == null) {
+                        $placeAddress = 'not available';
+                        $label = '-';
+                        $single = 'singles';
+                    } else {
+                        $placeAddress = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
+                        $label = $response->features[0]->place_name . ", " . $response->features[1]->place_name;
+                        $single = 'single';
+                    }
+                } else {
+                    $placeAddress = '-';
+                    $label = '-';
+                    $single = 'singles';
+                }
+                $plate = $cars[0]->vehno;
+                $investorphone = $cars[0]->investorphonenumber;
+                $driverphone = $cars[0]->driverphone;
+                $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
+                if (!empty($vehicleDetails)) {
+                    $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno);
+                }
+                $driverDetails = (new VMSAPI)->getDriverInfo($driverphone);
+                $investorInfo = (new VMSAPI)->getInvestorInfo($investorphone);
+                $data = array(
+                    'cars' => $cars,
+                    'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
+                    'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
+                    'vehicleLocation' => (!empty($vehicleLocation->Data)) ? $vehicleLocation->Data[0] : 'null',
+                    'investorInfo' => (!empty($investorInfo)) ? $investorInfo->Data : 'null',
+                );
+                
             }
-            // $placeAddress = $response->results[ 0 ]->formatted_address;
-            //details from mygarage
-            // $otherDetails = ( new ApiController )->get( 'https://test.mygarage.africa/api/other-details/bwr749fd' );
-            // $otherDetails->remittanceAmount;
-            $plate = $cars[0]->vehno;
-            $investorphone = $cars[0]->investorphonenumber;
-            $driverphone = $cars[0]->driverphone;
-            $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
-            if (!empty($vehicleDetails)) {
-                $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno);
-            }
-            $driverDetails = (new VMSAPI)->getDriverInfo($driverphone);
-            $investorInfo = (new VMSAPI)->getInvestorInfo($investorphone);
-            //    $cars3 =  $cars->toArray();
-            $data = array(
-                'cars' => $cars,
-                //  'otherDetails'=> $otherDetails,
-                'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
-                'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
-                'vehicleLocation' => (!empty($vehicleLocation->Data)) ? $vehicleLocation->Data[0] : 'null',
-                'investorInfo' => (!empty($investorInfo)) ? $investorInfo->Data : 'null',
-            );
         }
         // return view( 'track-web', [ 'data' => $data ] );
         $single = 'all';

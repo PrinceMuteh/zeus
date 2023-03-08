@@ -37,8 +37,13 @@
                                         <div class="box-col align-items-start">
                                             <span class="staff-name">{{ $user->name }}</span>
                                             <span class="staff-id">Date created: {{ $user->created_at }}</span>
+                                            <br>
+                                            
+                                            <div class ="row">   <h3>₦ {{ number_format($acctBal) }} </h3> <a href ="/collect-money/{{$user->id}}" class="btn btn-primary"> Collect Money</a> <br> <a href ="/pay-owner/{{$user->id}}" class="btn btn-info mt-1"> Pay Owner</a>
+                                            <a href ="/update-vms/{{$user->id}}" class="btn btn-success mt-1"> Update Vms</a></div>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-md-3">
                                         <div class="box-col align-items-center">
 

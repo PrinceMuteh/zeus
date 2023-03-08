@@ -40,11 +40,11 @@ class ScheduleController extends Controller
         // $this->diff( $time );userManagement
         $now = Carbon::parse(now())->timezone('Africa/Lagos')->toDateTimeString();
         //    $this->();
-        
+
         $this->reportTask();
         $this->allVehicleTask();
         $this->TellaPayment();
-        
+
         //  $this->vehicleStatusTask();
         //  $this->userManagement();
         //  $sql = DB::table('users')->where('id', '>=' ,"1500")->delete();
@@ -56,7 +56,7 @@ class ScheduleController extends Controller
         // $date = Carbon::tomorrow()->startOfDay();
         $date = Carbon::now()->endOfWeek(Carbon::SATURDAY);
         $page = 10000;
-       $result = (new VMSAPI)->getVehicleOverDue($date->format('Y-m-d'), $page);
+        $result = (new VMSAPI)->getVehicleOverDue($date->format('Y-m-d'), $page);
         foreach ($result->Data as $value) {
             if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
                 if ($value->Vehicle->drivername != '' || $value->Vehicle->investorname != '0000000000') {
@@ -810,6 +810,7 @@ class ScheduleController extends Controller
                         DB::table('vms_payments')->upsert(
                             [
                                 'userid' => $results->Data->userid,
+                                'supportManager' => $item->supportManager,
                                 'vehno' => $results->Data->vehno,
                                 'nickname' => $results->Data->nickname,
                                 'vehid' => $results->Data->vehid,
@@ -872,6 +873,7 @@ class ScheduleController extends Controller
                                 DB::table('vms_payments')->upsert(
                                     [
                                         'fleet' => $item->bodytypename,
+                                        'supportManager' => $item->supportManager,
                                         'userid' => $results->Data->userid,
                                         'vehno' => $results->Data->vehno,
                                         'nickname' => $results->Data->nickname,
@@ -893,6 +895,7 @@ class ScheduleController extends Controller
                                 DB::table('vms_payments')->upsert(
                                     [
                                         'fleet' => $item->bodytypename,
+                                        'supportManager' => $item->supportManager,
                                         'userid' => $results->Data->userid,
                                         'vehno' => $results->Data->vehno,
                                         'nickname' => $results->Data->nickname,
@@ -953,6 +956,8 @@ class ScheduleController extends Controller
                             foreach ($results->Data->leasePay as $value) {
                                 DB::table('vms_payments')->upsert(
                                     [
+                                        'supportManager' => $item->supportManager,
+
                                         'fleet' => $item->bodytypename,
                                         'userid' => $results->Data->userid,
                                         'vehno' => $results->Data->vehno,
@@ -975,6 +980,8 @@ class ScheduleController extends Controller
                                 DB::table('vms_payments')->upsert(
                                     [
                                         'fleet' => $item->bodytypename,
+                                        'supportManager' => $item->supportManager,
+
                                         'userid' => $results->Data->userid,
                                         'vehno' => $results->Data->vehno,
                                         'nickname' => $results->Data->nickname,
@@ -1037,6 +1044,8 @@ class ScheduleController extends Controller
 
                                     DB::table('vms_payments')->upsert(
                                         [
+                                            'supportManager' => $item->supportManager,
+
                                             'fleet' => $item->bodytypename,
                                             'vehno' => $results->Data->vehno,
                                             'nickname' => $results->Data->name,
@@ -1097,6 +1106,8 @@ class ScheduleController extends Controller
 
                                     DB::table('vms_payments')->upsert(
                                         [
+                                            'supportManager' => $item->supportManager,
+
                                             'fleet' => $item->bodytypename,
                                             'vehno' => $results->Data->vehno,
                                             'nickname' => $results->Data->name,
@@ -1157,6 +1168,8 @@ class ScheduleController extends Controller
 
                                     DB::table('vms_payments')->upsert(
                                         [
+                                            'supportManager' => $item->supportManager,
+
                                             'fleet' => $item->bodytypename,
                                             'vehno' => $results->Data->vehno,
                                             'nickname' => $results->Data->name,
@@ -1190,22 +1203,20 @@ class ScheduleController extends Controller
     public function vms_fleet()
     {
 
-        // DB::table( 'vehicle_details_vms' )
-        //     ->update( [
-        //         'updated_at' =>  null,
-        //     ] );
-        //     die();
         $result = DB::table('vms_payments')
             ->join('vehicle_details_vms', 'vms_payments.vehno', 'vehicle_details_vms.vehno')
-            ->whereNull("fleet")
+            // ->whereNull("vms_payments.supportManager")
             ->get();
         // dd($result);
+        
         foreach ($result as $results) {
             // $result = DB::table( 'vehicle_details_vms' )->where('vehno', $results->vehno)->first();
             DB::table('vms_payments')
                 ->where('vehno', $results->vehno)
                 ->update([
-                    'fleet' =>  $results->bodytypename,
+                    // 'fleet' =>  $results->bodytypename,
+                    'supportManager' => $results->supportManager,
+
                 ]);
         }
     }
@@ -1232,6 +1243,7 @@ class ScheduleController extends Controller
                 ->where('phone', $results->phone)
                 ->update([
                     'accountOfficer' =>  $results->accountOfficer,
+                    'supportManager' =>  $results->supportManager,
                 ]);
         }
     }
@@ -1457,7 +1469,7 @@ class ScheduleController extends Controller
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
-                ["BWR47XE", "ABC07ZY", "KUJ784XC", "KUJ319XC", "ABC802XD", "ABC803XD", "ABC804XD", "RBC758XD", "KWL386XB", "BWR261XB", "BWR945XB", "KUJ746XC", "KUJ749XC", "KUJ507XC", "KWL832XB", "BWR280XB", "ABC22XD", "ABC23XD", "BWR615XE", "KUJ221XC", "BWR668XB", "KWL660XB", "BWR143XB", "RSH562XD", "RSH480XD", "KUJ451XC", "KUJ452XC", "KUJ831XC", "RSH854XD", "RSH425XD", "BWR768YL", "RBC229YL", "RBC530XE", "RBC531XE", "BWR710YL", "ABC457XD", "KUJ915XC", "RSH992XD", "KWL892XB", "RBC451YL", "ABC454XD", "BWR816XE", "BWR817XE", "BWR819XE", "RSH989XD", "RSH862XD", "RSH654XD", "KWL385XB", "BWR858YL", "BWR859YL", "BWR696YL", "BWR697YL", "BWR698YL", "BWR767YL", "ABC79ZY", "KUJ780XC", "RBC703XD", "RSH807XD", "RSH806XD", "BWR145XB", "KUJ501XC", "KUJ990XC", "RBC305XD", "BWR48XB", "RSH397XC", "KWL783XB", "RBC369XD", "RBC370XD", "BWR150XB", "BWR18XB", "KUJ459XC", "KWL389XB", "KWL390XB", "ABJ988XB", "KUJ744XC", "KWL387XB", "KWL802XB", "RBC982XD", "ABC816XD", "RSH233XD", "ABJ332XV", "RSH235XD", "RSH236XD", "RBC529XD", "RSH552XD", "RBC530XD", "KUJ750XC", "RSH553XD", "RBC866XD", "RBC867XD", "ABC669ZW", "ABC670ZW", "RSH940XC", "KWL581XB", "KWL52XB", "ABJ239XV", "KUJ798XC", "BWR609XB", "KWL376XB", "BWR657XE", "RBC225YD", "ABC671XF", "ABC738ZY", "BWR441XB", "BWR380XB", "BWR423XE", "BWR424XE", "BWR422XE", "KUJ287XC", "RSH551XD", "RBC688XC", "RBC690XC", "BWR702YL", "KWL779XB", "ABJ131XB", "ABJ537XB", "ABJ942XB", "RBC518XD", "ABC361XD", "RBC452YL", "RBC865XD", "BWR20XB", "RSH994XD", "RSH141XD", "RSH557XD", "RSH559XD", "RSH558XD", "BWR265XB", "KUJ454XC", "KUJ460XC", "RSH477XD", "BWR620XE", "RBC313YL", "RSH983XC", "RSH561XD", "KUJ115XC", "BWR655XE", "KWL422ZY", "RSH861XD", "ABC303ZY", "KUJ461XC", "BWR881XE", "RBC902XD", "KUJ224XC", "BWR703YL", "KWL831XB", "RBC101YL", "RBC448YL", "ABJ243XV", "ABC810XD", "ABJ835XV", "RBC870XD", "RBC871XD", "RSH234XD", "RBC868XD", "KUJ360XC", "RSH76XD", "BWR239XB", "RSH109XD", "RSH110XD", "BWR861YL", "RBC880YL", "KUJ219XC", "ABC783XD", "KWL995XB", "RBC565XD", "KUJ315XC", "KUJ464XC", "BWR704YL", "BWR856YL", "BWR857YL", "KWL373XB", "KUJ502XC", "GWA376YL", "BWR288XB", "RBC307XD", "ABC384XF"]
+                ["BWR47XE", "ABC07ZY", "KUJ784XC", "KUJ319XC", "ABC802XD", "ABC803XD", "ABC804XD", "RBC758XD", "KWL386XB", "BWR261XB", "BWR945XB", "KUJ746XC", "KUJ749XC", "KUJ507XC", "KWL832XB", "BWR280XB", "ABC22XD", "ABC23XD", "BWR615XE", "KUJ221XC", "BWR668XB", "KWL660XB", "BWR143XB", "RSH562XD", "RSH480XD", "KUJ451XC", "KUJ452XC", "KUJ831XC", "RSH854XD", "RSH425XD", "BWR768YL", "RBC229YL", "RBC530XE", "RBC531XE", "BWR710YL", "ABC457XD", "KUJ915XC", "RSH992XD", "KWL892XB", "RBC451YL", "ABC454XD", "BWR816XE", "BWR817XE", "BWR819XE", "RSH989XD", "RSH862XD", "RSH654XD", "KWL385XB", "BWR858YL", "BWR859YL", "BWR696YL", "BWR697YL", "BWR698YL", "BWR767YL", "ABC79ZY", "KUJ780XC", "RBC703XD", "RSH807XD", "RSH806XD", "BWR145XB", "KUJ501XC", "KUJ990XC", "RBC305XD", "BWR48XB", "RSH397XC", "KWL783XB", "RBC369XD", "RBC370XD", "BWR150XB", "BWR18XB", "KUJ459XC", "KWL389XB", "KWL390XB", "ABJ988XB", "KUJ744XC", "KWL387XB", "KWL802XB", "RBC982XD", "ABC816XD", "RSH233XD", "ABJ332XV", "RSH235XD", "RSH236XD", "RBC529XD", "RSH552XD", "RBC530XD", "KUJ750XC", "RSH553XD", "RBC866XD", "RBC867XD", "ABC669ZW", "ABC670ZW", "RSH940XC", "KWL581XB", "KWL52XB", "ABJ239XV", "KUJ798XC", "BWR609XB", "KWL376XB", "BWR657XE", "RBC225YD", "ABC671XF", "ABC738ZY", "BWR441XB", "BWR380XB", "BWR423XE", "BWR424XE", "BWR422XE", "KUJ287XC", "RSH551XD", "RBC688XC", "RBC690XC", "BWR702YL", "KWL779XB", "ABJ131XB", "ABJ537XB", "ABJ942XB", "RBC518XD", "ABC361XD", "RBC452YL", "RBC865XD", "BWR20XB", "RSH994XD", "RSH141XD", "RSH557XD", "RSH559XD", "RSH558XD", "BWR265XB", "KUJ454XC", "KUJ460XC", "RSH477XD", "BWR620XE", "RBC313YL", "RSH983XC", "RSH561XD", "KUJ115XC", "BWR655XE", "KWL422ZY", "RSH861XD", "ABC303ZY", "KUJ461XC", "BWR881XE", "RBC902XD", "KUJ224XC", "BWR703YL", "KWL831XB", "RBC101YL", "RBC448YL", "ABJ243XV", "ABC810XD", "ABJ835XV", "RBC870XD", "RBC871XD", "RSH234XD", "RBC868XD", "KUJ360XC", "RSH76XD", "BWR239XB", "RSH109XD", "RSH110XD", "BWR861YL", "RBC880YL", "KUJ219XC", "ABC783XD", "KWL995XB", "RBC565XD", "KUJ315XC", "KUJ464XC", "BWR704YL", "BWR856YL", "BWR857YL", "KWL373XB", "KUJ502XC", "GWA376YL", "BWR288XB", "RBC307XD", "ABC384XF", "RBC757XD", "KWL450ZY", "KWL452ZY", "BWR48XE", "BWR49XE", "KWL780XB", "ABJ838XV", "GWA583YL", "KUJ510XC", "BWR973XE", "KUJ781XC", "RSH172XD", "BWR168XB", "RBC312XC", "GWA229YL", "GWA787YL", "KUJ06XC", "KUJ09XC", "BWR440XB", "BWR821XE", "RSH805XD", "RSH156XD", "BWR427XE", "ABJ858XV", "RSH159XD", "RSH748XD", "RSH749XD", "KUJ830XC", "BWR408YL", "RBC252YD", "ABC739ZY", "RSH232XD", "ABC506ZY", "BWR705YL", "GWA19YL", "RBC706XD", "RBC92YL", "RBC93YL", "KUJ625XC", "KUJ320XC", "KWL384XB", "KUJ284XC", "RSH142XD", "RBC580XD", "KWL391XB", "RSH738XD", "BWR822XE", "KWL786XB", "BWR655XB", "BWR656XB", "BWR657XB", "BWR660XB", "BWR661XB", "BWR659XB", "ABJ854XV", "KUJ862XC", "RSH863XD", "KUJ286XC", "KUJ821XC", "KUJ820XC", "RBC566XD", "RBC567XD", "RBC568XD", "BWR731XE", "ABC310ZW", "BWR943XB", "RSH564XD", "RSH563XD", "RBC901XD", "BWR46XB", "RBC346XD", "ABC956XB", "ABC745ZY", "BWR425XE", "BWR264XB", "KWL993XB", "RSH803XD", "RSH804XD", "BWR942XB", "RBC496XD", "RBC528XD", "RSH40XD", "BWR472XB", "BWR941XB", "BWR590XB", "BWR237XB", "BWR238XB", "MKA234LY", "ABC829LF", "BWR610SA", "KWL518BL", "RSH743AZ", "GWA236BT", "BDG939GJ", "FST901GL", "AKD297GD", "SMK373GE", "ABJ132DP", "ABJ138DP", "ABJ139DP", "ABJ140DP", "RSH554BM", "YAB645NQ", "YAB648NQ", "ABJ752CA", "JJJ534FW", "KRD680AT", "KUJ431NW", "KUJ452AZ", "MUS679FX", "RBC587TT", "RBC538DV", "RSH617AV", "YAB169AW", "RBC504EE", "ABJ648DL", "GWA234BT", "GWA235BT", "GWA238BT", "ABC408DX", "RSH752BG", "FST695HP", "BWR132CG", "LSD635HR", "KUJ597BT", "ABJ169EX", "ABJ352JZ", "GWA143JF"]
             )->select('vehno', 'id')
             ->get();
         foreach ($account as  $value) {
@@ -1471,7 +1483,7 @@ class ScheduleController extends Controller
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
-                ["ABC567ZW", "BWR974XE", "BWR294XB", "KUJ745XC", "ABC819XD", "RBC787YD", "ABJ237XV", "ABJ240XV", "GWA238YL", "ABC672XF", "RSH656XD", "ABC83ZW", "BWR373XB", "BWR474XB", "RBC983XD", "BWR442XB", "RBC533XD", "BWR473XB", "KWL834XB", "RBC561XD", "RBC562XD", "RBC91YD", "ABC365XD", "KWL785XB", "KUJ509XC", "BWR435YL", "ABC429ZY", "KUJ620XC", "RBC984XD", "ABC818XD", "ABC314XD", "ABC313XD", "BWR403YL", "BWR404YL", "BRW650XE", "BWR658XE", "BWR282XE", "ABJ134XB", "ABC536XD", "KUJ950XC", "RSH898XC", "RSH899XC", "RSH750XD", "KWL787XB", "BWR148XB", "RBC344YL", "RSH139XD", "RSH963XD", "KUJ120XC", "BWR501XE", "ABC72ZW", "BWR480XB", "RBC565YD", "ABC312XD", "ABJ492XV", "RBC217YL", "KWL833XB", "KUJ465XC", "KUJ552XC", "KUJ556XC", "BWR757XE", "KUJ550XC", "KUJ551XC", "RBC693YD", "ABJ857XV", "RBC614XD", "RBC12YL", "KUJ08XC", "ABC814XD", "ABC317XD", "RBC115XD", "KUJ285XC", "RBC704XD", "RBC705XD", "ABC315XD", "BWR776XB", "RBC96XD", "ABJ859XV", "RBC563XD", "ABC452XD", "BWR295XB", "BWR296XB", "KWL121ZY", "RBC445XD", "KWL601ZY", "RSH264XD", "KUJ504XC", "RBC879YL", "KUJ316XC", "KUJ317XC", "ABC901XD", "ABC902XD", "BWR149XB", "BWR436YL", "ABC307ZW", "ABC321ZW", "RBC532XD", "RBC707XD", "RBC709XD", "RBC711XD", "RBC712XD", "RBC710XD", "BWR262XB", "BWR263XB", "RBC872XD", "ABC820XD", "BWR651XE", "BWR99YL", "RSH810XD", "RBC121XD", "BWR279XB", "RBC759XD", "KWL835XB", "BWR402YL", "BWR135YL", "RBC802XE", "RBC218YL", "RBC176XE", "ABC720XF", "ABC721XF", "ABC722XF", "RBC173XE", "RBC527XE", "RBC174XE", "BWR405YL", "ABJ856XV", "ABJ132XB", "KWL116ZY", "KUJ288XC", "ABC849ZW", "ABC304ZY", "ABC305ZY", "BWR289XB", "BWR622XE", "ABC302ZY", "BWR860YL", "ABC417XF", "ABC384XF", "RBC535XD", "BWR144XB", "ABC364XD", "RBC246XC", "RSH653XC", "RBC497XD", "KUJ783XC", "RBC364YL", "BWR240XB", "BWR19XB", "KUJ218XC", "KUJ216XC", "KUJ217XC", "RSH947XD", "RSH948XD", "ABC458XD", "KWL661XB", "RBC368XD", "ABC181XF", "BWR139XE", "ABC67XF", "RBC897XC", "ABC61XD", "ABC665XF", "BWR971XE", "BWR701YL", "BWR699YL", "KWL781XB", "ABC357XD", "ABC359XD", "ABC360XD", "KUJ453XC", "KUJ455XC", "ABC453XD", "KUJ145XC"]
+                ["ABC567ZW", "BWR974XE", "BWR294XB", "KUJ745XC", "ABC819XD", "RBC787YD", "ABJ237XV", "ABJ240XV", "GWA238YL", "ABC672XF", "RSH656XD", "ABC83ZW", "BWR373XB", "BWR474XB", "RBC983XD", "BWR442XB", "RBC533XD", "BWR473XB", "KWL834XB", "RBC561XD", "RBC562XD", "RBC91YD", "ABC365XD", "KWL785XB", "KUJ509XC", "BWR435YL", "ABC429ZY", "KUJ620XC", "RBC984XD", "ABC818XD", "ABC314XD", "ABC313XD", "BWR403YL", "BWR404YL", "BRW650XE", "BWR658XE", "BWR282XE", "ABJ134XB", "ABC536XD", "KUJ950XC", "RSH898XC", "RSH899XC", "RSH750XD", "KWL787XB", "BWR148XB", "RBC344YL", "RSH139XD", "RSH963XD", "KUJ120XC", "BWR501XE", "ABC72ZW", "BWR480XB", "RBC565YD", "ABC312XD", "ABJ492XV", "RBC217YL", "KWL833XB", "KUJ465XC", "KUJ552XC", "KUJ556XC", "BWR757XE", "KUJ550XC", "KUJ551XC", "RBC693YD", "ABJ857XV", "RBC614XD", "RBC12YL", "KUJ08XC", "ABC814XD", "ABC317XD", "RBC115XD", "KUJ285XC", "RBC704XD", "RBC705XD", "ABC315XD", "BWR776XB", "RBC96XD", "ABJ859XV", "RBC563XD", "ABC452XD", "BWR295XB", "BWR296XB", "KWL121ZY", "RBC445XD", "KWL601ZY", "RSH264XD", "KUJ504XC", "RBC879YL", "KUJ316XC", "KUJ317XC", "ABC901XD", "ABC902XD", "BWR149XB", "BWR436YL", "ABC307ZW", "ABC321ZW", "RBC532XD", "RBC707XD", "RBC709XD", "RBC711XD", "RBC712XD", "RBC710XD", "BWR262XB", "BWR263XB", "RBC872XD", "ABC820XD", "BWR651XE", "BWR99YL", "RSH810XD", "RBC121XD", "BWR279XB", "RBC759XD", "KWL835XB", "BWR402YL", "BWR135YL", "RBC802XE", "RBC218YL", "RBC176XE", "ABC720XF", "ABC721XF", "ABC722XF", "RBC173XE", "RBC527XE", "RBC174XE", "BWR405YL", "ABJ856XV", "ABJ132XB", "KWL116ZY", "KUJ288XC", "ABC849ZW", "ABC304ZY", "ABC305ZY", "BWR289XB", "BWR622XE", "ABC302ZY", "BWR860YL", "ABC417XF", "ABC384XF", "RBC535XD", "BWR144XB", "ABC364XD", "RBC246XC", "RSH653XC", "RBC497XD", "KUJ783XC", "RBC364YL", "BWR240XB", "BWR19XB", "KUJ218XC", "KUJ216XC", "KUJ217XC", "RSH947XD", "RSH948XD", "ABC458XD", "KWL661XB", "RBC368XD", "ABC181XF", "BWR139XE", "ABC67XF", "RBC897XC", "ABC61XD", "ABC665XF", "BWR971XE", "BWR701YL", "BWR699YL", "KWL781XB", "ABC357XD", "ABC359XD", "ABC360XD", "KUJ453XC", "KUJ455XC", "ABC453XD", "KUJ145XC", "ABC579ZW", "BWR818XE", "ABJ538XB", "BWR972XE", "ABJ855XV", "RBC411XD", "RBC412XD", "RBC383XF", "ABC418XF", "RSH439XD", "KUJ618XC", "KUJ619XC", "KUJ621XC", "KUJ622XC", "KWL388XB", "RBC85YL", "RBC498XD", "BWR544XE", "RSH991XD", "BWR829XE", "ABJ856XE", "RSH995XD", "RSH996XD", "RSH997XD", "RSH998XD", "ABC884ZY", "ABJ977XV", "KUJ503XC", "GWA211YL", "RBC570XD", "KWL382XB", "BWR232XB", "KUJ225XC", "RBC443XD", "RSH746XD", "ABC93ZW", "RBC309XD", "KUJ785XC", "BWR931XE", "RSH267XD", "RBC904YD", "KUJ508XC", "BWR406YL", "RSH934XC", "ABC354XD", "BWR649XE", "RSH613XC", "ABJ869XV", "RSH554XD", "RSH556XD", "ABC455XD", "ABJ57XB", "RBC728XD", "ABC356XD", "BWR370XB", "KUJ782XC", "RBC878YL", "RSH238XD", "RSH801XD", "KUJ10XC", "RSH479XD", "ABC460ZW", "ABC351XD", "RBC336YD", "RBC977YD", "RBC123XD", "BWR104XB", "KUJ223XC", "RSH481XD", "BWR147XB", "ABJ83XB", "ABJ84XB", "ABJ81XB", "ABJ82XB", "ABC746ZW", "ABC811XD", "BWR475XB", "RBC390YD", "MNA475ZY", "KWL379XB", "ABJ943XB", "BWR399XB", "ABJ133XB", "RBC981XD", "BWR616XE", "RBC495XD", "RBC499XD", "ABJ803KH", "DKA487TK", "FST971GF", "ABJ545CE", "RSH792AJ", "YAB707AV", "KSF997HN", "NDN958TM", "MUS763HL", "LND380HB", "ABC822DX", "BEN918FA", "AUC457NU", "GBZ105TL", "GWA217RY", "YAB747AV", "FKJ585HJ", "RSH56BU", "KUJ650CB", "GWA189CK", "GWA584EA", "APP551CC", "ABJ47BD", "EPE942HL", "GWA452HV", "JJJ896DW", "BWR238BT", "YAB967CN", "ABJ941HC", "GWA287CQ", "GWA610BK", "RSH59CB", "ABC144NE", "ABC378CM", "ABJ72BH", "KUJ720NZ", "KPR566AG", "SMK975DS", "GGE322GP", "GWA150DR", "RSH388LV"]
             )->select('vehno', 'id')
             ->get();
         foreach ($account as  $value) {
@@ -1482,30 +1494,30 @@ class ScheduleController extends Controller
                 ]);
         }
         // Group C
-        $account = DB::table('vehicle_details_vms')
-            ->whereIn(
-                "vehno",
-                ["ABC579ZW", "BWR818XE", "ABJ538XB", "BWR972XE", "ABJ855XV", "RBC411XD", "RBC412XD", "RBC383XF", "ABC418XF", "RSH439XD", "KUJ618XC", "KUJ619XC", "KUJ621XC", "KUJ622XC", "KWL388XB", "RBC85YL", "RBC498XD", "BWR544XE", "RSH991XD", "BWR829XE", "ABJ856XE", "RSH995XD", "RSH996XD", "RSH997XD", "RSH998XD", "ABC884ZY", "ABJ977XV", "KUJ503XC", "GWA211YL", "RBC570XD", "KWL382XB", "BWR232XB", "KUJ225XC", "RBC443XD", "RSH746XD", "ABC93ZW", "RBC309XD", "KUJ785XC", "BWR931XE", "RSH267XD", "RBC904YD", "KUJ508XC", "BWR406YL", "RSH934XC", "ABC354XD", "BWR649XE", "RSH613XC", "ABJ869XV", "RSH554XD", "RSH556XD", "ABC455XD", "ABJ57XB", "RBC728XD", "ABC356XD", "BWR370XB", "KUJ782XC", "RBC878YL", "RSH238XD", "RSH801XD", "KUJ10XC", "RSH479XD", "ABC460ZW", "ABC351XD", "RBC336YD", "RBC977YD", "RBC123XD", "BWR104XB", "KUJ223XC", "RSH481XD", "BWR147XB", "ABJ83XB", "ABJ84XB", "ABJ81XB", "ABJ82XB", "ABC746ZW", "ABC811XD", "BWR475XB", "RBC390YD", "MNA475ZY", "KWL379XB", "ABJ943XB", "BWR399XB", "ABJ133XB", "RBC981XD", "BWR616XE", "RBC495XD", "RBC499XD", "RBC757XD", "KWL450ZY", "KWL452ZY", "BWR48XE", "BWR49XE", "KWL780XB", "ABJ838XV", "GWA583YL", "KUJ510XC", "BWR973XE", "KUJ781XC", "RSH172XD", "BWR168XB", "RBC312XC", "GWA229YL", "GWA787YL", "KUJ06XC", "KUJ09XC", "BWR440XB", "BWR821XE", "RSH805XD", "RSH156XD", "BWR427XE", "ABJ858XV", "RSH159XD", "RSH748XD", "RSH749XD", "KUJ830XC", "BWR408YL", "RBC252YD", "ABC739ZY", "RSH232XD", "ABC506ZY", "BWR705YL", "GWA19YL", "RBC706XD", "RBC92YL", "RBC93YL", "KUJ625XC", "KUJ320XC", "KWL384XB", "KUJ284XC", "RSH142XD", "RBC580XD", "KWL391XB", "RSH738XD", "BWR822XE", "KWL786XB", "BWR655XB", "BWR656XB", "BWR657XB", "BWR660XB", "BWR661XB", "BWR659XB", "ABJ854XV", "KUJ862XC", "RSH863XD", "KUJ286XC", "KUJ821XC", "KUJ820XC", "RBC566XD", "RBC567XD", "RBC568XD", "BWR731XE", "ABC310ZW", "BWR943XB", "RSH564XD", "RSH563XD", "RBC901XD", "BWR46XB", "RBC346XD", "ABC956XB", "ABC745ZY", "BWR425XE", "BWR264XB", "KWL993XB", "RSH803XD", "RSH804XD", "BWR942XB", "RBC496XD", "RBC528XD", "RSH40XD", "BWR472XB", "BWR941XB", "BWR590XB", "BWR237XB", "BWR238XB"]
-            )->select('vehno', 'id')
-            ->get();
-        foreach ($account as  $value) {
-            $sql =   DB::table('vehicle_details_vms')
-                ->where('vehno', $value->vehno)
-                ->update([
-                    'accountOfficer' => "Omega@teamenvio.com",
-                ]);
-        }
+        // $account = DB::table('vehicle_details_vms')
+        //     ->whereIn(
+        //         "vehno",
+        //         ["ABC579ZW", "BWR818XE", "ABJ538XB", "BWR972XE", "ABJ855XV", "RBC411XD", "RBC412XD", "RBC383XF", "ABC418XF", "RSH439XD", "KUJ618XC", "KUJ619XC", "KUJ621XC", "KUJ622XC", "KWL388XB", "RBC85YL", "RBC498XD", "BWR544XE", "RSH991XD", "BWR829XE", "ABJ856XE", "RSH995XD", "RSH996XD", "RSH997XD", "RSH998XD", "ABC884ZY", "ABJ977XV", "KUJ503XC", "GWA211YL", "RBC570XD", "KWL382XB", "BWR232XB", "KUJ225XC", "RBC443XD", "RSH746XD", "ABC93ZW", "RBC309XD", "KUJ785XC", "BWR931XE", "RSH267XD", "RBC904YD", "KUJ508XC", "BWR406YL", "RSH934XC", "ABC354XD", "BWR649XE", "RSH613XC", "ABJ869XV", "RSH554XD", "RSH556XD", "ABC455XD", "ABJ57XB", "RBC728XD", "ABC356XD", "BWR370XB", "KUJ782XC", "RBC878YL", "RSH238XD", "RSH801XD", "KUJ10XC", "RSH479XD", "ABC460ZW", "ABC351XD", "RBC336YD", "RBC977YD", "RBC123XD", "BWR104XB", "KUJ223XC", "RSH481XD", "BWR147XB", "ABJ83XB", "ABJ84XB", "ABJ81XB", "ABJ82XB", "ABC746ZW", "ABC811XD", "BWR475XB", "RBC390YD", "MNA475ZY", "KWL379XB", "ABJ943XB", "BWR399XB", "ABJ133XB", "RBC981XD", "BWR616XE", "RBC495XD", "RBC499XD", "RBC757XD", "KWL450ZY", "KWL452ZY", "BWR48XE", "BWR49XE", "KWL780XB", "ABJ838XV", "GWA583YL", "KUJ510XC", "BWR973XE", "KUJ781XC", "RSH172XD", "BWR168XB", "RBC312XC", "GWA229YL", "GWA787YL", "KUJ06XC", "KUJ09XC", "BWR440XB", "BWR821XE", "RSH805XD", "RSH156XD", "BWR427XE", "ABJ858XV", "RSH159XD", "RSH748XD", "RSH749XD", "KUJ830XC", "BWR408YL", "RBC252YD", "ABC739ZY", "RSH232XD", "ABC506ZY", "BWR705YL", "GWA19YL", "RBC706XD", "RBC92YL", "RBC93YL", "KUJ625XC", "KUJ320XC", "KWL384XB", "KUJ284XC", "RSH142XD", "RBC580XD", "KWL391XB", "RSH738XD", "BWR822XE", "KWL786XB", "BWR655XB", "BWR656XB", "BWR657XB", "BWR660XB", "BWR661XB", "BWR659XB", "ABJ854XV", "KUJ862XC", "RSH863XD", "KUJ286XC", "KUJ821XC", "KUJ820XC", "RBC566XD", "RBC567XD", "RBC568XD", "BWR731XE", "ABC310ZW", "BWR943XB", "RSH564XD", "RSH563XD", "RBC901XD", "BWR46XB", "RBC346XD", "ABC956XB", "ABC745ZY", "BWR425XE", "BWR264XB", "KWL993XB", "RSH803XD", "RSH804XD", "BWR942XB", "RBC496XD", "RBC528XD", "RSH40XD", "BWR472XB", "BWR941XB", "BWR590XB", "BWR237XB", "BWR238XB"]
+        //     )->select('vehno', 'id')
+        //     ->get();
+        // foreach ($account as  $value) {
+        //     $sql =   DB::table('vehicle_details_vms')
+        //         ->where('vehno', $value->vehno)
+        //         ->update([
+        //             'accountOfficer' => "Omega@teamenvio.com",
+        //         ]);
+        // }
     }
 
 
 
-    public function assignAccountOfficer2()
+    public function supportManager()
     {
-        // FRAnk
+        // Tamar
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
                 "vehno",
-                ["RBC867XD", "ABC669ZW", "ABC670ZW", "RSH940XC", "KWL581XB", "KWL52XB", "ABJ239XV", "KUJ798XC", "BWR609XB", "KWL376XB", "BWR657XE", "RBC225YD", "ABC671XF", "ABC738ZY", "BWR441XB", "BWR380XB", "BWR423XE", "BWR424XE", "BWR422XE", "KUJ287XC", "RSH551XD", "RBC688XC", "RBC690XC", "BWR702YL", "KWL779XB", "ABJ131XB", "ABJ537XB", "ABJ942XB", "RBC518XD", "ABC361XD", "RBC452YL", "RBC865XD", "BWR20XB", "RSH994XD", "RSH141XD", "RSH557XD", "RSH559XD", "RSH558XD", "BWR265XB", "KUJ454XC", "KUJ460XC", "RSH477XD", "BWR620XE", "RBC313YL", "RSH983XC", "RSH561XD", "KUJ115XC", "BWR655XE", "KWL422ZY", "RSH861XD", "ABC303ZY", "KUJ461XC", "BWR881XE", "RBC902XD", "KUJ224XC", "BWR703YL", "KWL831XB", "RBC101YL", "RBC448YL", "ABJ243XV", "ABC810XD", "ABJ835XV", "RBC870XD", "RBC871XD", "RSH234XD", "RBC868XD", "KUJ360XC", "RSH76XD", "BWR239XB", "RSH109XD", "RSH110XD", "BWR861YL", "RBC880YL", "KUJ219XC", "ABC783XD", "KWL995XB", "RBC565XD", "KUJ315XC", "KUJ464XC", "BWR704YL", "BWR856YL", "BWR857YL", "KWL373XB", "KUJ502XC", "GWA376YL", "BWR288XB", "RBC307XD", "ABC384XF"]
+                ["RBC757XD", "KWL450ZY", "KWL452ZY", "BWR46XB", "RBC346XD", "ABC745ZY", "BWR425XE", "BWR264XB", "KWL993XB", "RSH803XD", "RSH804XD", "BWR942XB", "RBC496XD", "BWR941XB", "BWR590XB", "BWR237XB", "BWR238XB", "ABC567ZW", "BWR294XB", "KWL121ZY", "ABC819XD", "RBC787YD", "GWA238YL", "ABC672XF", "RSH656XD", "ABC83ZW", "BWR373XB", "BWR474XB", "RBC983XD", "BWR442XB", "RBC533XD", "KWL834XB", "RBC91YD", "ABC365XD", "KWL785XB", "KUJ509XC", "BWR435YL", "ABC429ZY", "KUJ620XC", "RBC984XD", "ABC818XD", "ABC314XD", "ABC313XD", "BWR403YL", "BWR404YL", "ABJ967KE", "DKA598BQ", "DKA100TJ", "MKA234LY", "RSH492BV", "YAB112DM", "SMK975DS"]
             )->select('vehno', 'id')
             ->get();
 
@@ -1513,147 +1525,303 @@ class ScheduleController extends Controller
             $sql =   DB::table('vehicle_details_vms')
                 ->where('vehno', $value->vehno)
                 ->update([
-                    'accountOfficer' => "frank@teamenvio.com",
+                    'supportManager' => "tamar@teamenvio.com",
                 ]);
         }
-
-        // solomon
+        // kelly
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
-                'vehno',
-                [
-                    "KWL450ZY", "KWL452ZY", "BWR48XE", "BWR49XE", "KWL780XB", "ABJ838XV", "GWA583YL", "KUJ510XC", "BWR973XE", "KUJ781XC", "RSH172XD", "BWR168XB", "RBC312XC", "GWA229YL", "GWA787YL", "KUJ06XC", "KUJ09XC", "BWR440XB", "BWR821XE", "RSH805XD", "RSH156XD", "BWR427XE", "ABJ858XV", "RSH159XD", "RSH748XD", "RSH749XD", "KUJ830XC", "BWR408YL", "RBC252YD", "ABC739ZY", "RSH232XD", "ABC506ZY", "BWR705YL", "GWA19YL", "RBC706XD", "RBC92YL", "RBC93YL", "KUJ625XC", "KUJ320XC", "KWL384XB", "KUJ284XC", "RSH142XD", "RBC580XD", "KWL391XB", "RSH738XD", "BWR822XE", "KWL786XB", "BWR655XB", "BWR656XB", "BWR657XB", "BWR660XB", "BWR661XB", "BWR659XB", "ABJ854XV", "KUJ862XC", "RSH863XD", "KUJ286XC", "KUJ821XC", "KUJ820XC", "RBC566XD", "RBC567XD", "RBC568XD", "BWR731XE", "ABC310ZW", "BWR943XB", "RSH564XD", "RSH563XD", "RBC901XD", "BWR46XB", "RBC346XD", "ABC956XB", "ABC745ZY", "BWR425XE", "BWR264XB", "KWL993XB", "RSH803XD", "RSH804XD", "BWR942XB", "RBC496XD", "RBC528XD", "RSH40XD", "BWR472XB", "BWR941XB", "BWR590XB", "BWR237XB", "BWR238XB"
-                ]
+                "vehno",
+                ["RBC902XD", "KUJ224XC", "BWR703YL", "KWL831XB", "RBC101YL", "RBC448YL", "ABJ243XV", "ABC810XD", "ABJ835XV", "RBC870XD", "RBC871XD", "RSH234XD", "RBC868XD", "KUJ360XC", "RSH76XD", "BWR239XB", "RSH109XD", "RSH110XD", "BWR861YL", "RBC880YL", "KUJ219XC", "ABC783XD", "KWL995XB", "RBC565XD", "KUJ315XC", "KUJ464XC", "BWR704YL", "BWR856YL", "BWR857YL", "KWL373XB", "KUJ502XC", "GWA376YL", "BWR288XB", "RBC307XD", "ABC384XF", "BWR48XE", "BWR49XE", "KWL780XB", "GWA583YL", "KUJ510XC", "BWR973XE", "KUJ781XC", "RSH172XD", "BWR168XB", "GWA229YL", "GWA787YL", "LSD635HR", "EPE573GU", "KWL977TK", "YAB267CW", "ABC849DQ", "KUJ359CN", "RSH917GN"]
+
             )->select('vehno', 'id')
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('vehicle_details_vms')
-                ->where('id', $value->id)
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
                 ->update([
-                    'accountOfficer' => "solomonstevens8@gmail.com",
+                    'supportManager' => "kelly@teamenvio.com",
                 ]);
         }
-
-        // Joshua
+        // Jemila  
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
-                'vehno',
-                [
-                    "BWR818XE", "ABJ538XB", "BWR972XE", "ABJ855XV", "RBC411XD", "RBC412XD", "RBC383XF", "ABC418XF", "RSH439XD", "KUJ618XC", "KUJ619XC", "KUJ621XC", "KUJ622XC", "KWL388XB", "RBC85YL", "RBC498XD", "BWR544XE", "RSH991XD", "BWR829XE", "ABJ856XE", "RSH995XD", "RSH996XD", "RSH997XD", "RSH998XD", "ABC884ZY", "ABJ977XV", "KUJ503XC", "GWA211YL", "RBC570XD", "KWL382XB", "BWR232XB", "KUJ225XC", "RBC443XD", "RSH746XD", "ABC93ZW", "RBC309XD", "KUJ785XC", "BWR931XE", "RSH267XD", "RBC904YD", "KUJ508XC", "BWR406YL", "RSH934XC", "ABC354XD", "BWR649XE", "RSH613XC", "ABJ869XV", "RSH554XD", "RSH556XD", "ABC455XD", "ABJ57XB", "RBC728XD", "ABC356XD", "BWR370XB", "KUJ782XC", "RBC878YL", "RSH238XD", "RSH801XD", "KUJ10XC", "RSH479XD", "ABC460ZW", "ABC351XD", "RBC336YD", "RBC977YD", "RBC123XD", "BWR104XB", "KUJ223XC", "RSH481XD", "BWR147XB", "ABJ83XB", "ABJ84XB", "ABJ81XB", "ABJ82XB", "ABC746ZW", "ABC811XD", "BWR475XB", "RBC390YD", "MNA475ZY", "KWL379XB", "ABJ943XB", "BWR399XB", "ABJ133XB", "RBC981XD", "BWR616XE", "RBC495XD", "RBC499XD"
-                ]
+                "vehno",
+                ["KUJ06XC", "KUJ09XC", "BWR440XB", "BWR821XE", "RSH805XD", "RSH156XD", "BWR427XE", "RSH748XD", "RSH749XD", "KUJ830XC", "BWR408YL", "ABC739ZY", "RSH232XD", "ABC506ZY", "BWR705YL", "GWA19YL", "RBC706XD", "RBC92YL", "RBC93YL", "KUJ625XC", "KUJ320XC", "KWL384XB", "KUJ284XC", "RSH142XD", "KWL391XB", "RSH738XD", "BWR822XE", "KWL786XB", "BWR655XB", "BWR656XB", "BWR657XB", "BWR660XB", "BWR661XB", "BWR659XB", "KUJ862XC", "RSH863XD", "KUJ286XC", "RBC566XD", "RBC567XD", "RBC568XD", "BWR731XE", "ABC310ZW", "BWR943XB", "RSH564XD", "RSH563XD", "RBC901XD", "BWR122CQ", "RSH540HN", "BWR995JV", "GWA895CH", "GWA234BT", "KUJ370TY", "YAB279CF"]
             )->select('vehno', 'id')
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('vehicle_details_vms')
-                ->where('id', $value->id)
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
                 ->update([
-                    'accountOfficer' => "Joshua@teamenvio.com",
+                    'supportManager' => "jemila@teamenvio.com",
                 ]);
         }
-
-        // Kelly
+        // Joshua   
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
-                'vehno',
-                [
-                    "RBC879YL", "KUJ316XC", "KUJ317XC", "ABC901XD", "ABC902XD", "BWR149XB", "BWR436YL", "ABC307ZW", "ABC321ZW", "RBC532XD", "RBC707XD", "RBC709XD", "RBC711XD", "RBC712XD", "RBC710XD", "BWR262XB", "BWR263XB", "RBC872XD", "ABC820XD", "BWR651XE", "BWR99YL", "RSH810XD", "RBC121XD", "BWR279XB", "RBC759XD", "KWL835XB", "BWR402YL", "BWR135YL", "RBC802XE", "RBC218YL", "RBC176XE", "ABC720XF", "ABC721XF", "ABC722XF", "RBC173XE", "RBC527XE", "RBC174XE", "BWR405YL", "ABJ856XV", "ABJ132XB", "KWL116ZY", "KUJ288XC", "ABC849ZW", "ABC304ZY", "ABC305ZY", "BWR289XB", "BWR622XE", "ABC302ZY", "BWR860YL", "ABC417XF", "ABC384XF", "RBC535XD", "BWR144XB", "ABC364XD", "RBC246XC", "RSH653XC", "RBC497XD", "KUJ783XC", "RBC364YL", "BWR240XB", "BWR19XB", "KUJ218XC", "KUJ216XC", "KUJ217XC", "RSH947XD", "RSH948XD", "ABC458XD", "KWL661XB", "RBC368XD", "ABC181XF", "BWR139XE", "ABC67XF", "RBC897XC", "ABC61XD", "ABC665XF", "BWR971XE", "BWR701YL", "BWR699YL", "KWL781XB", "ABC357XD", "ABC359XD", "ABC360XD", "KUJ453XC", "KUJ455XC", "ABC453XD", "KUJ145XC"
-                ]
+                "vehno",
+                ["ABJ239XV", "KUJ798XC", "BWR609XB", "KWL376XB", "BWR657XE", "RBC225YD", "ABC671XF", "ABC738ZY", "BWR441XB", "BWR380XB", "BWR423XE", "BWR424XE", "BWR422XE", "KUJ287XC", "RBC710XD", "RBC688XC", "RBC690XC", "BWR702YL", "KWL779XB", "ABJ131XB", "ABJ537XB", "ABJ942XB", "RBC518XD", "ABC361XD", "RBC452YL", "RBC865XD", "BWR20XB", "RSH994XD", "RSH141XD", "RSH557XD", "RSH559XD", "RSH558XD", "BWR265XB", "KUJ454XC", "KUJ460XC", "RSH477XD", "BWR620XE", "RBC313YL", "RSH983XC", "RSH561XD", "KUJ115XC", "BWR655XE", "KWL422ZY", "RSH861XD", "ABC303ZY", "GWA287CQ", "GWA610BK", "RSH59CB", "ABC378CM", "ABJ72BH", "KPR566AG", "BWR132CG", "KUJ461XC"]
             )->select('vehno', 'id')
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('vehicle_details_vms')
-                ->where('id', $value->id)
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
                 ->update([
-                    'accountOfficer' => "Knwabundo@gmail.com",
+                    'supportManager' => "joshua@teamenvio.com",
                 ]);
         }
-
-        // Ayomide
+        // Kelechi    
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
-                'vehno',
-                ["ABC567ZW", "BWR974XE", "BWR294XB", "KUJ745XC", "ABC819XD", "RBC787YD", "ABJ237XV", "ABJ240XV", "GWA238YL", "ABC672XF", "RSH656XD", "ABC83ZW", "BWR373XB", "BWR474XB", "RBC983XD", "BWR442XB", "RBC533XD", "BWR473XB", "KWL834XB", "RBC561XD", "RBC562XD", "RBC91YD", "ABC365XD", "KWL785XB", "KUJ509XC", "BWR435YL", "ABC429ZY", "KUJ620XC", "RBC984XD", "ABC818XD", "ABC314XD", "ABC313XD", "BWR403YL", "BWR404YL", "BRW650XE", "BWR658XE", "BWR282XE", "ABJ134XB", "ABC536XD", "KUJ950XC", "RSH898XC", "RSH899XC", "RSH750XD", "KWL787XB", "BWR148XB", "RBC344YL", "RSH139XD", "RSH963XD", "KUJ120XC", "BWR501XE", "ABC72ZW", "BWR480XB", "RBC565YD", "ABC312XD", "ABJ492XV", "RBC217YL", "KWL833XB", "KUJ465XC", "KUJ552XC", "KUJ556XC", "BWR757XE", "KUJ550XC", "KUJ551XC", "RBC693YD", "ABJ857XV", "RBC614XD", "RBC12YL", "KUJ08XC", "ABC814XD", "ABC317XD", "RBC115XD", "KUJ285XC", "RBC704XD", "RBC705XD", "ABC315XD", "BWR776XB", "RBC96XD", "ABJ859XV", "RBC563XD", "ABC452XD", "BWR295XB", "BWR296XB", "KWL121ZY", "RBC445XD", "KWL601ZY", "RSH264XD"]
+                "vehno",
+                ["BWR262XB", "BWR263XB", "ABC820XD", "BWR651XE", "BWR99YL", "RSH810XD", "RBC759XD", "KWL835XB", "BWR402YL", "BWR135YL", "RBC802XE", "RBC218YL", "RBC176XE", "ABC720XF", "ABC721XF", "ABC722XF", "RBC173XE", "RBC527XE", "RBC174XE", "BWR405YL", "ABJ132XB", "KWL116ZY", "KUJ288XC", "ABC849ZW", "ABC304ZY", "ABC305ZY", "BWR289XB", "BWR622XE", "BWR860YL", "ABC417XF", "ABC384XF", "RBC535XD", "BWR144XB", "ABC364XD", "KUJ783XC", "RBC364YL", "BWR240XB", "BWR19XB", "KUJ218XC", "KUJ216XC", "KUJ217XC", "RSH947XD", "RSH948XD", "ABC458XD", "KWL661XB", "BEN360LY", "ABC803RF", "GGE322GP", "ABC710DJ", "RBC504EE", "ABJ181LE", "YAB206BG"]
             )->select('vehno', 'id')
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('vehicle_details_vms')
-                ->where('id', $value->id)
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
                 ->update([
-                    'accountOfficer' => "ayomideolaoluwa19@gmail.com",
+                    'supportManager' => "kelechi@teamenvio.com",
                 ]);
         }
-
-        // Jemila
+        // Nafees 
         $account = DB::table('vehicle_details_vms')
             ->whereIn(
-                'vehno',
-                ["BWR47XE", "ABC07ZY", "KUJ784XC", "KUJ319XC", "ABC802XD", "ABC803XD", "ABC804XD", "RBC758XD", "KWL386XB", "BWR261XB", "BWR945XB", "KUJ746XC", "KUJ749XC", "KUJ507XC", "KWL832XB", "BWR280XB", "ABC22XD", "ABC23XD", "BWR615XE", "KUJ221XC", "BWR668XB", "KWL660XB", "BWR143XB", "RSH562XD", "RSH480XD", "KUJ451XC", "KUJ452XC", "KUJ831XC", "RSH854XD", "RSH425XD", "BWR768YL", "RBC229YL", "RBC530XE", "RBC531XE", "BWR710YL", "ABC457XD", "KUJ915XC", "RSH992XD", "KWL892XB", "RBC451YL", "ABC454XD", "BWR816XE", "BWR817XE", "BWR819XE", "RSH989XD", "RSH862XD", "RSH654XD", "KWL385XB", "BWR858YL", "BWR859YL", "BWR696YL", "BWR697YL", "BWR698YL", "BWR767YL", "ABC79ZY", "KUJ780XC", "RBC703XD", "RSH807XD", "RSH806XD", "BWR145XB", "KUJ501XC", "KUJ990XC", "RBC305XD", "BWR48XB", "RSH397XC", "KWL783XB", "RBC369XD", "RBC370XD", "BWR150XB", "BWR18XB", "KUJ459XC", "KWL389XB", "KWL390XB", "ABJ988XB", "KUJ744XC", "KWL387XB", "KWL802XB", "RBC982XD", "ABC816XD", "RSH233XD", "ABJ332XV", "RSH235XD", "RSH236XD", "RBC529XD", "RSH552XD", "RBC530XD", "KUJ750XC", "RSH553XD"]
+                "vehno",
+                ["ABC181XF", "BWR139XE", "ABC67XF", "ABC61XD", "ABC665XF", "BWR971XE", "BWR701YL", "BWR699YL", "KWL781XB", "ABC357XD", "ABC359XD", "ABC360XD", "KUJ453XC", "KUJ455XC", "ABC453XD", "KUJ145XC", "BWR818XE", "ABJ538XB", "BWR972XE", "ABJ855XV", "RBC383XF", "ABC418XF", "RSH439XD", "KUJ618XC", "KUJ619XC", "KUJ621XC", "KUJ622XC", "KWL388XB", "RBC85YL", "RBC498XD", "BWR544XE", "BWR829XE", "RSH995XD", "RSH996XD", "RSH997XD", "RSH998XD", "ABC884ZY", "KUJ503XC", "GWA211YL", "RBC570XD", "KWL382XB", "BWR232XB", "KUJ225XC", "RBC443XD", "BWR931XE", "KUJ650CB", "ABJ47BD", "DKA53FQ", "YAB484BD", "ABC18FH", "GWA71EU", "YAB970DN"]
             )->select('vehno', 'id')
             ->get();
 
         foreach ($account as  $value) {
-            DB::table('vehicle_details_vms')
-                ->where('id', $value->id)
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
                 ->update([
-                    'accountOfficer' => "jemilatu25@gmail.com",
+                    'supportManager' => "nafees@teamenvio.com",
+                ]);
+        }
+        // Philip 
+        $account = DB::table('vehicle_details_vms')
+            ->whereIn(
+                "vehno",
+                ["RSH862XD", "RSH654XD", "KWL385XB", "BWR858YL", "BWR859YL", "BWR696YL", "BWR697YL", "BWR698YL", "BWR767YL", "ABC79ZY", "KUJ780XC", "RBC703XD", "RSH807XD", "RSH806XD", "BWR145XB", "KUJ501XC", "KUJ990XC", "RBC305XD", "BWR48XB", "RSH397XC", "KWL783XB", "RBC369XD", "RBC370XD", "BWR150XB", "BWR18XB", "KUJ459XC", "KWL389XB", "KWL390XB", "ABJ988XB", "KUJ744XC", "KWL387XB", "KWL802XB", "RBC982XD", "ABC816XD", "RSH233XD", "RSH235XD", "RSH236XD", "RBC529XD", "RSH552XD", "RBC530XD", "KUJ750XC", "RSH553XD", "RBC866XD", "RBC867XD", "KWL581XB", "KWL52XB", "YAB747AV", "GWA189CK", "RSH56BU", "GWA584EA", "GWA452HV", "YAB967CN", "ABJ941HC"]
+            )->select('vehno', 'id')
+            ->get();
+
+        foreach ($account as  $value) {
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
+                ->update([
+                    'supportManager' => "philip.ameh@teamenvio.com",
+                ]);
+        }
+        // John  
+        $account = DB::table('vehicle_details_vms')
+            ->whereIn(
+                "vehno",
+                ["GBZ105TL", "BEN194DU", "BEN196DU", "BEN195DU", "KRD556HS", "URM151AE", "YAB530CW", "RRU87NE", "EKP660AE", "AUC457NU", "BDG694GH", "BDG624HN", "KPR441SX", "MHA412LC"]
+            )->select('vehno', 'id')
+            ->get();
+
+        foreach ($account as  $value) {
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
+                ->update([
+                    'supportManager' => "john@teamenvio.com",
+                ]);
+        }
+        // tunde  
+        $account = DB::table('vehicle_details_vms')
+            ->whereIn(
+                "vehno",
+                ["MUS474HS", "MUS474HS", "MUS475HS", "MUS476HS", "MUS477HS", "MUS478HS", "MUS687HU", "FST401HV", "FKJ482HV", "MUS996HW", "MUS997HW", "BDG939GJ", "FST901GL", "AKD297GD", "SMK373GE", "KSF997HN", "NDN958TM", "MUS763HL", "SMK717HL", "FST403HS", "MUS352AX", "EKY68HV", "AGL400HT", "AKD531HS", "SMK177BZ", "BWR560BK"]
+            )->select('vehno', 'id')->get();
+
+        foreach ($account as  $value) {
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
+                ->update([
+                    'supportManager' => "tunde@teamenvio.com",
+                ]);
+        }
+        // Judith   
+        $account = DB::table('vehicle_details_vms')
+            ->whereIn(
+                "vehno",
+                ["BWR658XE", "BWR282XE", "ABJ134XB", "ABC536XD", "KUJ950XC", "RSH750XD", "KWL787XB", "BWR148XB", "RBC344YL", "RSH139XD", "KUJ120XC", "BWR501XE", "BWR480XB", "ABC312XD", "RBC217YL", "KWL833XB", "KUJ465XC", "KUJ552XC", "BWR757XE", "KUJ551XC", "RBC614XD", "RBC12YL", "KUJ08XC", "ABC814XD", "ABC317XD", "RBC115XD", "KUJ285XC", "ABC315XD", "BWR776XB", "RBC563XD", "ABC452XD", "BWR295XB", "BWR296XB", "KWL601ZY", "RSH264XD", "KUJ504XC", "RBC879YL", "KUJ316XC", "KUJ317XC", "BWR149XB", "ABC321ZW", "RBC532XD", "RBC707XD", "RBC709XD", "RBC711XD", "GWA235BT", "RSH752BG", "ABC144NE", "ABJ352JZ", "ABC603GX", "FKJ152HU", "ABC802RF"]
+            )->select('vehno', 'id')->get();
+
+        foreach ($account as  $value) {
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
+                ->update([
+                    'supportManager' => "jnmegwah@envio.com.ng",
+                ]);
+        }
+        // Seun    
+        $account = DB::table('vehicle_details_vms')
+            ->whereIn(
+                "vehno",
+                ["RSH267XD", "KUJ508XC", "BWR406YL", "ABC354XD", "BWR649XE", "RSH554XD", "ABC455XD", "ABJ57XB", "RBC728XD", "ABC356XD", "BWR370XB", "KUJ782XC", "RBC878YL", "RSH238XD", "RSH801XD", "KUJ10XC", "RSH479XD", "ABC351XD", "RBC336YD", "RBC977YD", "BWR104XB", "KUJ223XC", "RSH481XD", "BWR147XB", "ABJ83XB", "ABJ84XB", "ABJ81XB", "ABJ82XB", "ABC811XD", "BWR475XB", "MNA475ZY", "KWL379XB", "ABJ943XB", "BWR399XB", "ABJ133XB", "RBC981XD", "BWR616XE", "YAB707AV", "FST385GX", "ABJ138DP", "ABJ139DP", "YAB645NQ", "YAB648NQ", "KUJ452AZ", "RBC587TT", "RBC538DV", "RSH617AV", "YAB169AW", "KWL518BL", "RBC751BK", "RSH957TP", "RSH551XD", "KUJ745XC"]
+            )->select('vehno', 'id')->get();
+
+        foreach ($account as  $value) {
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
+                ->update([
+                    'supportManager' => "seun.akinola@teamenvio.com",
+                ]);
+        }
+        // Frank
+        $account = DB::table('vehicle_details_vms')
+            ->whereIn(
+                "vehno",
+                    ["ABC07ZY","KUJ784XC","KUJ319XC","ABC802XD","ABC803XD","ABC804XD","RBC758XD","KWL386XB","BWR261XB","BWR945XB","KUJ746XC","KUJ749XC","KUJ507XC","KWL832XB","BWR280XB","ABC22XD","ABC23XD","BWR615XE","KUJ221XC","BWR668XB","KWL660XB","BWR143XB","RSH562XD","RSH480XD","KUJ451XC","KUJ452XC","KUJ831XC","RSH854XD","RSH425XD","BWR768YL","RBC229YL","RBC530XE","RBC531XE","BWR710YL","ABC457XD","KUJ915XC","RSH992XD","KWL892XB","RBC451YL","ABC454XD","BWR816XE","BWR817XE","BWR819XE","RSH989XD","RSH862XD","GWA217RY","KUJ597BT","ABJ169EX","GWA143JF","DKA487TK","FST971GF","ABJ545CE","BWR881XE"]
+            )->select('vehno', 'id')->get();
+
+        foreach ($account as  $value) {
+            $sql =   DB::table('vehicle_details_vms')
+                ->where('vehno', $value->vehno)
+                ->update([
+                    'supportManager' => "frank@teamenvio.com",
                 ]);
         }
     }
-    
-    
-    public function sendDuePayment(){
-        $date = Carbon::now()->addDays(1)->format('Y-m-d H:i:s');
+
+    // public function sendsmss()
+    // {
+    //     $phone = "07030338024";
+    //     $msg = "Hello " . $name . " You have a pending invoice due on" . $date . "Make payments to avoid disconnection Team Motor Africa";
+    //     $msg =  str_replace(' ', '%20', $msg);
+    //     $url = "https://sms.mysmstab.com/api/?username=oga@envio.com.ng&password=@transport100%&message=" . $msg . "&sender=Envio&mobiles=" . $phone;
+    //     return $result = (new ApiController)->get($url);
+    // }
+
+    public function sendsms()
+    {
+        $date = Carbon::now()->addDays(0)->endOfDay()->format('Y-m-d H:i:s');
+        $date2 = Carbon::now()->subDays(0)->startOfDay()->format('Y-m-d H:i:s');
+
         $result = DB::table('duepayments')
-            ->where('duepayments.duetime', '>=', $date)->select('driveremail','vehno', 'drivername','duetime')
-            ->get();
-            // return $result;
-            foreach ($result as $item){
-               if(strpos($item->driveremail, '@')){
-                    $headers = explode('@', $item->driveremail);
-                    if($headers[1] == "gmail.com" || $headers[1] == "yahoo.com"){
-                        $sql = (new MailerController)->DuePayment($item->drivername, $item->driveremail, $item->duetime);
-                        DB::table('all_Email_Log')->insert([
-                            'vehno' => $item->vehno,
-                            'email' => $item->driveremail,
-                            'message' => "payment will be due on ". $item->duetime,
-                            'status' => $sql,
-                            'trail' => "1",
-                            'created_at' => now(),
-                        ]);
-                    }
-                 
+            ->whereBetween('duepayments.duetime', [$date2, $date])->get();
+        foreach ($result as $item) {
+            $date =  date('d-m-Y', strtotime($item->duetime));
+            $driveremail = str_replace(' ', '', $item->driveremail);
+            if (strpos($item->driveremail, '@')) {
+                $headers = explode('@', $driveremail);
+                if ($headers[1] == "breketetaxi.com") {
+                    // $date = $item->duetime;
+                    $msg = "Hello " . $item->drivername . " You have a pending invoice due on " . $date . " Make payments to avoid disconnection. Team Motor Africa";
+                    $msg =  str_replace(' ', '%20', $msg);
+                    $url = "https://sms.mysmstab.com/api/?username=oga@envio.com.ng&password=@transport100%&message=" . $msg . "&sender=Envio&mobiles=" . $item->driverphone;
+                    $result = (new ApiController)->get($url);
+                    DB::table('all_Email_Log')->insert([
+                        'vehno' => $item->vehno,
+                        'email' => $item->driveremail,
+                        'phone' => $item->driverphone,
+                        'type' => "Sms",
+                        'message' => "payment will be Overdue on " . $item->duetime,
+                        'status' => $result->status,
+                        'trail' => "1",
+                        'created_at' => now(),
+                    ]);
                 }
             }
-            // return $email;
-    }
-    public function sendOverDuePayment(){
+        }
+
         $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d H:i:s');
         $date2 = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
-        
         $result = DB::table('duepayments')
-        ->whereBetween('duepayments.duetime', [$date2, $date])->get();
-            foreach ($result as $item){
-               if(strpos($item->driveremail, '@')){
-                    $headers = explode('@', $item->driveremail);
-                    if($headers[1] == "gmail.com" || $headers[1] == "yahoo.com"){
-                        // $email[] = $item->driveremail;
-                        $sql = (new MailerController)->OverDuePayment($item->drivername, $item->driveremail);
-                        DB::table('all_Email_Log')->insert([
-                            'vehno' => $item->vehno,
-                            'email' => $item->driveremail,
-                            'message' => "payment will be Over due on ". $item->duetime,
-                            'status' => $sql,
-                            'trail' => "1",
-                            'created_at' => now(),
-                        ]);
-                    }
-                 
+            ->whereBetween('duepayments.duetime', [$date2, $date])->get();
+        foreach ($result as $item) {
+            $driveremail = str_replace(' ', '', $item->driveremail);
+            if (strpos($item->driveremail, '@')) {
+                $headers = explode('@', $driveremail);
+                if ($headers[1] == "breketetaxi.com") {
+                    // $email[] = $driveremail;
+                    // $date = $item->duetime;
+                    $date =  date('d-m-Y', strtotime($item->duetime));
+                    $msg = "Hello " . $item->drivername . " Your pending  invoice due on " . $date . " is overdue. Make payments to avoid contacting your guarantors. Team Motor Africa";
+                    $msg =  str_replace(' ', '%20', $msg);
+                    $url = "https://sms.mysmstab.com/api/?username=oga@envio.com.ng&password=@transport100%&message=" . $msg . "&sender=Envio&mobiles=" . $item->driverphone;
+                    $result = (new ApiController)->get($url);
+                    DB::table('all_Email_Log')->insert([
+                        'vehno' => $item->vehno,
+                        'email' => $item->driveremail,
+                        'phone' => $item->driverphone,
+                        'type' => "Sms",
+                        'message' => "payment will be Overdue on " . $item->duetime,
+                        'status' => $result->status,
+                        'trail' => "1",
+                        'created_at' => now(),
+                    ]);
                 }
             }
-            // return $email;
+        }
+        // return $email;
+    }
+
+
+    public function sendDuePayment()
+    {
+        $date = Carbon::now()->addDays(0)->endOfDay()->format('Y-m-d H:i:s');
+        $date2 = Carbon::now()->subDays(0)->startOfDay()->format('Y-m-d H:i:s');
+        $result = DB::table('duepayments')
+            ->whereBetween('duepayments.duetime', [$date2, $date])
+            ->select('driveremail', 'vehno', 'drivername', 'duetime', 'driverphone')
+            ->get();
+        foreach ($result as $item) {
+            if (strpos($item->driveremail, '@')) {
+                $headers = explode('@', $item->driveremail);
+                if ($headers[1] == "gmail.com" || $headers[1] == "yahoo.com") {
+
+                    $sql = (new MailerController)->DuePayment($item->drivername, $item->driveremail, $item->duetime);
+                    DB::table('all_Email_Log')->insert([
+                        'vehno' => $item->vehno,
+                        'email' => $item->driveremail,
+                        'phone' => $item->driverphone,
+                        'type' => "Email",
+                        'message' => "payment will be due on " . $item->duetime,
+                        'status' => $sql,
+                        'trail' => "1",
+                        'created_at' => now(),
+                    ]);
+                }
+            }
+        }
+        // return $email;
+        $this->sendsms();
+    }
+
+
+    public function sendOverDuePayment()
+    {
+        $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d H:i:s');
+        $date2 = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
+
+        $result = DB::table('duepayments')
+            ->whereBetween('duepayments.duetime', [$date2, $date])->get();
+        foreach ($result as $item) {
+            if (strpos($item->driveremail, '@')) {
+                $headers = explode('@', $item->driveremail);
+                if ($headers[1] == "gmail.com" || $headers[1] == "yahoo.com") {
+                    $email[] = $item->driveremail;
+                    $sql = (new MailerController)->OverDuePayment($item->drivername, $item->driveremail);
+                    DB::table('all_Email_Log')->insert([
+                        'vehno' => $item->vehno,
+                        'email' => $item->driveremail,
+                        'message' => "payment will be Over due on " . $item->duetime,
+                        'status' => $sql,
+                        'trail' => "1",
+                        'created_at' => now(),
+                    ]);
+                }
+            }
+        }
+        return $email;
     }
 }

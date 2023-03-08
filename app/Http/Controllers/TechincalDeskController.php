@@ -16,39 +16,39 @@ class TechincalDeskController extends Controller
     }
     public function taskLogs()
     {
-        $sql2 = DB::connection('mysql_2');
-        $now = Carbon::parse(now())->format("Y-m-d");
-        $from =  Carbon::now()->subDays(14)->format("Y-m-d");
+        if(Auth()->user()->user_type == 'SUPER'){
+                $newInstallation = DB::table('car_fleet')
+                ->where('car_fleet.status','Pending')
+                ->orWhereNull('car_fleet.status')
+                ->join("users","car_fleet.userId","users.id")
+                ->select('car_fleet.*','users.phone','users.email')
+                ->get();
 
-        $newInstallation = DB::table("users")
-            ->whereBetween('created_at', [$from, now()])->get();
+                if (count($newInstallation) > 1) {
+                    foreach ($newInstallation as  $value) {
+                        if ($value->taskId == "") {
+                            $str = substr($value->phone, -4) . "-" . substr($value->email, 1, 4). "-". Rand(000,999);
+                            DB::table("car_fleet")
+                                ->where('id', $value->id)->update([
+                                    'status' =>  "Pending",
+                                    'taskId' =>  $str,
+                                    'taskStatus' => 0,
+                                ]);                    
 
-        if (count($newInstallation) > 1) {
-            foreach ($newInstallation as  $value) {
-                if ($value->taskId == "") {
-                    $str = substr($value->phone, -4) . "-" . substr($value->email, 1, 4);
-                    DB::table("users")
-                        ->where('id', $value->id)->update([
-                            'taskId' =>  $str,
-                            'taskStatus' => 0,
-                        ]);
-                    $newInstallation = DB::table("users")
-                        ->whereBetween('users.created_at', [$from, now()])
-                        ->where('category', "Investor")
-                        // ->where('taskStatus', '!=', 'processing')
-                        ->orderBy('users.created_at', 'desc')
-                        // ->join('car_fleet', 'users.id', 'car_fleet.userId')
-                        ->get();
+                        }
+                    }
                 }
-            }
-        }
-
-        $processing =  DB::table("users")
-            ->whereBetween('users.created_at', [$from, now()])
-            ->where(['category' => "Investor", 'taskStatus' => 'processing'])
-            ->orderBy('users.created_at', 'desc')
+                
+        }else{
+             $newInstallation = DB::table('car_fleet')
+            ->where(['car_fleet.status' => 'Processing', 'car_fleet.installer' => Auth()->user()->id])
+            ->join("users","car_fleet.userId","users.id")
+            ->select('car_fleet.*','users.phone','users.email')
             ->get();
-
+        }
+            $processing = DB::table('car_fleet')->where('car_fleet.status','Processing')
+                ->join("users","car_fleet.userId","users.id")
+                    ->get();
         // dd($newInstallation);
 
         return view('task-logs', ['newInstallation' => $newInstallation, 'processing' => $processing]);
@@ -60,36 +60,37 @@ class TechincalDeskController extends Controller
     public function newEntry($id)
     {
 
-        $newInstallation = DB::table("users")
-            ->where('users.id', $id)
-            ->join('car_fleet', 'users.id', 'car_fleet.userId')
+        $newInstallation = DB::table("car_fleet")
+            ->where('car_fleet.id', $id)
+            ->join('users','car_fleet.userId','users.id')
+            ->select('car_fleet.*','users.phone','users.email')
             ->first();
-
         $installer = DB::table('zeususers')
             ->where('user_type', "Workshop Administrator")
             ->get();
-
-        // dd($installer);
-
+        // dd($newInstallation);
         return view('task-new-entry', ['data' => $newInstallation, 'installer' => $installer]);
     }
     public function taskCreate(Request $request)
     {
-        // dd($request->all());
-        $sql2 = DB::connection('mysql_2');
-        $newInstallation = DB::table("users")
-            ->where(['taskId' =>  $request->id, 'category' => "Investor"])
+ 
+      
+        $newInstallation = DB::table("car_fleet")
+            ->where('taskId',  $request->id)
             ->update([
+                'status' => "Processing",
                 'taskStatus' => $request->status,
                 'installer' => $request->installer,
                 'installationAddress' => $request->address,
                 'installationDate' => $request->date,
+                'updated_at' => now(),
             ]);
+            
         // dd($newInstallation);
 
         if ($newInstallation) {
             Alert::toast('Successful', 'success');
-            return back()->with('success', "Successful");
+             return redirect()->route('task-logs')->with('success', 'Successful');
         } else {
             Alert::toast('Couldnt assign task', 'failed');
             return back()->with('Emessaage', "Couldnt assign task");

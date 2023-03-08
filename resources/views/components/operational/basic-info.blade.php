@@ -149,13 +149,13 @@
                     <div class="operation-item-100 mb-1">
                         <span style="font-size: 10px">WALLET BALANCE</span>
                         <span style="font-size: 18px; font-weight:bold;">
-                            {{ number_format($data['mangament']->acctBal ?? 0) }} </span>
+                            {{ number_format($data['userDetails']->acctBal ?? 0) }} </span>
                         {{-- <span style="font-size: 10px;">TOTAL SPEND:$78,0000</span> --}}
                     </div>
                 </div>
 
                 <span class="status-100 mb-4 mt-4 ml-2">INTEGRATION SUMMARY</span>
-                <div class="baseInfo" style="padding-bottom: 10px;">
+                <div class="baseInfo" style="padding-bottom: 4px;">
                     <div class="row mb-2 mt-2">
                         <div class="col-6">
                             <span class="ll-text">PAYMENT START DATE:</span>
@@ -223,6 +223,32 @@
                             <span class="lr-text">{{ $data['carFleet']->hirePurchaseValue ?? '-' }}</span>
                         </div>
                     </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <span class="ll-text">Account Name:</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="lr-text">{{ $data['userDetails']->accountName ?? '-' }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <span class="ll-text">Account Number:</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="lr-text">{{ $data['userDetails']->accountNumber ?? '-' }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <span class="ll-text">Bank Name:</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="lr-text">{{ $data['userDetails']->bankName ?? '-' }}</span>
+                        </div>
+                    </div>
+                    
                     {{-- <div id="donutchart-4" style=" height: 150px; padding-bottom:5px; font-size: 20px;">
                     </div> --}}
                 </div>

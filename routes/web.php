@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountOfficer;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ControlPanelController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\WorkshopController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TechincalDeskController;
+use App\Http\Controllers\OnePipeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Spatie\FlareClient\View;
@@ -29,6 +31,29 @@ use Spatie\FlareClient\View;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomepageController::class, 'index'])->name('home');
+Route::get('/test', [App\Http\Controllers\ScheduleController::class, 'all']);
+Route::get('/check/{no}', [App\Http\Controllers\ScheduleController::class, 'check']);
+Route::get('/userManagement', [App\Http\Controllers\ScheduleController::class, 'userManagement']);
+
+Route::get('/allvehicle', [App\Http\Controllers\ScheduleController::class, 'allVehicleTask']);
+
+
+Route::get('/officers', function () {
+    return view('officers');
+});
+Route::get('/finance-report', function () {
+    return view('finance-report');
+});
+Route::get('/fleet', function () {
+    return view('fleet');
+});
+
+
+
 
 Route::get('/assign-password/{id}', [PasswordController::class, 'index']);
 Route::post('/change_passwordz', [PasswordController::class, 'changePasswordz'])->name('changePasswordz');
@@ -48,7 +73,10 @@ Route::Post('/categoryName', [SettingsController::class, 'categoryName'])->name(
 Route::group(['middleware' => ['auth']], function () {
     Route::get("/", [HomepageController::class, 'index']);
     Route::get('/users', [HomepageController::class, 'users']);
-    Route::get('/user/{phone}', [HomepageController::class, 'user'])->name("user");
+    Route::get('/user/{phone}', [HomepageController::class, 'user'])->name("userz");
+    Route::get('/collect-money/{id}', [OnePipeController::class, 'collectMoney'])->name("collect-money");
+    Route::get('/pay-owner/{id}', [OnePipeController::class, 'payOwner'])->name("user");
+    Route::get('/user/update-vms/{id}', [OnePipeController::class, 'updateVms'])->name("user");
 
     Route::post('/user', [HomepageController::class, 'editUserAccount'])->name("editUserAccount");
     Route::get('track-web', [TrackWebController::class, 'index']);
@@ -82,7 +110,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('maintenance-edit', [ControlPanelController::class, 'maintenanceEdit']);
     Route::get('delete-maintenance/{id}', [ControlPanelController::class, 'deleteMaintence']);
 
-    Route::get('vehicle-management', [VehicleMgtController::class, 'index']);
+    Route::get('vehicle-management', [VehicleMgtController::class, 'index'])->name("vehicleManagement");
     Route::get('getFleet', [VehicleMgtController::class, 'getFleet'])->name('getFleet');
     Route::post('add-vehicles', [VehicleMgtController::class, 'addVehicle2'])->name("add-vehicle");
 
@@ -137,7 +165,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::get('technical-desk', [TechincalDeskController::class, 'technicalDesk']);
-    Route::get('task-logs', [TechincalDeskController::class, 'taskLogs']);
+    Route::get('task-logs', [TechincalDeskController::class, 'taskLogs'])->name('task-logs');
     Route::get('task-new-entry/{id}', [TechincalDeskController::class, 'newEntry'])->name('task-new-entry');
     Route::get('technical-desk-offline-cars', [TechincalDeskController::class, 'techincalDeskOffline']);
     Route::post('create-task', [TechincalDeskController::class, 'taskCreate'])->name('taskCreate');
@@ -214,36 +242,18 @@ Route::group(['prefix' => 'driver'], function () {
 
 
 
-
-
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomepageController::class, 'index'])->name('home');
-Route::get('/test', [App\Http\Controllers\ScheduleController::class, 'all']);
-Route::get('/check/{no}', [App\Http\Controllers\ScheduleController::class, 'check']);
-Route::get('/userManagement', [App\Http\Controllers\ScheduleController::class, 'userManagement']);
-
-Route::get('/allvehicle', [App\Http\Controllers\ScheduleController::class, 'allVehicleTask']);
-
-
-
-Route::get('/account-officer', function () {
-    return view('account-officer');
-});
-Route::get('/host', function () {
-    return view('host');
-});
-Route::get('/officers', function () {
-    return view('officers');
-});
-Route::get('/finance-report', function () {
-    return view('finance-report');
-});
-Route::get('/fleet', function () {
-    return view('fleet');
-});
-
-
-
 Route::view('map', 'map');
+
+//Account Officer 
+// Route::group(['prefix' => 'account-Officer/'], function () {
+
+Route::get('account-officer', function () {
+    return view('account-officer/account-officer');
+});
+Route::get('/account-officer/host', function () {
+    return view('account-officer/host');
+});
+Route::get('account-officer/fleet', [AccountOfficer::class, 'fleet']);
+Route::post('account-officer/update-fleet', [AccountOfficer::class, 'updateFleet'])->name('updateFleet');
+Route::post('account-officer/update-manager', [AccountOfficer::class, 'updateMangers'])->name('updateSupportManager');
+// });

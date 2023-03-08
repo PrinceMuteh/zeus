@@ -26,381 +26,273 @@ class ReportModuleController extends Controller
     {
         $weekstart = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
         $weekend =  Carbon::now()->endOfWeek(Carbon::SATURDAY)->format('Y-m-d');
-
+        $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        $date = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
+        $projectIncome = DB::table('duepayments')->whereBetween('duetime', [$weekstart, $weekend])->get();
+        $depot = DB::table('duepayments')->where('duetime', '<=', $date)->get();
+        $paidUsers = DB::table('vms_payments')->whereBetween('createtime', [$weekstart, $weekend])->get();
         if (Auth()->user()->user_type == 'SUPER') {
             $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
-                // ->whereBetween( 'createtime', [ $weekstart, $weekend ] )
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('count');
             $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
-                // ->whereBetween( 'createtime', [ $weekstart, $weekend ] )
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
-            // dd($paidUserChart);
-            $paidUsers = DB::table('vms_payments')
-                ->whereBetween('createtime', [$weekstart, $weekend])
-                ->sum('needpayment');
-
-            // $paidUsers = DB::table( 'tella_payment' )->sum( 'amount' );
-            $weekstart = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
-            $weekend =  Carbon::now()->endOfWeek(Carbon::SATURDAY)->format('Y-m-d');
-            // dd($weekstart);
-
-            $projectIncome = DB::table('duepayments')->whereBetween('duetime', [$weekstart, $weekend])->sum('needpayment');
-            // $projectIncome = DB::table('duepayments')->whereBetween('duetime', [$weekstart, $weekend])->get();
-
-            // dd($projectIncome);
-
-
-            $date = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
-            $depot = DB::table('duepayments')->where('duetime', '<=', $date)->sum('needpayment');
-
-            $unpaid  = $projectIncome - $paidUsers;
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
-            }
-            $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
-                ->whereIn('vehno', $fleet)
-                // ->whereBetween( 'createtime', [ $weekstart, $weekend ] )
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
-            $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
-                ->whereIn('vehno', $fleet)
-                // ->whereBetween( 'createtime', [ $weekstart, $weekend ] )
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
-            $paidUsers = DB::table('vms_payments')
-                ->whereIn('vehno', $fleet)
-                ->whereBetween('createtime', [$weekstart, $weekend])
-                ->sum('needpayment');
-            $projectIncome = DB::table('duepayments')
-                ->whereIn('vehno', $fleet)
-                ->whereBetween('duetime', [$weekstart, $weekend])->sum('needpayment');
-
-            $date = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
-            $depot = DB::table('duepayments')
-                ->whereIn('vehno', $fleet)
-                ->where('duetime', '<=', $date)->sum('needpayment');
-
-            $unpaid  = $projectIncome - $paidUsers;
+            $paidUsers = $paidUsers->sum('needpayment');
+            $projectIncome = $projectIncome->sum('needpayment');
+            $depot = $depot->sum('needpayment');
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
+                    ->whereYear('createtime', date('Y'))
+                    ->whereIn('fleet', $fleet)
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('count');
+                $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
+                    ->whereYear('createtime', date('Y'))
+                    ->whereIn('fleet', $fleet)
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('month');
+                $paidUsers = $paidUsers->whereIn('fleet', $fleet)->sum('needpayment');
+                $projectIncome = $projectIncome->whereIn('fleet', $fleet)->sum('needpayment');
+                $depot = $depot->whereIn('fleet', $fleet)->sum('needpayment');
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
+                    ->whereYear('createtime', date('Y'))
+                    ->whereIn('vms_payments.vehno', $vehnox)
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('count');
+                $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
+                    ->whereYear('createtime', date('Y'))
+                    ->whereIn('vms_payments.vehno', $vehnox)
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('month');
+                $paidUsers = $paidUsers->whereIn('vehno', $vehnox)->sum('needpayment');
+                // dd($paidUsers);
+                
+                $projectIncome = $projectIncome->whereIn('vehno', $vehnox)->sum('needpayment');
+                $depot = $depot->whereIn('vehno', $vehnox)->sum('needpayment');
             }
-            $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
-                ->whereIn('fleet', $fleet)
-                // ->whereBetween( 'createtime', [ $weekstart, $weekend ] )
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
-            $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
-                ->whereIn('fleet', $fleet)
-                // ->whereBetween( 'createtime', [ $weekstart, $weekend ] )
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
-            $paidUsers = DB::table('vms_payments')
-                ->whereIn('fleet', $fleet)
-                ->whereBetween('createtime', [$weekstart, $weekend])
-                ->sum('needpayment');
-            $projectIncome = DB::table('duepayments')
-                ->whereIn('bodytypename', $fleet)
-                ->whereBetween('duetime', [$weekstart, $weekend])->sum('needpayment');
-
-            $date = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
-            $depot = DB::table('duepayments')
-                ->whereIn('bodytypename', $fleet)
-                ->where('duetime', '<=', $date)->sum('needpayment');
-
-            $unpaid  = $projectIncome - $paidUsers;
+        }
+        $unpaid  = $projectIncome - $paidUsers;
+        foreach ($months as $index => $month) {
+            $paidUserChart[$month] = $users[$index];
         }
         Array_shift($paidUserChart);
-        // dd($projectIncome);
-
         return view('report-module', ['paidUserChart' => $paidUserChart ?? 0, 'paid' => $paidUsers ?? 0, 'unpaid' => $unpaid ?? 0, 'income' => $projectIncome ?? 0, 'depot' => $depot ?? 0]);
     }
-
     public function allPayments()
     {
-        $weekstart = Carbon::now()->startOfWeek()->format('Y-m-d H:i:s');
-        $date = Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
-        if (Auth()->user()->user_type == 'SUPER') {
-
-            $result = DB::table('vms_payments')
-                // ->whereBetween( 'vms_payments.createtime', [ $weekstart, $weekend ] )
-                ->whereBetween('vms_payments.createtime', [$weekstart, $date])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
-
-            $totalAmount = $result->sum('needpayment');
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
+        $weekstart = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+        $weekend =  Carbon::now()->endOfWeek(Carbon::SATURDAY)->format('Y-m-d');
+        $result = DB::table('vms_payments')
+            ->whereBetween('vms_payments.createtime', [$weekstart, $weekend])
+            ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+            ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+            ->orderBy('created_at', 'DESC');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('vms_payments.fleet', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('vms_payments.vehno', $vehnox)->get();
             }
-            $result = DB::table('vms_payments')
-                ->whereIn('vms_payments.vehno', $fleet)
-                ->whereBetween('vms_payments.createtime', [$weekstart, $date])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
-            $totalAmount = $result->sum('needpayment');
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            $result = DB::table('vms_payments')
-                ->whereIn('fleet', $fleet)
-                ->whereBetween('vms_payments.createtime', [$weekstart, $date])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
-            $totalAmount = $result->sum('needpayment');
+            $result =  $result->get();
         }
-        // dd( $totalAmount );
+        // dd($result);
+        
+        $totalAmount = $result->sum('needpayment');
         return view('all-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
     }
 
     public function allPaymentFilter(Request $request)
     {
-
-        if (Auth()->user()->user_type == 'SUPER') {
-
-            $result = DB::table('vms_payments')
-                ->whereBetween('vms_payments.createtime', [$request->startDate, $request->endDate])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
-        } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
+        $result = DB::table('vms_payments')
+            ->whereBetween('vms_payments.createtime', [$request->startDate, $request->endDate])
+            ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+            ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+            ->orderBy('created_At', 'DESC');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('vms_payments.fleet', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('vms_payments.vehno', $vehnox)->get();
             }
-
-
-            $result = DB::table('vms_payments')
-                ->whereIn('fleet', $fleet)
-                ->whereBetween('vms_payments.createtime', [$request->startDate, $request->endDate])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
+        } else {
+            $result =  $result->get();
         }
         $totalAmount = $result->sum('needpayment');
-
-        return view('all-payments', ['totalAmount' => $totalAmount, 'data' => $result]);
+        return view('all-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
     }
 
     public function allPaymentFilter2($date)
     {
         $endDate = Carbon::now()->subDays($date)->format('Y-m-d');
         $startDate =  Carbon::now()->format('Y-m-d');
-
-        if (Auth()->user()->user_type == 'SUPER') {
-
-            $result = DB::table('vms_payments')
-                ->whereBetween('vms_payments.createtime', [$endDate, $startDate])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
-        } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
+        $result = DB::table('vms_payments')
+            ->whereBetween('vms_payments.createtime', [$endDate, $startDate])
+            ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
+            ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
+            ->orderBy('created_At', 'DESC');
+        // ->get();
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('vms_payments.fleet', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('vms_payments.vehno', $vehnox)->get();
             }
-
-            $result = DB::table('vms_payments')
-                ->whereIn('fleet', $fleet)
-                ->whereBetween('vms_payments.createtime', [$endDate, $startDate])
-                ->leftjoin('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vms_payments.vehno')
-                ->select('vms_payments.*',  'vehicle_details_vms.drivername', 'vehicle_details_vms.driverphone', 'vehicle_details_vms.driveremail')
-                ->orderBy('created_At', 'DESC')
-                ->get();
+        } else {
+            $result =  $result->get();
         }
         $totalAmount = $result->sum('needpayment');
-
-        // dd( $totalAmount );
-
-        return view('all-payments', ['totalAmount' => $totalAmount, 'data' => $result]);
+        return view('all-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
     }
 
     public function duePayments()
     {
-        $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d H:i:s');
-
-        if (Auth()->user()->user_type == 'SUPER') {
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->where('duepayments.duetime', '>', $date)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
+        $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d');
+        $result = DB::table('duepayments')
+            ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
+            ->where('duepayments.duetime', '>', $date)
+            ->select('duepayments.*', 'vehicle_status.time');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('duepayments.bodytypename', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('duepayments.vehno', $vehnox)->get();
+                // dd($result);
             }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('duepayments.vehno', $fleet)
-                ->where('duepayments.duetime', '>', $date)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('bodytypename', $fleet)
-                ->where('duepayments.duetime', '>', $date)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
+            $result =  $result->get();
         }
         $totalAmount = $result->sum('needpayment');
-
         return view('due-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result  ?? 0]);
     }
 
     public function overduePayments()
     {
-        // $date = Carbon::yesterday()->startOfDay()->format( 'Y-m-d H:i:s' );
-        $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d H:i:s');
-        $date2 = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d H:i:s');
-
-        if (Auth()->user()->user_type == 'SUPER') {
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereBetween('duepayments.duetime', [$date2, $date])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
+        $date = Carbon::now()->subDays(1)->endOfDay()->format('Y-m-d');
+        $date2 = Carbon::now()->subDays(2)->startOfDay()->format('Y-m-d');
+        $result = DB::table('duepayments')
+            ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
+            ->whereBetween('duepayments.duetime', [$date2, $date])
+            ->select('duepayments.*', 'vehicle_status.time');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('duepayments.bodytypename', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('duepayments.vehno', $vehnox)->get();
             }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('duepayments.vehno', $fleet)
-                ->whereBetween('duepayments.duetime', [$date2, $date])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('bodytypename', $fleet)
-                ->whereBetween('duepayments.duetime', [$date2, $date])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
+            $result =  $result->get();
         }
         $totalAmount = $result->sum('needpayment');
-        return view('overdue-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
+        return view('due-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result  ?? 0]);
     }
 
     public function criticalPayments()
     {
-        $date = Carbon::now()->subDays(3)->startOfDay()->format('Y-m-d H:i:s');
-        $date2 = Carbon::now()->subDays(5)->endOfDay()->format('Y-m-d H:i:s');
-        if (Auth()->user()->user_type == 'SUPER') {
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereBetween('duepayments.duetime', [$date2, $date])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
+        $date = Carbon::now()->subDays(3)->startOfDay()->format('Y-m-d');
+        $date2 = Carbon::now()->subDays(5)->endOfDay()->format('Y-m-d');
+        $result = DB::table('duepayments')
+            ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
+            ->whereBetween('duepayments.duetime', [$date2, $date])
+            ->select('duepayments.*', 'vehicle_status.time');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('duepayments.bodytypename', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('duepayments.vehno', $vehnox)->get();
             }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('duepayments.vehno', $fleet)
-                ->whereBetween('duepayments.duetime', [$date2, $date])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('bodytypename', $fleet)
-                ->whereBetween('duepayments.duetime', [$date2, $date])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
+            $result =  $result->get();
         }
         $totalAmount = $result->sum('needpayment');
+
         return view('critical-payments', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
     }
 
     public function codeRed()
     {
-        $date = Carbon::now()->subDays(5)->endOfDay()->format('Y-m-d H:i:s');
-        if (Auth()->user()->user_type == 'SUPER') {
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->where('duepayments.duetime', '<', $date)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
+        $date = Carbon::now()->subDays(5)->endOfDay()->format('Y-m-d');
+        $result = DB::table('duepayments')
+            ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
+            ->where('duepayments.duetime', '<', $date)
+            ->select('duepayments.*', 'vehicle_status.time');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('duepayments.bodytypename', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('duepayments.vehno', $vehnox)->get();
             }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('duepayments.vehno', $fleet)
-                ->where('duetime', '<', $date)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('bodytypename', $fleet)
-                ->where('duetime', '<', $date)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
+            $result =  $result->get();
         }
         $totalAmount = $result->sum('needpayment');
         return view('code-red', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
@@ -410,40 +302,34 @@ class ReportModuleController extends Controller
     {
         $startDate = Carbon::parse($request->startDate, 'UTC')->format('Y-m-d');
         $endDate = Carbon::parse($request->endDate, 'UTC')->format('Y-m-d');
-
-        if (Auth()->user()->user_type == 'SUPER') {
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereBetween('duetime', [$startDate, $endDate])
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->get();
-        } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
+        $result = DB::table('duepayments')
+            ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
+            ->whereBetween('duetime', [$startDate, $endDate])
+            ->select('duepayments.*', 'vehicle_status.time');
+        if (Auth()->user()->user_type != 'SUPER') {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $result =  $result->whereIn('duepayments.bodytypename', $fleet)->get();
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $vehnox[] = $value->vehno;
+                }
+                $result =  $result->whereIn('duepayments.vehno', $vehnox)->get();
             }
-
-            $result = DB::table('duepayments')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'duepayments.vehno')
-                ->whereIn('bodytypename', $fleet)
-                ->select('duepayments.*', 'vehicle_status.time')
-                ->whereBetween('duetime', [$startDate, $endDate])->get();
+        } else {
+            $result =  $result->get();
         }
-        // $date = Carbon::now()->subDays( 2 )->endOfDay()->format( 'Y-m-d H:i:s' );
-        // $date2 = Carbon::now()->subDays( 5 )->startOfDay()->format( 'Y-m-d H:i:s' );
-
-        // dd( $result );
-
         $totalAmount = $result->sum('needpayment');
-
-        return view('code-red', ['totalAmount' => $totalAmount, 'data' => $result]);
+        return view('code-red', ['totalAmount' => $totalAmount ?? 0, 'data' => $result ?? 0]);
     }
 
     public function codeRedFilter2($date)
     {
-        // return $date;
         $date2 = Carbon::now()->subDays($date)->endOfDay()->format('Y-m-d H:i:s');
-        // $result = DB::table( 'duepayments' )->where( 'duetime', '<', $date )->get();
         $date = Carbon::now()->subDays(5)->startOfDay()->format('Y-m-d H:i:s');
         $result = DB::table('duepayments')->whereBetween('duetime', [$date2, $date])->get();
         $totalAmount = $result->sum('needpayment');
@@ -488,31 +374,25 @@ class ReportModuleController extends Controller
         $date = Carbon::today()->format('Y-m-d');
         $weekstart = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
         $weekend =  Carbon::now()->startOfWeek(Carbon::SATURDAY)->format('Y-m-d');
-        // // aLlpayment
         $result =  (new ApiController)->post('https://tella.envio.africa/api/all-payment-date', array(
-            'startDate' => Carbon::now()->subDays(7)->startOfDay()->format('Y-m-d H:i:s'),
-            'endDate' => Carbon::today()->format('Y-m-d H:i:s'),
+            'startDate' => Carbon::now()->subDays(7)->startOfDay()->format('Y-m-d'),
+            'endDate' => Carbon::today()->format('Y-m-d'),
         ));
         $paidUsers = 0;
         foreach ($result as $item) {
             $paidUsers += $item->amount;
         }
-        // return $paidUsers;
         $depotx = (new VMSAPI)->getVehicleOverDue(Carbon::yesterday()->startOfDay()->format('Y-m-d'), 1000);
         $depot = 0;
         $overdueOneWeek = Carbon::now()->subDays(9)->startOfDay()->format('Y-m-d');
         foreach ($depotx->Data as $value) {
             if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
                 if ($value->duetime >= $overdueOneWeek) {
-                    // from sunday till today
                     $depot += $value->needpayment;
                     $arr[] = $value->duetime;
                 }
             }
         }
-        // return $arr;
-        // get due payment
-
         $unpaid = $this->DuePayment();
         $unpaidAmount = $unpaid['totalAmount'];
         return array(
@@ -523,12 +403,15 @@ class ReportModuleController extends Controller
         );
     }
 
+
+
+
+
     public function reportModuleFilter(Request $request)
     {
-        // dd( $request->all() );
-
         $startDate = Carbon::parse($request->startDate, 'UTC')->format('Y-m-d');
         $endDate = Carbon::parse($request->endDate, 'UTC')->format('Y-m-d');
+        $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         if (Auth()->user()->user_type == 'SUPER') {
             $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
@@ -541,10 +424,6 @@ class ReportModuleController extends Controller
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
             $result = DB::table('vms_payments')
                 ->whereBetween('createtime', [$startDate, $endDate])
                 ->get();
@@ -559,18 +438,18 @@ class ReportModuleController extends Controller
                     }
                 }
             }
-            $unpaid = $this->DuePayment();
-            $unpaidAmount = $depot;
-            $income  = $paidUsers + $unpaidAmount;
-            $depot =  $depot + $unpaidAmount;
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $fleet[] = $value->vehno;
+                }
             }
-
-            // dd($fleet);
-
             $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
                 ->whereBetween('createtime', [$startDate, $endDate])
                 ->whereIn('fleet', $fleet)
@@ -583,107 +462,72 @@ class ReportModuleController extends Controller
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
             $result = DB::table('vms_payments')
                 ->whereIn('fleet', $fleet)
                 ->whereBetween('createtime', [$startDate, $endDate])
                 ->get();
             $paidUsers = $result->sum('needpayment');
-
-
             $depotx = (new VMSAPI)->getVehicleOverDue($endDate, 300);
             $depot = 0;
-
-            // dd($depotx);
-
             foreach ($depotx->Data as $value) {
                 if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
                     if ($value->Vehicle->bodytypename == $fleet) {
                         if ($value->duetime >= $startDate) {
                             if ($value->duetime <= $endDate) {
-                                // $arr[] = $value->duetime ;
                                 $depot += $value->needpayment;
                             }
                         }
                     }
                 }
             }
-            // dd($arr);
-
-            $unpaid = $this->DuePayment();
-            // $unpaid = 0;
-            $unpaidAmount = $depot;
-            $income  = $paidUsers + $unpaidAmount;
-            $depot =  $depot + $unpaidAmount;
         }
-        
-                $paidUserChart = array_reverse($paidUserChart);
+
+        $unpaid = $this->DuePayment();
+        $unpaidAmount = $depot;
+        $income  = $paidUsers + $unpaidAmount;
+        $depot =  $depot + $unpaidAmount;
+        foreach ($months as $index => $month) {
+            $paidUserChart[$month] = $users[$index];
+        }
+        $paidUserChart = array_reverse($paidUserChart);
         array_pop($paidUserChart);
         $paidUserChart = array_reverse($paidUserChart);
-        
-        
         return view('report-module', ['paid' => $paidUsers, 'paidUserChart' => $paidUserChart, 'unpaid' => $unpaidAmount, 'income' => $income, 'depot' => $depot]);
     }
 
     public function reportModuleFilter2($date)
     {
-        // $date = $request->date;
-        // dd( $request->all() );
-
         $endDate = Carbon::now()->subDays($date)->format('Y-m-d');
         $startDate =  Carbon::now()->format('Y-m-d');
-
+        $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        $depot = 0;
+        $depotx = (new VMSAPI)->getVehicleOverDue($startDate, 300);
         if (Auth()->user()->user_type == 'SUPER') {
             $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
                 ->whereBetween('createtime', [$endDate, $startDate])
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('count');
-
-            // dd( $users );
             $months =  DB::table('vms_payments')->select(DB::raw('Month(createtime) as month'))
                 ->whereBetween('createtime', [$endDate, $startDate])
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
-
             $result = DB::table('vms_payments')
                 ->whereBetween('createtime', [$endDate, $startDate])
                 ->get();
-            // dd($result);
-            $paidUsers = $result->sum('needpayment');
-
-
-            // return $totalAmount;
-            $depotx = (new VMSAPI)->getVehicleOverDue($startDate, 300);
-            // return $depotx;
-            $depot = 0;
-            foreach ($depotx->Data as $value) {
-                if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
-                    if ($value->duetime >= $endDate) {
-                        $arr[] = $value->duetime;
-                        $depot += $value->needpayment;
-                    }
+        } else {
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                foreach ($vehno as $key => $value) {
+                    $fleet[] = $value->vehno;
                 }
             }
-            // dd( $depot );
-            $unpaid = $this->DuePayment();
-            $unpaidAmount = $depot;
-            $income  = $paidUsers + $unpaidAmount;
-            $depot =  $depot + $unpaidAmount;
-        } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-
             $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
                 ->whereBetween('createtime', [$startDate, $endDate])
                 ->whereIn('fleet', $fleet)
@@ -696,47 +540,33 @@ class ReportModuleController extends Controller
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('month');
-            $paidUserChart = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $paidUserChart[$month] = $users[$index];
-            }
+
             $result = DB::table('vms_payments')
                 ->whereIn('fleet', $fleet)
                 ->whereBetween('createtime', [$startDate, $endDate])
                 ->get();
-            $paidUsers = $result->sum('needpayment');
+        }
 
-            // return $totalAmount;
-            $depotx = (new VMSAPI)->getVehicleOverDue($startDate, 300);
-            // return $depotx;
-            $depot = 0;
-
-            foreach ($depotx->Data as $value) {
-                if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
-                    // if ( $value->Vehicle->bodytypename == $fleet ) {
-                    if ($value->duetime >= $startDate) {
-                        if ($value->duetime <= $endDate) {
-                            // $arr[] = $value->duetime ;
-                            $depot += $value->needpayment;
-                        }
-                    }
-                    // }
+        foreach ($months as $index => $month) {
+            $paidUserChart[$month] = $users[$index];
+        }
+        $paidUsers = $result->sum('needpayment');
+        foreach ($depotx->Data as $value) {
+            if ($value->Vehicle->investorname != '' || $value->Vehicle->investorname != null) {
+                if ($value->duetime >= $endDate) {
+                    $arr[] = $value->duetime;
+                    $depot += $value->needpayment;
                 }
             }
-
-            // dd( $depot );
-            $unpaid = $this->DuePayment();
-            $unpaidAmount = $depot;
-            $income  = $paidUsers + $unpaidAmount;
-            $depot =  $depot + $unpaidAmount;
         }
+        $unpaid = $this->DuePayment();
+        $unpaidAmount = $depot;
+        $income  = $paidUsers + $unpaidAmount;
+        $depot =  $depot + $unpaidAmount;
 
         $paidUserChart = array_reverse($paidUserChart);
         array_pop($paidUserChart);
         $paidUserChart = array_reverse($paidUserChart);
-
-        // dd( $result );
-
         return view('report-module', ['paidUserChart' => $paidUserChart, 'paid' => $paidUsers, 'unpaid' => $unpaidAmount, 'income' => $income, 'depot' => $depot]);
     }
 

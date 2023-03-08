@@ -304,29 +304,34 @@ class UserManagementController extends Controller
     {
         if (Auth()->user()->user_type == 'SUPER') {
             $users = DB::table('users')->get();
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            // $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->user_type)->select('vehno')->get();
-
-            // foreach ($vehno as $key => $value) {
-            //     $fleet[] = $value->vehno;
-            // }
-            // dd( Auth()->user()->email );
-            $users = DB::table('users')
-                ->where('accountOfficer', Auth()->user()->email)
-                ->get();
-            // dd($users);
-
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $users = DB::table('users')
+                    ->whereIn('fleet', $fleet)
+                    ->get();
+            } else {
+                $users = DB::table('users')->where(Auth()->user()->user_type, Auth()->user()->email)->get();
             }
-            // dd( $fleet );
-            $users = DB::table('users')
-                ->whereIn('fleet', $fleet)
-                // ->where( 'creator_id', Auth()->user()->id )
-                ->get();
         }
+
+        // else if (Auth()->user()->user_type == 'accountOfficer') {
+
+        //     $users = DB::table('users')
+        //         ->where('accountOfficer', Auth()->user()->email)
+        //         ->get();
+        // } else {
+        //     $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+        //     foreach ($fle as $key => $value) {
+        //         $fleet[] = $value->fleet_name;
+        //     }
+        //     $users = DB::table('users')
+        //         ->whereIn('fleet', $fleet)
+        //         ->get();
+        // }
 
         return view('user-management', ['users' => $users]);
     }

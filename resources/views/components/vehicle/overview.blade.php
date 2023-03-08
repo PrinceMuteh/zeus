@@ -151,8 +151,7 @@
                                     Combined Drive-time
                                 </span>
                                 <span class="inner-text-value">
-                                    {{-- 6,561 HRS : 560 MNS --}}
-                                    0
+                                     4,450 HRS : 50M
                                 </span>
                             </div>
                         </div>
@@ -170,7 +169,7 @@
                                     Total Assets Value
                                 </span>
                                 <span class="inner-text-value">₦
-                                    <span class="counter">0</span>
+                                    <span class="counter">  2,650,000,000</span>
                                 </span>
                             </div>
                         </div>

@@ -104,29 +104,29 @@
 
                                                     </td>
                                                     <td>
-                                                            {{ \Carbon\Carbon::parse($item->time)->format('d-m-Y h:i a') }}
+                                                        {{ \Carbon\Carbon::parse($item->time)->format('d-m-Y h:i a') }}
                                                     </td>
-                                               
-                                            </td>
-                                            <td><span>&#8358;</span> {{ number_format($item->needpayment, 2) }}
-                                            </td>
-                                            <td>
-                                                @if (Auth()->user()->email == 'accounts@thankucash.com')
-                                                    {{ substr($item->bodytypename, 0, 3) }}****
-                                                @else
-                                                    <a
-                                                        href="{{ route('userInfo', ['phone' => $item->driverphone, 'plate' => $item->vehno, 'investorphone' => $item->investorphone]) }}">
-                                                        {{ $item->bodytypename }}
-                                                    </a>
-                                                @endif
+
+                                                    </td>
+                                                    <td><span>&#8358;</span> {{ number_format($item->needpayment, 2) }}
+                                                    </td>
+                                                    <td>
+                                                        @if (Auth()->user()->email == 'accounts@thankucash.com')
+                                                            {{ substr($item->bodytypename, 0, 3) }}****
+                                                        @else
+                                                            <a
+                                                                href="{{ route('userInfo', ['phone' => $item->driverphone, 'plate' => $item->vehno, 'investorphone' => $item->investorphone]) }}">
+                                                                {{ $item->bodytypename }}
+                                                            </a>
+                                                        @endif
 
 
-                                            </td>
-                                            <td>{{ $item->duetime }}</td>
-                                            <td>{{ $item->createtime }}</td>
+                                                    </td>
+                                                    <td>{{ $item->duetime }}</td>
+                                                    <td>{{ $item->createtime }}</td>
 
-                                            </tr>
-                                        @endforeach
+                                                </tr>
+                                            @endforeach
                                         @endif
 
 

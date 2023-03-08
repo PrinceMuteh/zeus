@@ -14,14 +14,6 @@ class VehicleMgtController extends Controller
     {
         return  DB::connection('mysql_2');
     }
-
-
-    //   public function __construct() {
-    //         $this->middleware( 'auth' );
-    //     }
-
-
-
     private function maptiller()
     {
         $result = DB::table('api_details')
@@ -106,6 +98,8 @@ class VehicleMgtController extends Controller
     }
     public function index()
     {
+        $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
         if (Auth()->user()->user_type == 'SUPER') {
             $users = DB::table('vehicle_details_vms')->select(DB::raw('COUNT(*) as count'))
                 ->whereYear('createtime', date('Y'))
@@ -115,106 +109,87 @@ class VehicleMgtController extends Controller
                 ->whereYear('createtime', date('Y'))
                 ->groupBy(DB::raw('Month(createtime)'))
                 ->pluck('month');
-            $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $datas[$month] = $users[$index];
-            }
-            $datas = array_reverse($datas);
-            array_pop($datas);
-            $datas = array_reverse($datas);
-
-            // dd( $datas );
-
             $vehicle = DB::table('vehicle_details_vms')
                 ->leftjoin('car_fleet', 'car_fleet.vehiclePlateNo', 'vehicle_details_vms.vehno')
                 ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'vehicle_details_vms.vehno')
                 ->orderBy('vehicle_details_vms.createtime', 'Desc')
                 ->select('vehicle_details_vms.*', 'vehicle_status.offlineStatus', 'vehicle_status.Dtstatus',  'vehicle_status.time',  'vehicle_status.address', 'car_fleet.package')
                 ->get();
-
-            // dd( $vehicle );
-            // $status = DB::table( 'vehicle_status' )
-            // ->leftjoin( 'car_fleet', 'car_fleet.vehiclePlateNo', 'vehicle_status.vehno' )->get();
             $nodriver = DB::table('vehicle_details_vms')->whereNull('drivername')->count();
             $totalMiles = DB::table('vehicle_status')->sum('miles');
-        } else if (Auth()->user()->user_type == 'accountOfficer') {
-            // dd(Auth()->user()->email);
-            $vehno = DB::table('vehicle_details_vms')->where('accountOfficer', Auth()->user()->email)->select('vehno')->get();
-
-            if (count($vehno) < 1) {
-                Auth::logout();
-                return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
-            }
-
-            foreach ($vehno as $key => $value) {
-                $fleet[] = $value->vehno;
-            }
-            // dd($vehnos);
-
-            $users = DB::table('vehicle_details_vms')->select(DB::raw('COUNT(*) as count'))
-                ->whereIn('vehno', $fleet)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
-            $months =  DB::table('vehicle_details_vms')->select(DB::raw('Month(createtime) as month'))
-                ->whereIn('vehno', $fleet)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
-
-            $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $datas[$month] = $users[$index];
-            }
-            $datas = array_reverse($datas);
-            array_pop($datas);
-            $datas = array_reverse($datas);
-            $vehicle = DB::table('vehicle_details_vms')
-                ->whereIn('vehicle_details_vms.vehno', $fleet)
-                ->leftjoin('car_fleet', 'car_fleet.vehiclePlateNo', 'vehicle_details_vms.vehno')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'vehicle_details_vms.vehno')
-                ->orderBy('vehicle_details_vms.createtime', 'Desc')
-                ->select('vehicle_details_vms.*', 'vehicle_status.offlineStatus', 'vehicle_status.Dtstatus',  'vehicle_status.time',  'vehicle_status.address', 'car_fleet.package')
-                ->get();
-            $nodriver = DB::table('vehicle_details_vms')->whereIn('vehno', $fleet)->whereNull('drivername')->count();
-            $totalMiles = DB::table('vehicle_status')->whereIn('vehno', $fleet)->sum('miles');
         } else {
-            $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
-            if (count($fle) < 1) {
-                Auth::logout();
-                return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
-            }
-            foreach ($fle as $key => $value) {
-                $fleet[] = $value->fleet_name;
-            }
-            $users = DB::table('vehicle_details_vms')->select(DB::raw('COUNT(*) as count'))
-                ->whereIn('bodytypename', $fleet)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('count');
-            $months =  DB::table('vehicle_details_vms')->select(DB::raw('Month(createtime) as month'))
-                ->whereIn('bodytypename', $fleet)
-                ->whereYear('createtime', date('Y'))
-                ->groupBy(DB::raw('Month(createtime)'))
-                ->pluck('month');
+            if (Auth()->user()->user_type == 'Fleet Operator') {
+                // dd(Auth()->user()->email);
+                $fle = DB::table('fleet')->where('assigned_to', Auth()->user()->id)->select('fleet_name')->get();
+                if (count($fle) < 1) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+                }
+                foreach ($fle as $key => $value) {
+                    $fleet[] = $value->fleet_name;
+                }
+                $users = DB::table('vehicle_details_vms')->select(DB::raw('COUNT(*) as count'))
+                    ->whereIn('bodytypename', $fleet)
+                    ->whereYear('createtime', date('Y'))
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('count');
+                $months =  DB::table('vehicle_details_vms')->select(DB::raw('Month(createtime) as month'))
+                    ->whereIn('bodytypename', $fleet)
+                    ->whereYear('createtime', date('Y'))
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('month');
+                $vehicle = DB::table('vehicle_details_vms')
+                    ->whereIn('bodytypename', $fleet)
+                    ->leftjoin('car_fleet', 'car_fleet.vehiclePlateNo', 'vehicle_details_vms.vehno')
+                    ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'vehicle_details_vms.vehno')
+                    ->orderBy('vehicle_details_vms.createtime', 'Desc')
+                    ->select('vehicle_details_vms.*', 'vehicle_status.offlineStatus', 'vehicle_status.Dtstatus',  'vehicle_status.time',  'vehicle_status.address', 'car_fleet.package')
+                    ->get();
+                $nodriver = DB::table('vehicle_details_vms')->whereIn('bodytypename', $fleet)->whereNull('drivername')->count();
+                $totalMiles = DB::table('vehicle_status')->whereIn('fleet', $fleet)->sum('miles');
+            } else {
+                $vehno = DB::table('vehicle_details_vms')->where(Auth()->user()->user_type, Auth()->user()->email)->select('vehno')->get();
+                if (count($vehno) < 1) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('Emessage', 'You have not been assign to a fleet, Please Contact Admin');
+                }
+                foreach ($vehno as $key => $value) {
+                    $fleet[] = $value->vehno;
+                }
+                // dd($vehnos);
 
-            $datas = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            foreach ($months as $index => $month) {
-                $datas[$month] = $users[$index];
+                $users = DB::table('vehicle_details_vms')->select(DB::raw('COUNT(*) as count'))
+                    ->whereIn('vehno', $fleet)
+                    ->whereYear('createtime', date('Y'))
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('count');
+                $months =  DB::table('vehicle_details_vms')->select(DB::raw('Month(createtime) as month'))
+                    ->whereIn('vehno', $fleet)
+                    ->whereYear('createtime', date('Y'))
+                    ->groupBy(DB::raw('Month(createtime)'))
+                    ->pluck('month');
+
+
+                $vehicle = DB::table('vehicle_details_vms')
+                    ->whereIn('vehicle_details_vms.vehno', $fleet)
+                    ->leftjoin('car_fleet', 'car_fleet.vehiclePlateNo', 'vehicle_details_vms.vehno')
+                    ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'vehicle_details_vms.vehno')
+                    ->orderBy('vehicle_details_vms.createtime', 'Desc')
+                    ->select('vehicle_details_vms.*', 'vehicle_status.offlineStatus', 'vehicle_status.Dtstatus',  'vehicle_status.time',  'vehicle_status.address', 'car_fleet.package')
+                    ->get();
+                $nodriver = DB::table('vehicle_details_vms')->whereIn('vehno', $fleet)->whereNull('drivername')->count();
+                $totalMiles = DB::table('vehicle_status')->whereIn('vehno', $fleet)->sum('miles');
             }
-            $datas = array_reverse($datas);
-            array_pop($datas);
-            $datas = array_reverse($datas);
-            $vehicle = DB::table('vehicle_details_vms')
-                ->whereIn('bodytypename', $fleet)
-                ->leftjoin('car_fleet', 'car_fleet.vehiclePlateNo', 'vehicle_details_vms.vehno')
-                ->leftjoin('vehicle_status', 'vehicle_status.vehno', 'vehicle_details_vms.vehno')
-                ->orderBy('vehicle_details_vms.createtime', 'Desc')
-                ->select('vehicle_details_vms.*', 'vehicle_status.offlineStatus', 'vehicle_status.Dtstatus',  'vehicle_status.time',  'vehicle_status.address', 'car_fleet.package')
-                ->get();
-            $nodriver = DB::table('vehicle_details_vms')->whereIn('bodytypename', $fleet)->whereNull('drivername')->count();
-            $totalMiles = DB::table('vehicle_status')->whereIn('fleet', $fleet)->sum('miles');
         }
+
+        foreach ($months as $index => $month) {
+            $datas[$month] = $users[$index];
+        }
+        $datas = array_reverse($datas);
+        array_pop($datas);
+        $datas = array_reverse($datas);
+
+
         // fetch vehicle types
         $vehicletype = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->get();
         // fetch users type
@@ -242,11 +217,11 @@ class VehicleMgtController extends Controller
             foreach ($fle as $key => $value) {
                 $fleet[] = $value->fleet_name;
             }
- 
+
             $vehicleOwner = DB::table('users')->where('creator_id', Auth()->user()->id)->get();
             $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->whereIn('bodytypename', $fleet)->get();
             // dd($fleet);.
-            
+
             $service = DB::table('service_center')->where('creator_id', Auth()->user()->id)->get();
         }
 
@@ -260,11 +235,14 @@ class VehicleMgtController extends Controller
 
     public function addVehicle2(Request $request)
     {
-        $sql2 = DB::connection('mysql_2');
-        // dd($request->all());
+        //   dd($request->all());
+
         if (DB::table('car_fleet')->where('vehiclePlateNo', $request->plate)->exists()) {
             toast('Plate Number already exist', 'error');
             return back()->with("Emessage", "Plate Number already exist");
+        }
+        if ($request->serviceCenter != "") {
+            $serviceCenter = DB::table('service_center')->where('center_id', $request->id)->first();
         }
 
         $arr = array(
@@ -279,6 +257,10 @@ class VehicleMgtController extends Controller
             'transmission' => $request->transmission,
             'type' => $request->fleet,
             'body' => $request->type,
+            'status' => "Pending",
+            'serviceCentreId' => $request->serviceCenter ?? "",
+            'serviceCentreName' => $serviceCenter->center_name ?? "",
+            'serviceCentreAddress' => $serviceCenter->center_location ?? "",
             'package' => $request->package,
             'location' => $request->location,
             'created_at' => now(),
@@ -287,7 +269,6 @@ class VehicleMgtController extends Controller
         // dd($arr);
 
         if (isset($request->frontImage)) {
-            // dd("HEll");
             $lo = 'Cars/';
             $filename = $this->upload($request, 'frontImage', $lo);
             $frontImage =  url('') . "/" . $lo . strtolower($filename);
@@ -320,35 +301,22 @@ class VehicleMgtController extends Controller
         } else {
             $arr = $arr + array('diagonal' => "https://test.mygarage.africa/car2.png");
         }
-        // dd($arr);
         if (DB::table('car_fleet')->where('vehiclePlateNo', $request->vehno)->exists()) {
-            // dd($diagonalImage);
             $sql  = DB::table('car_fleet')
                 ->where('vehiclePlateNo', $request->vehno)
                 ->update($arr);
             toast('Successful Added', 'success');
-
             return back()->with("success", "successful added");
         } else {
             $arr = $arr + array('vehiclePlateNo' => $request->vehno, 'created_at' => now(),);
             $sql  = DB::table('car_fleet')->insert($arr);
             toast('Successful Added', 'success');
-
             return back()->with("success", "successful updated");
         }
     }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function vehicleProfile()
     {
         return view('vehicle-profile');
-    }
-    public function create()
-    {
-        //
     }
 
     public function fleetOperatorPermission($id)
@@ -366,48 +334,26 @@ class VehicleMgtController extends Controller
         return view('fleet-operator-permissions', ['menu' => $menu, 'user' => $userType, 'payment_commision' => $payment_commision, 'fleet_management' => $fleet_management, 'finance_wallet' => $finance_wallet, 'report_activity' => $report_activity]);
     }
 
-
-
     public function operational($plate)
     {
-
         $vehicle = DB::table('vehicle_details_vms')->where('vehno', $plate)->first();
-        // dd($vehicle);
-        $phone = $vehicle->driverphone;
-        // if(!empty($phone)){
-        // $phone = substr($phone, 1);
-        $grantor = DB::table('gurantors_info')->where('plate_number', $plate)
-            // ->orWhere('Driver_PHONE', $phone)
-            ->first();
-        // }else{
-        //     $grantor = "";
-        // }
-        // dd($grantor);
-
-        // $driverInfo = $this->sql2()->table( 'users' )->where( 'phone', $phone )->first();
-        // $investorInfo = $this->sql2()->table( 'users' )->where( 'phone', $vehicle->investorphonenumber )->first()
+        $grantor = DB::table('gurantors_info')->where('plate_number', $plate)->first();
+        $userDetails = DB::table('users')->where('phone', $vehicle->driverphone)->first();
         $investorInfo = (new VMSAPI)->getInvestorInfo($vehicle->investorphonenumber);
-        $driverDetails = (new VMSAPI)->getDriverInfo($phone);
+        $driverDetails = (new VMSAPI)->getDriverInfo($vehicle->driverphone);
         $vehicleDetails = (new VMSAPI)->getVehicleRecord($plate);
-
-        // dd($vehicleDetails);
-
         if ($vehicleDetails == null) {
             toast('Couldnt Fetch Vehicle Details', 'error');
             return back()->with('error', "Couldnt Fetch Vehicle Details");
         }
         if ($vehicleDetails->Data->systemno == null) {
             toast('Couldnt Fetch Vehicle Details', 'error');
-
             return back()->with('error', "Couldnt Fetch Vehicle Details");
         }
-
         $getBill = (new VMSAPI)->get_pay_bill($plate);
         $recentPayment = (new VMSAPI)->get_vehicle_recent_payment($plate);
-
         $leasePay = 0;
         $installment = 0;
-        $pay;
         if (!empty($getBill->Data->leasePay)) {
             $pay = $getBill->Data->leasePay;
             foreach ($getBill->Data->leasePay as $value) {
@@ -415,25 +361,17 @@ class VehicleMgtController extends Controller
             }
         }
         if (!empty($getBill->Data->installment)) {
-
             $pay = $getBill->Data->installment;
-
             foreach ($getBill->Data->installment as $value) {
                 $installment =  $value->needpayment + $installment;
             }
         }
-        // dd($vehicleDetails);
         if (!empty($vehicleDetails)) {
             $vehicleLocation = (new VMSAPI)->getVehiclePosition($vehicleDetails->Data->systemno);
         }
-
         $car_fleet = $this->sql2()->table('car_fleet')->where('vehiclePlateNo', $plate)->first();
         $allVehicle = DB::table('vehicle_details_vms')->where('vehno', $plate)->first();
-        // $mangement = $this->sql2()->table( 'users' )->where( 'phone', $phone )->first();
         $payments = DB::table('vms_payments')->where('vehno', $plate)->orderBy('createtime', 'DESC')->get();
-
-
-
         $users = DB::table('vms_payments')->select(DB::raw('COUNT(*) as count'))
             ->where('vehno', $plate)
             ->whereYear('createtime', date('Y'))
@@ -448,42 +386,30 @@ class VehicleMgtController extends Controller
         foreach ($months as $index => $month) {
             $transactionChart[$month] = $users[$index];
         }
-
         $transactionChart = array_reverse($transactionChart);
         array_pop($transactionChart);
         $transactionChart = array_reverse($transactionChart);
-
-        // dd($transactionChart);
-
-        // dd($vehicleLocation);
         $latitude = $vehicleLocation->Data[0]->Latitude ?? "";
         $longitude = $vehicleLocation->Data[0]->Longitude ?? "";
-
-
         if ($latitude != 0.0 || $latitude != "") {
             $res =  (new ApiController)->get('https://api.maptiler.com/geocoding/' . $longitude . ',' . $latitude . '.json?key=' . $this->maptiller());
             if ($res == null) {
                 $placeAddress = "not available";
                 $label = "-";
             } else {
-                // dd($res);
                 if (!empty($res->features)) {
                     $label = $res->features[0]->place_name;
                 } else {
                     $label = "-";
                 }
-
-                // $placeAddress = $response->results[ 0 ]->formatted_address;
-                // $label = $response->results[ 0 ]->formatted_address;
             }
         } else {
             $placeAddress = '-';
             $label = '-';
         }
-
-        // return $pay;
         $result = array(
             'allVehicle' => $allVehicle ?? 'null',
+            'userDetails' => $userDetails ?? 'null',
             'driverDetail' => (!empty($driverDetails)) ? $driverDetails->Data : 'null',
             'driverInfo' => (!empty($driverInfo)) ? $driverInfo : 'null',
             'vehicleDetails' => (!empty($vehicleDetails)) ? $vehicleDetails->Data : 'null',
@@ -497,27 +423,17 @@ class VehicleMgtController extends Controller
             'payments' =>   $payments  ?? 'null',
             'pay' =>   $pay  ?? [],
         );
-
-        // dd($result);
         if (Auth()->user()->user_type == 'SUPER') {
             $driver = DB::table('users')->where('category', 'Driver')->get();
-            // $fleet = DB::table('fleet')->get();
             $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->get();
             $service = DB::table('service_center')->get();
         } else {
             $driver = DB::table('users')->where('creator_id', Auth()->user()->id)->get();
-            // $fleet = DB::table('fleet')->where('creator_id', Auth()->user()->id)->get();
             $fleet = DB::table('vehicle_details_vms')->distinct('bodytypename')->select('bodytypename')->get();
-
             $service = DB::table('service_center')->where('creator_id', Auth()->user()->id)->get();
         }
-
         $cars = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->where('vehicle_status.vehno', $plate)->get();
-
         $cars3 = DB::table('vehicle_status')->join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
-        // $cars3 = DB::table('vms_payments')join('vehicle_details_vms', 'vehicle_details_vms.vehno', 'vehicle_status.vehno')->get()->toArray();
-        // dd($cars);
-
         $single = 'single';
         return view('operational-data', ['chart' => $transactionChart, 'driver' => $driver, 'service' => $service, 'fleet' => $fleet, 'data' => $result, 'cars' => $cars, 'cars3' => $cars3,  'single' => $single]);
     }

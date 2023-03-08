@@ -18,6 +18,7 @@
         <div class="content">
             <div class="container-fluid m15">
                 {{ $allTask = count($newInstallation) + count($processing) }}
+                
                 @include('sections.technical-desk-info', [
                     'allTask' => $allTask,
                     'newTask' => count($newInstallation),
@@ -31,7 +32,8 @@
                             <a href="task-logs">new installation ({{ count($newInstallation) }})</a>
                         </li>
                         <li>
-                            <a href="technical-desk-offline-cars">offline cars (4)</a>
+                            {{--<a href="technical-desk-offline-cars">offline cars (4)</a>--}}
+                            offline cars (4)
                         </li>
                         <li>reset task (12)</li>
                         <li>termination (2)</li>
@@ -78,8 +80,8 @@
                                                     </td>
                                                     <td>New Installation</td>
                                                     <td>{{$item->taskStatus}}</td>
-                                                    <td>{{ $item->created_at }}</td>
-                                                    <td></td>
+                                                    <td>{{ $item->updated_at ?? "-" }}</td>
+                                                    <td>{{$item->state ?? "-"}}</td>
                                                     <td>
                                                         <i class='bx bx-dots-vertical-rounded'></i>
                                                     </td>

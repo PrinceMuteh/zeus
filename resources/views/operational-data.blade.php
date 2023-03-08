@@ -11,6 +11,16 @@
             padding: 20px;
         }
     </style>
+    <style>
+        div.baseInfo {
+            /* background-color: #fed9ff; */
+            /* width: 600px; */
+            max-height: 400px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 20px;
+        }
+    </style>
 
     <title>Zeus | Vehicle Profile</title>
     <div class="content-page" style="background: #fff; height: auto">

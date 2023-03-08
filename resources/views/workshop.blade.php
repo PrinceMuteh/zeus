@@ -205,9 +205,9 @@
                 </div>
                 <ul class="sub-tabs">
                     <li class="workshop-list border-bottom-0 bbd">WORKSHOP OVERVIEW</li>
-                    <li class="work-bench-list border-bottom-0">WORK BENCH</li>
+                   {{-- <li class="work-bench-list border-bottom-0">WORK BENCH</li>
                     <li class="appointment-list border-bottom-0">APPOINTMENT(S) LOG</li>
-                    <li class="financials-list border-bottom-0">FINANCIALS</li> 
+                    <li class="financials-list border-bottom-0">FINANCIALS</li>  --}}
                 </ul>
 
                 <div class="work-shop-sec">
@@ -220,10 +220,10 @@
                                         <span>Est. Cost of <br> Maintenance Service <br> for your Fleet.</span>
                                         <div class="work-circle">
                                             <span>Total</span>
-                                            <span class="span-100">₦0</span>
+                                            <span class="span-100">₦ {{ number_format(180000000) }}</span>
                                         </div>
-                                        <span>Labour Cost <br> <b>₦0M</b></span>
-                                        <span>Cost of Parts <br> <b>₦0</b></span>
+                                        <span>Labour Cost <br> <b>₦ {{number_format(180000) }}</b></span>
+                                        <span>Cost of Parts <br> <b>₦ {{ number_format(603300000) }}</b></span>
                                     </div>
                                     <div class="col-work-space-100">
                                         <div class="boxInfo-100">
@@ -240,7 +240,7 @@
                                             <div class="bottomInfo">
                                                 <div class="leftBottom">
                                                     <span class="lft1">Total Tickets</span><br />
-                                                    <span class="lft2 text-inter">0</span>
+                                                    <span class="lft2 text-inter">{{number_format(544677)}}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -258,7 +258,7 @@
                                             <div class="bottomInfo">
                                                 <div class="leftBottom">
                                                     <span class="lft1">Avg. Service Score</span><br />
-                                                    <span class="lft2 text-inter">0 / 100</span>
+                                                    <span class="lft2 text-inter">46.5 / 100</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -269,9 +269,11 @@
                         <div class="col-sm-6 col-md-12 col-lg-8">
                             <div class="workshop-top">
                            
-                                        <div class="chart_deposit_staistics" >
-                                            <div id="top_x_div" style="width: 100%; height: 100%;"></div>
-                                        </div>
+                        <div class="technical-inner">
+                            <div class="p-1">
+                                <canvas id="myChart" height="30vh" width="80vw"></canvas>
+                            </div>
+                        </div>
                                   
                             </div>
                         </div>
@@ -296,7 +298,7 @@
                                                     Total Mileage
                                                 </span>
                                                 <span class="inner-text-value">
-                                                    <span class="counter">0</span>KM
+                                                    <span class="counter">{{ number_format(74566611) }}</span>KM
                                                 </span>
                                             </div>
                                         </div>
@@ -314,8 +316,8 @@
                                                 <span class="inner-text-100">
                                                     Total Est Fuel Cost
                                                 </span>
-                                                <span class="inner-text-value">
-                                                    ₦0
+                                                <span class="inner-text-value "> ₦ 
+                                                  <span class="counter"> {{ number_format(581092489) }} </span>
                                                 </span>
                                             </div>
                                         </div>
@@ -340,7 +342,7 @@
                                                     Combined Drive-TIme
                                                 </span>
                                                 <span class="inner-text-value">
-                                                    <span class="">0</span>HRS
+                                                    <span class="counter">{{ number_format(14300) }}</span>HRS
                                                 </span>
                                             </div>
                                         </div>
@@ -359,7 +361,8 @@
                                                     Total Asset Value
                                                 </span>
                                                 <span class="inner-text-value">
-                                                    <span class="counter">0</span>
+                                                     ₦
+                                                    <span class="counter"> {{number_format(2650000000) }}</span>
                                                 </span>
                                             </div>
                                         </div>
@@ -382,19 +385,19 @@
                                                     <span class="value-donut mb-1 mt-2">
                                                         <div class="dot-100 mr-2 bg-deep-blue-100"></div>
                                                         <div>
-                                                            <div class="t-100 font-weight-bold">Fixed: 0</div>
+                                                            <div class="t-100 font-weight-bold">Fixed: 700</div>
                                                         </div>
                                                     </span>
                                                     <span class="value-donut mb-1">
                                                         <div class="dot-100 font-weight-bold mr-2 bg-deep-blue-200"></div>
                                                         <div>
-                                                            <div class="t-100 font-weight-bold">Replaced: 0</div>
+                                                            <div class="t-100 font-weight-bold">Replaced: 34,000</div>
                                                         </div>
                                                     </span>
                                                     <span class="value-donut mb-4">
                                                         <div class="dot-100 mr-2 bg-deep-blue-300"></div>
                                                         <div>
-                                                            <div class="t-100">Serviced: 0</div>
+                                                            <div class="t-100">Serviced: 6,400</div>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -765,6 +768,34 @@
     
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>z
     <script src="{{ asset('assets/js/chart.js') }} "></script>
+
+
+    <script>
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                datasets: [{
+                    label: 'Revenue Est. ₦ 581,092,489',
+                    data: [302345503, 220900883, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    borderWidth: 1,
+                    minBarLength: 10,
+                    highlightFill: "green",
+                    highlightStroke: "red",
+                    backgroundColor: 'rgba(4, 4, 255, 0.406)'
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
     <script>
         var yValues = [70, 49, 44];

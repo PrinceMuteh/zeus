@@ -1,5 +1,20 @@
 @extends('main')
 @section('content')
+    @php
+        if (Auth()->user()->user_type_name == 'Demo') {
+            $income = $income + 14900000;
+            $paid = $paid + 10900000;
+            $unpaid = $unpaid + 4400000;
+            $depot = $depot + 140000;
+        } else {
+            $income = $income;
+            $paid = $paid;
+            $unpaid = $unpaid;
+            $depot = $depot;
+        }
+    @endphp
+    
+    
     <div class="content-page bg-light-grey">
         <div class="content">
             <!-- Start Content-->

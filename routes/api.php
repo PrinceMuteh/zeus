@@ -22,6 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/due-email', [App\Http\Controllers\ScheduleController::class, 'sendDuePayment']);
 Route::get('/overdue-email', [App\Http\Controllers\ScheduleController::class, 'sendOverDuePayment']);
 
+Route::get('/due-sms', [App\Http\Controllers\ScheduleController::class, 'sendsms']);
+
+
+
 // Route::get('/overdue-email', [App\Http\Controllers\MailerController::class, 'OverDuePayment']);
 // Route::get('/payment-receipt', [App\Http\Controllers\MailerController::class, 'DriverPaymentReceipt']);
 
@@ -60,6 +64,7 @@ Route::get('/nodriver', [App\Http\Controllers\ScheduleController::class, 'getVeh
 
 Route::get('/secondary', [App\Http\Controllers\ScheduleController::class, 'secondary']);
 Route::get('/officers', [App\Http\Controllers\ScheduleController::class, 'assignAccountOfficer']);
+Route::get('/supportManager', [App\Http\Controllers\ScheduleController::class, 'supportManager']);
 
 Route::get('/get-address/{lat}/{long}', [App\Http\Controllers\ExternalController::class, 'getAddress']);
 
@@ -69,10 +74,14 @@ Route::get('/get-address/{lat}/{long}', [App\Http\Controllers\ExternalController
 
 Route::group(['prefix' => 'workforce'], function () {
     Route::post('/login', [App\Http\Controllers\WorkForceController::class, 'login']);
+    Route::post('/getuserdetails', [App\Http\Controllers\WorkForceController::class, 'getuserDetails']);
     Route::post('/update-password', [App\Http\Controllers\WorkForceController::class, 'updatePassword']);
     Route::post('/update-bank', [App\Http\Controllers\WorkForceController::class, 'updateBank']);
     
     Route::post('/update-profile', [App\Http\Controllers\WorkForceController::class, 'updateProfile']);
+    
+    Route::Post('/get-register-account', [App\Http\Controllers\WorkForceController::class, 'getRegisteredAccount']);
+    Route::Post('/get-account-users', [App\Http\Controllers\WorkForceController::class, 'getAccountUsers']);
     
     Route::post('/register-account', [App\Http\Controllers\WorkForceController::class, 'registerAccount']);
     Route::post('/register-account2', [App\Http\Controllers\WorkForceController::class, 'registerAccount2']);
@@ -89,6 +98,10 @@ Route::group(['prefix' => 'workforce'], function () {
     Route::post('/step7-skills', [App\Http\Controllers\WorkForceController::class, 'step7skills']); 
     
     Route::post('/image_upload', [App\Http\Controllers\WorkForceController::class, 'uploadImage']);
+    
+    Route::get('/get-config/{city}', [App\Http\Controllers\WorkForceController::class, 'getConfig']);
+    Route::get('/get-receipt/{id}', [App\Http\Controllers\WorkForceController::class, 'getReceipt']);
+    Route::get('/get-account/{city}', [App\Http\Controllers\WorkForceController::class, 'getEnvioAccount']);
 
 });
 

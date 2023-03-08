@@ -12,7 +12,7 @@
             $documentActive = 6033;
              $totalAssigned = $allVehicle->count() - $noDriver + 991;
              $unAssigned = $noDriver - 276;
-        $totalFuel = $totalAssigned * 9 * ($totalMiles / 1000) * 120;
+        $totalFuel = $totalAssigned  * 0.7* ($totalMiles / 100000);
  
         } else {
         
