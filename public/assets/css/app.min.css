@@ -2240,9 +2240,9 @@ body[data-layout=horizontal] .footer {
 }
 
 div.dataTables_wrapper div.dataTables_filter input {
-    height: 50px;
-    margin-top: -33px;
-    width: 300px;
+    height: 38px;
+    /* margin-top: -33px; */
+    width: 200px;
 }
 
 .widget-two-default {
@@ -3364,8 +3364,8 @@ div.dt-button-info h2 {
 
 .footable-pagination li.active a {
     color: #fff;
-    background-color: #64c5b1;
-    border-color: #64c5b1
+    background-color: red;
+    border-color: red
 }
 
 .footable>thead>tr>th>span.footable-sort-indicator {
@@ -6275,7 +6275,8 @@ thead {
     border-radius: 12px;
 }
 
-.leftBase, .rightBase {
+.leftBase,
+.rightBase {
     display: flex;
     /* padding: 10px 2px; */
     justify-content: center;
@@ -6663,6 +6664,7 @@ thead {
     box-shadow: 0px 20.501px 68.3368px rgba(160, 163, 189, 0.1);
     border-radius: 8px;
 }
+
 .addBtn-200 {
     color: #fff;
     font-family: var(--text-inter);
@@ -6677,6 +6679,7 @@ thead {
     box-shadow: 0px 20.501px 68.3368px rgba(160, 163, 189, 0.1);
     border-radius: 8px;
 }
+
 .addBtn-300 {
     color: #fff;
     font-family: var(--text-inter);
@@ -6860,9 +6863,32 @@ label {
     text-align: center;
     margin-top: 2px;
     margin-bottom: 20px;
-    /* margin-left: -35px; */
     padding: 0;
 }
+
+.sub-tab-finance {
+    display: flex;
+    width: 50%;
+    border-bottom: 1px solid #C6C2DE;
+    text-align: center;
+    padding: 0;
+    margin-bottom: 0 !important;
+}
+
+.sub-tab-finance a {
+    color: grey;
+}
+
+.sub-tab-finance li {
+    margin-right: 5px;
+    list-style: none;
+    width: auto;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-right: 60px;
+    cursor: pointer;
+}
+
 
 .sub-tabz {
     display: flex;

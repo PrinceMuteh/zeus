@@ -244,7 +244,7 @@ Route::group(['prefix' => 'driver'], function () {
 
 Route::view('map', 'map');
 
-//Account Officer 
+//Account Officer
 // Route::group(['prefix' => 'account-Officer/'], function () {
 
 Route::get('account-officer', function () {
@@ -257,3 +257,7 @@ Route::get('account-officer/fleet', [AccountOfficer::class, 'fleet']);
 Route::post('account-officer/update-fleet', [AccountOfficer::class, 'updateFleet'])->name('updateFleet');
 Route::post('account-officer/update-manager', [AccountOfficer::class, 'updateMangers'])->name('updateSupportManager');
 // });
+
+Route::get('/general-remittance', function () {
+    return view('general-remittance');
+});
