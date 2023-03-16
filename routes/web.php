@@ -247,12 +247,37 @@ Route::view('map', 'map');
 //Account Officer
 // Route::group(['prefix' => 'account-Officer/'], function () {
 
+// Route::get('account-officer', function () {
+//     return view('account-officer/account-officer');
+// });
 Route::get('account-officer', function () {
-    return view('account-officer/account-officer');
+    return view('account-officer');
 });
 Route::get('/account-officer/host', function () {
     return view('account-officer/host');
 });
+Route::get('account-officer-fleet-operations', function () {
+    return view('account-office.fleet-operations');
+});
+Route::get('account-officer-remittance-manager', function () {
+    return view('account-office.remittance-manager');
+});
+Route::get('failed-payouts', function () {
+    return view('account-office.section.failed-payout');
+});
+Route::get('account-officer-loans-credit', function () {
+    return view('account-office.loans-credit');
+});
+Route::get('loan-payment-recieved', function () {
+    return view('account-office.section.loan-payment-recieved');
+});
+Route::get('account-officer-communication', function () {
+    return view('account-office.communications');
+});
+Route::get('communication-user', function () {
+    return view('account-office.section.communication-user');
+});
+
 Route::get('account-officer/fleet', [AccountOfficer::class, 'fleet']);
 Route::post('account-officer/update-fleet', [AccountOfficer::class, 'updateFleet'])->name('updateFleet');
 Route::post('account-officer/update-manager', [AccountOfficer::class, 'updateMangers'])->name('updateSupportManager');

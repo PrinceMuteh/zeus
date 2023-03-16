@@ -98,10 +98,11 @@ html {
 
 .bg-light-blue {
     background: #437eed31;
+
 }
 
 .bg-light-purple {
-    background: #7d2cc8b7;
+    background: #7d2cc82a;
 }
 
 .light-red {
@@ -1972,9 +1973,11 @@ tr {
     cursor: pointer;
     border-bottom: 1px solid #CCCCCC;
 }
-.single_deposit_detail:hover{
+
+.single_deposit_detail:hover {
     background: #ccc;
 }
+
 .single_deposit_detail:last-child {
     /* border-bottom: none; */
 }
@@ -4658,6 +4661,17 @@ select {
     margin-bottom: 15px;
 }
 
+@media screen and (max-width: 900px) {
+    .links-filter {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .filter-calender {
+        margin-top: 15px;
+    }
+}
+
 .link-plate-no {
     color: var(--deepPurple);
     cursor: pointer;
@@ -4947,4 +4961,114 @@ select {
     width: 5px;
     border-radius: 50px;
     background: rgb(9, 109, 9);
+}
+
+
+/* account office */
+.remittance-row {
+    display: grid;
+    grid-template-columns: 9fr 2fr;
+    grid-gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.remittance-col {
+    background: #FFFFFF;
+    border: 2px solid #ECECEC;
+    border-radius: 12px;
+}
+
+.remittance-col:nth-of-type(1) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.remittance-col:nth-child(2) {
+    background: #FF4A4A;
+}
+
+.top-remitt-col {
+    display: flex;
+    justify-content: space-between;
+    text-transform: uppercase;
+    color: #08102E;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.box-icon {
+    border-radius: 6px;
+    height: 35px;
+    width: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remittance-col-in {
+    margin: 20px;
+    padding-right: 30px;
+    border-right: 1px solid #DCDCDC;
+}
+
+.remittance-col-in:last-child {
+    border: none;
+    padding-right: 15px;
+}
+
+.payBtn {
+    background: #4A4AFF;
+    border-radius: 6px;
+    color: #fff;
+    padding: 11px 20px;
+    width: 120px;
+    border: none;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.loans-credit-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: #FFFFFF;
+    border: 2px solid #ECECEC;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.loans-credit-col-in {
+    margin: 20px;
+    padding-right: 30px;
+    border-right: 1px solid #DCDCDC;
+}
+
+.loans-credit-col-in:last-child {
+    border: none;
+    padding-right: 15px;
+}
+
+@media screen and (max-width: 900px) {
+    .remittance-row {
+        grid-template-columns: 1fr;
+        grid-gap: 1rem;
+    }
+
+    .remittance-col:nth-of-type(1) {
+        grid-template-columns: 1fr;
+    }
+
+    .remittance-col-in {
+        border-bottom: 1px solid #DCDCDC;
+        border-right: 0;
+    }
+
+    .loans-credit-row {
+        grid-template-columns: 1fr;
+        grid-gap: 1rem;
+    }
+
+    .loans-credit-col-in {
+        border-bottom: 1px solid #DCDCDC;
+        border-right: 0;
+    }
 }

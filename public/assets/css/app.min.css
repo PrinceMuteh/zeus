@@ -6548,8 +6548,8 @@ thead {
 
 .bg-light-red {
     border-radius: 24px;
-    background: #FFC0C0;
     padding: 4px 5px;
+    background: #ff4a4a2a;
 }
 
 .bg-light-green {
@@ -6617,7 +6617,7 @@ thead {
     padding: 10px 15px 15px 15px;
     /* color: var(--deepPurple); */
     color: #08102E !important;
-    font-weight: 400 !important;
+    font-weight: 600 !important;
 }
 
 .sectionTitle img {
@@ -6889,6 +6889,77 @@ label {
     cursor: pointer;
 }
 
+/* accountoffice tabs */
+.account-office-tab {
+    display: flex;
+    border-bottom: 1px solid #C6C2DE;
+    text-align: center;
+    padding: 0;
+    margin-bottom: 0 !important;
+}
+
+@media screen and (max-width: 800px) {
+    .account-office-tab {
+        flex-wrap: wrap;
+    }
+
+    .account-office-tab-in {
+        flex-wrap: wrap;
+    }
+}
+
+.account-office-tab a {
+    color: grey;
+}
+
+.account-office-tab li {
+    margin-right: 35px;
+    list-style: none;
+    width: auto;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-right: 10px;
+    cursor: pointer;
+    transform: translateY(2px);
+}
+
+/* account office in table tabs */
+.account-office-tab-in {
+    display: flex;
+    border-bottom: 1px solid #C6C2DE;
+    text-align: center;
+    margin: 10px 0 40px 0;
+    padding: 0;
+}
+
+.account-office-tab-in a {
+    color: grey;
+}
+
+.account-office-tab-in li {
+    margin-right: 5px;
+    list-style: none;
+    width: auto;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    cursor: pointer;
+    transform: translateY(2px);
+}
+
+.table a {
+    color: #08102E !important;
+}
+
+@media screen and (max-width: 800px) {
+    .account-office-tab {
+        flex-wrap: wrap;
+    }
+
+    .account-office-tab-in {
+        flex-wrap: wrap;
+    }
+}
 
 .sub-tabz {
     display: flex;
