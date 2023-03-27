@@ -1,93 +1,60 @@
 <div class="overview_section">
     <div class=" mt-2">
-        <div class="row">
-            <div class="col-sm-6 col-md-12 col-lg-8">
-                <div class="top-banner-100">
-                    <div class="top-row-banner">
-                        <span class="title-100">Hello, {{ auth()->user()->first_name }} (Operator)</span>
-                        {{-- <span class="title-200">Here is a summary of what your fleet currently looks
-                            like...</span> --}}
-                        <img src="{{ asset('assets/images/computer.png') }}"
-                            style="width: 115px; height: 100px; transform: translateY(10px); translateX(10px);"
-                            class="computer_img" alt="">
-                    </div>
-                    <div class="mt-4 graph-home p-3 w-100 d-flex justify-content-center align-items-center">
-
-                        <canvas id="top_x_div" height="20vh" width="80vw"></canvas>
-
-                        {{-- <div id="top_x_div" style="width: 800px; height: 306px;"></div> --}}
-                    </div>
+        <div class="home-row">
+            <div class="top-banner-100">
+                <div class="top-row-banner">
+                    <span class="title-100">Hello, {{ auth()->user()->first_name }} (Operator)</span>
+                    <img src="{{ asset('assets/images/computer.png') }}"
+                        style="width: 115px; height: 100px; transform: translateY(10px); translateX(10px);"
+                        class="computer_img" alt="">
+                </div>
+                <div class="mt-4 graph-home p-3 w-100 d-flex justify-content-center align-items-center">
+                    <canvas id="top_x_div"></canvas>
                 </div>
             </div>
-            {{-- <div class="col-sm-6 col-md-12 col-lg-4">
-                <div class="right-side-home-2 mt-0">
-                    <div class="top-finance-heading pl-4 pr-2">
-                        <span class="title-250">Fleet Status</span>
-                        <a href="add-vehicle" class="addBtn-100">ADD NEW</a>
-                    </div>
-                    <div id="donutchart-4" style=" height: 420px;  padding-bottom:5px; ">
-                    </div>
-                    <div class="base-right-side">
-                        <div class="base-22">
-                            <span class="dot-1"></span>
-                            <div class="base-inner-val">
-                                <span class="base-inner-100">Offline Vehicles</span>
-                                <span class="base-inner-200">500</span>
-                            </div>
-                        </div>
-                        <div class="base-22">
-                            <span class="dot-2"></span>
-                            <div class="base-inner-val">
-                                <span class="base-inner-100">Online Vehicles</span>
-                                <span class="base-inner-200">30,500</span>
-                            </div>
-                        </div>
-                    </div>
+
+            <div class="overview-side-1">
+                <div class="top-finance-heading pl-4 pr-2">
+                    <span class="title-250">Fleet Status</span>
+                    <a href="add-vehicle" class="addBtn-100">ADD NEW</a>
                 </div>
-            </div> --}}
-            <div class="col-sm-6 col-md-12 col-lg-4">
-                <div class="right-side-home-2 mt-0" style="padding-bottom: 440px;">
-                    <div class="top-finance-heading pl-4 pr-2">
-                        <span class="title-250">Fleet Status</span>
-                        <a href="add-vehicle" class="addBtn-100">ADD NEW</a>
+                <div class="row">
+                    <div class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column justify-content-center">
+                        <canvas id="myChart4"></canvas>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
-                            <canvas id="myChart4" style="width: 350px; height: 350px"></canvas>
-                        </div>
-                        <div class="col-sm-6 col-md-6 col-lg-6 d-flex justify-content-center align-items-center">
-                            <div>
-                                <span class="value-donut mb-1 mt-4">
-                                    <div class="dot-100 mr-2 bg-green-100"></div>
-                                    <div>
-                                        <div class="t-100">Total Assigned</div>
-                                        <div class="t-200">{{ $totalAssigned }}</div>
-                                    </div>
-                                </span>
-                                <span class="value-donut mb-1">
-                                    <div class="dot-100 mr-2 bg-green-200"></div>
-                                    <div>
-                                        <div class="t-100">Un-Assigned</div>
-                                        <div class="t-200">{{ $unAssigned }}</div>
-                                    </div>
-                                </span>
-                                <span class="value-donut mb-4">
-                                    <div class="dot-100 mr-2 bg-green-300"></div>
-                                    <div>
-                                        <div class="t-100">Others</div>
-                                        <div class="t-200"> 0</div>
-                                    </div>
-                                </span>
-                            </div>
+                    <div class="col-sm-6 col-md-6 col-lg-6 d-flex justify-content-center align-items-center">
+                        <div>
+                            <span class="value-donut mb-1 mt-4">
+                                <div class="dot-100 mr-2 bg-green-100"></div>
+                                <div>
+                                    <div class="t-100">Total Assigned</div>
+                                    <div class="t-200">{{ $totalAssigned }}</div>
+                                </div>
+                            </span>
+                            <span class="value-donut mb-1">
+                                <div class="dot-100 mr-2 bg-green-200"></div>
+                                <div>
+                                    <div class="t-100">Un-Assigned</div>
+                                    <div class="t-200">{{ $unAssigned }}</div>
+                                </div>
+                            </span>
+                            <span class="value-donut mb-4">
+                                <div class="dot-100 mr-2 bg-green-300"></div>
+                                <div>
+                                    <div class="t-100">Others</div>
+                                    <div class="t-200"> 0</div>
+                                </div>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
 
 
-        <div class="base-row">
+        {{-- <div class="base-row">
             <span class="base-top-text">Analytics</span>
             <div class="row">
                 <div class="col-sm-6 col-md-3 col-xl-3 float-left">
@@ -128,7 +95,7 @@
                                     Total Est Fuel Cost
                                 </span>
                                 <span class="inner-text-value">
-                                    ₦ {{number_format($totalFuel)}}
+                                    ₦ {{ number_format($totalFuel) }}
                                 </span>
                             </div>
                         </div>
@@ -151,7 +118,7 @@
                                     Combined Drive-time
                                 </span>
                                 <span class="inner-text-value">
-                                     4,450 HRS : 50M
+                                    4,450 HRS : 50M
                                 </span>
                             </div>
                         </div>
@@ -169,7 +136,7 @@
                                     Total Assets Value
                                 </span>
                                 <span class="inner-text-value">₦
-                                    <span class="counter">  2,650,000,000</span>
+                                    <span class="counter"> 2,650,000,000</span>
                                 </span>
                             </div>
                         </div>
@@ -194,21 +161,21 @@
                                         <div class="dot-100 mr-2 bg-green-400"></div>
                                         <div class="d-flex">
                                             <div class="t-200 mr-1">Active:</div>
-                                            <div class="t-200">{{number_format( $maintenaceActive) }}</div>
+                                            <div class="t-200">{{ number_format($maintenaceActive) }}</div>
                                         </div>
                                     </span>
                                     <span class="value-donut mb-3">
                                         <div class="dot-100 mr-2 bg-gold-100"></div>
                                         <div class="d-flex">
                                             <div class="t-200 mr-1">Due Soon</div>
-                                            <div class="t-200">{{number_format( $maintenanceDue) }}</div>
+                                            <div class="t-200">{{ number_format($maintenanceDue) }}</div>
                                         </div>
                                     </span>
                                     <span class="value-donut mb-3">
                                         <div class="dot-100 mr-2 bg-red-100"></div>
                                         <div class="d-flex">
                                             <div class="t-200 mr-1">Overdue</div>
-                                            <div class="t-200">{{number_format( $overDue) }}</div>
+                                            <div class="t-200">{{ number_format($overDue) }}</div>
                                         </div>
                                     </span>
                                 </div>
@@ -234,21 +201,21 @@
                                         <div class="dot-100 mr-2 bg-blue-100"></div>
                                         <div class="d-flex">
                                             <div class="t-200 mr-1">Active:</div>
-                                            <div class="t-200">{{number_format( $documentActive) }}</div>
+                                            <div class="t-200">{{ number_format($documentActive) }}</div>
                                         </div>
                                     </span>
                                     <span class="value-donut mb-3">
                                         <div class="dot-100 mr-2 bg-gold-100"></div>
                                         <div class="d-flex">
                                             <div class="t-200 mr-1">Due Soon</div>
-                                            <div class="t-200">{{number_format( $documentDue) }}</div>
+                                            <div class="t-200">{{ number_format($documentDue) }}</div>
                                         </div>
                                     </span>
                                     <span class="value-donut mb-3">
                                         <div class="dot-100 mr-2 bg-red-100"></div>
                                         <div class="d-flex">
                                             <div class="t-200 mr-1">Expired</div>
-                                            <div class="t-200">{{number_format( $documentExpired) }}</div>
+                                            <div class="t-200">{{ number_format($documentExpired) }}</div>
                                         </div>
                                     </span>
                                 </div>
@@ -257,6 +224,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>

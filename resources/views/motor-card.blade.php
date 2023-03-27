@@ -19,12 +19,15 @@
                     {{-- <a href="/add-vehicle" class="addBtn addNew">ADD NEW</a> --}}
                 </div>
                 <ul class="sub-tabs">
-                    <li class="vehicle-list-overview"><a href = "{{route('vehicleManagement')}}" > OVERVIEW </a></li>
-                    <li class="vehicle-list-fleet"><a href = "{{route('vehicleManagement')}}" >FLEET STATUS </a></li>
-                 
+                    <li class="vehicle-list-overview"><a href="{{ route('vehicleManagement') }}"> OVERVIEW </a></li>
+                    <li class="vehicle-list-fleet"><a href="{{ route('vehicleManagement') }}">FLEET STATUS </a></li>
+
                     <li class="vehicle-list-track"> <a href="track-web">TRACK WEB</a> </li>
                     <li class="vehicle-list-fleet bbd">
                         <a href="motor-card">MOTOR CARD</a>
+                    </li>
+                    <li class="vehicle-list-card">
+                        <a href="high-way">HIGH WAY</a>
                     </li>
                 </ul>
 
@@ -63,7 +66,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                  {{--  <tr>
+                                    {{--  <tr>
                                         <td>
                                             <input type="checkbox" class="form-check">
                                         </td>
@@ -81,7 +84,7 @@
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
-                                        
+
                                         <td>
                                             <div class="dropdown">
                                                 <i class='bx bx-dots-vertical-rounded' data-bs-toggle="dropdown"></i>

@@ -155,12 +155,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/motor-card', [VehicleMgtController::class, 'motorCard'])->name('motorCard');
     Route::get('/motor-card-user/{plate}/{phone}/{reference}', [VehicleMgtController::class, 'motorCardUser'])->name('motorCardUser');
 
+    Route::get('/high-way', function(){
+        return view('high-way');
+    });
 
 
 
-    // Route::get('/motor-card', function(){
-    //     return view('motor-card');
-    // });
 
 
 

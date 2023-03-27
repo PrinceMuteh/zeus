@@ -8,23 +8,23 @@
             $maintenaceActive = 2011;
             $maintenanceDue = 705;
             $overDue = 43;
-        
+
             $documentExpired = 540;
             $documentDue = 1700;
             $documentActive = 6033;
-        
+
             $envioBox = number_format(($totalUsers->count() - $totalUsers->where('status', 5)->count()) * 50000);
         } else {
             $totalAssigned = $totalVehicle->count() - $nodriver->count();
             $unAssigned = $nodriver->count();
             $totalAssetValue = number_format(2000000 * ($totalUsers->count() - $totalUsers->where('status', 5)->count()));
-        
+
             $envioBox = number_format(($totalUsers->count() - $totalUsers->where('status', 5)->count()) * 50000);
-        
+
             $maintenaceActive = 1;
             $maintenanceDue = 1;
             $overDue = 1;
-        
+
             $documentExpired = 0;
             $documentDue = 0;
             $documentActive = 0;
@@ -40,252 +40,213 @@
                         Dashboard
                     </span>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6 col-md-12 col-lg-8">
-                        <div class="top-banner-100">
-                            <div class="top-row-banner">
-                                <span class="title-100">Hello, {{ auth()->user()->first_name }}
-                                    ({{ auth()->user()->user_type }})</span>
-                                {{-- <span class="title-200">Welcome back, here's a Zeus of your fleet today...</span> --}}
-                                <img src="{{ asset('assets/images/computer.png') }}" class="computer_img" alt="">
-                            </div>
-                            <div class="mt-4 graph-home p-2 w-100">
-                                {{-- <div id="top_x_div" style="width: 800px; height: 356px;"></div> --}}
-                                <canvas id="top_x_div" height="20vh" width="80vw"></canvas>
-                            </div>
-                            <div class="row pt-2" style="margin-bottom:5px">
-                                <div class="col-sm-6 col-md-6 pl-4 pr-4 pb-2 pt-2 first-col-100">
-                                    <div class="revenue-balance">
-                                        <span class="inner-sub-100">Total Transaction(s)</span>
-                                        <span class="inner-sub-100"><span class="counter">
-                                                @if (Auth()->user()->user_type_name == 'Demo')
-                                                    {{ number_format($totalTransaction->count() * 1.5, 0) }}
-                                                @else
-                                                    {{ number_format( $totalTransaction->count() )}}
-                                                @endif
-                                            </span></span>
-                                    </div>
-                                    <div class="revenue-balance">
-                                        <span class="inner-sub-100">Total Transaction Volume</span>
-                                        <span class="inner-sub-100">₦ <span class="counter">
-                                                @if (Auth()->user()->user_type_name == 'Demo')
-                                                    {{ number_format($totalTransaction->sum('needpayment') + 284821005) }}
-                                                @else
-                                                    {{ number_format($totalTransaction->sum('needpayment') )}}
-                                                @endif
-                                            </span></span>
-                                    </div>
-                                    <!--284,821,005-->
-                                    <div class="revenue-balance">
-                                        <span class="inner-sub-100">Transaction Commission</span>
-                                        <span class="inner-sub-100">₦ <span class="counter">
-                                                {{ number_format(($totalTransaction->sum('needpayment') + 284821005) * 0.15) }}
-                                            </span></span>
-                                    </div>
-                                    <div class="sideLine-col"></div>
-                                </div>
-
-                                <div class="col-sm-6 col-md-6 pl-4 pr-4 pb-2 pt-2">
-                                    <div class="revenue-balance">
-                                        <span class="inner-sub-100">Total Asset Value</span>
-                                        <span class="inner-sub-100">₦ <span class="counter">{{ $totalAssetValue }}
-                                            </span></span>
-                                    </div>
-                                    <div class="revenue-balance">
-                                        <span class="inner-sub-100">envioBox GPS System</span>
-                                        <span class="inner-sub-100">₦ <span
-                                                class="counter">{{ $envioBox }}</span></span>
-                                    </div>
-                                    <div class="revenue-balance">
-                                        <span class="inner-sub-100">Active Locations</span>
-                                        <span class="inner-sub-100"><span class="counter">4</span></span>
-                                    </div>
-                                </div>
-                            </div>
-
+                <div class="home-row">
+                    <div class="top-banner-100">
+                        <div class="top-row-banner">
+                            <span class="title-100">Hello, {{ auth()->user()->first_name }}
+                                ({{ auth()->user()->user_type }})</span>
+                            <img src="{{ asset('assets/images/computer.png') }}" class="computer_img" alt="">
                         </div>
-                        <div class="chart-summary">
-                            <div class="row">
-                                <div class="col-sm-6 col-md-12 col-lg-6 mb-3">
-                                    <div class="right-side-home-2 h-auto">
-                                        <div class="top-finance-heading pl-4 pr-2">
-                                            <span class="title-250 adjust-title">Document Status</span>
-                                        </div>
-                                        <div class="row">
-                                            <div
-                                                class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column align-items-center justify-content-center">
-                                                <canvas id="myChart" style="max-width:100%"></canvas>
-                                            </div>
-                                            <div
-                                                class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column justify-content-center align-items-center">
-                                                <div>
-                                                    <span class="value-donut mb-3 mt-3">
-                                                        <div class="dot-100 mr-2 bg-blue-100"></div>
-                                                        <div class="d-flex">
-                                                            <div class="t-200 mr-1">Active:</div>
-                                                            <div class="t-200">{{ number_format( $documentActive) }}</div>
-                                                        </div>
-                                                    </span>
-                                                    <span class="value-donut mb-3">
-                                                        <div class="dot-100 mr-2 bg-gold-100"></div>
-                                                        <div class="d-flex">
-                                                            <div class="t-200 mr-1">Due Soon</div>
-                                                            <div class="t-200">{{ number_format( $documentDue) }}</div>
-                                                        </div>
-                                                    </span>
-                                                    <span class="value-donut mb-3">
-                                                        <div class="dot-100 mr-2 bg-red-100"></div>
-                                                        <div class="d-flex">
-                                                            <div class="t-200 mr-1">Expired</div>
-                                                            <div class="t-200">{{ number_format( $documentExpired ) }}</div>
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <div class="mt-4 graph-home p-2 w-100">
+                            <canvas id="top_x_div"></canvas>
+                        </div>
+                        <div class="row pt-2" style="margin-bottom:5px">
+                            <div class="col-sm-6 col-md-6 pl-4 pr-4 pb-2 pt-2 first-col-100">
+                                <div class="revenue-balance">
+                                    <span class="inner-sub-100">Total Transaction(s)</span>
+                                    <span class="inner-sub-100"><span class="counter">
+                                            @if (Auth()->user()->user_type_name == 'Demo')
+                                                {{ number_format($totalTransaction->count() * 1.5, 0) }}
+                                            @else
+                                                {{ number_format($totalTransaction->count()) }}
+                                            @endif
+                                        </span></span>
                                 </div>
-                                <div class="col-sm-6 col-md-12 col-lg-6 mb-3">
-                                    <div class="right-side-home-2 h-auto">
-                                        <div class="top-finance-heading pl-4 pr-2">
-                                            <span class="title-250 adjust-title">Maintenance Summary</span>
-                                        </div>
-                                        <div class="row">
-                                            <div
-                                                class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
-                                                <canvas id="myChart2" style="max-width:100%"></canvas>
+                                <div class="revenue-balance">
+                                    <span class="inner-sub-100">Total Transaction Volume</span>
+                                    <span class="inner-sub-100">₦ <span class="counter">
+                                            @if (Auth()->user()->user_type_name == 'Demo')
+                                                {{ number_format($totalTransaction->sum('needpayment') + 284821005) }}
+                                            @else
+                                                {{ number_format($totalTransaction->sum('needpayment')) }}
+                                            @endif
+                                        </span></span>
+                                </div>
+                                <div class="revenue-balance">
+                                    <span class="inner-sub-100">Transaction Commission</span>
+                                    <span class="inner-sub-100">₦ <span class="counter">
+                                            {{ number_format(($totalTransaction->sum('needpayment') + 284821005) * 0.15) }}
+                                        </span></span>
+                                </div>
+                                <div class="sideLine-col"></div>
+                            </div>
+
+                            <div class="col-sm-6 col-md-6 pl-4 pr-4 pb-2 pt-2">
+                                <div class="revenue-balance">
+                                    <span class="inner-sub-100">Total Asset Value</span>
+                                    <span class="inner-sub-100">₦ <span class="counter">{{ $totalAssetValue }}
+                                        </span></span>
+                                </div>
+                                <div class="revenue-balance">
+                                    <span class="inner-sub-100">envioBox GPS System</span>
+                                    <span class="inner-sub-100">₦ <span class="counter">{{ $envioBox }}</span></span>
+                                </div>
+                                <div class="revenue-balance">
+                                    <span class="inner-sub-100">Active Locations</span>
+                                    <span class="inner-sub-100"><span class="counter">4</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="right-side-home">
+                        <div class="top-finance-heading">
+                            <span class="title-250">User Overview</span>
+                            <a href="add-user" class="addBtn-100">ADD NEW</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
+                                <canvas id="myChart3"></canvas>
+                            </div>
+                            <div
+                                class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column align-items-center justify-cotent-center">
+                                <div>
+                                    <span class="value-donut mb-2 mt-3">
+                                        <div class="dot-100 mr-2 bg-orange-100"></div>
+                                        <div>
+                                            <div class="t-100">Active Accounts</div>
+                                            <div class="t-200">
+                                                {{ $totalUsers->count() - $totalUsers->where('status', 5)->count() }}
                                             </div>
-                                            <div
-                                                class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column align-items-center justify-content-center">
-                                                <div>
-                                                    <span class="value-donut mb-3 mt-3">
-                                                        <div class="dot-100 mr-2 bg-green-400"></div>
-                                                        <div class="d-flex">
-                                                            <div class="t-200 mr-1">Active:</div>
-                                                            <div class="t-200"> {{number_format( $maintenaceActive) }}</div>
-                                                        </div>
-                                                    </span>
-                                                    <span class="value-donut mb-3">
-                                                        <div class="dot-100 mr-2 bg-gold-100"></div>
-                                                        <div class="d-flex">
-                                                            <div class="t-200 mr-1">Due Soon</div>
-                                                            <div class="t-200">{{ number_format($maintenanceDue) }}</div>
-                                                        </div>
-                                                    </span>
-                                                    <span class="value-donut mb-3">
-                                                        <div class="dot-100 mr-2 bg-red-100"></div>
-                                                        <div class="d-flex">
-                                                            <div class="t-200 mr-1">Overdue</div>
-                                                            <div class="t-200"> {{ number_format($overDue) }}</div>
-                                                        </div>
-                                                    </span>
-                                                </div>
+                                        </div>
+                                    </span>
+                                    <span class="value-donut mb-2">
+                                        <div class="dot-100 mr-2 bg-orange-200"></div>
+                                        <div>
+                                            <div class="t-100">In-Active Accounts</div>
+                                            <div class="t-200">
+
+                                                {{ $totalUsers->where('status', 5)->count() + 300 }}
                                             </div>
                                         </div>
-                                    </div>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="right-side-home-2">
+                        <div class="top-finance-heading">
+                            <span class="title-250 adjust-title">Document Status</span>
+                        </div>
+                        <div class="row">
+                            <div
+                                class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column align-items-center justify-content-center">
+                                <canvas id="myChart"></canvas>
+                            </div>
+                            <div
+                                class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column justify-content-center align-items-center">
+                                <div>
+                                    <span class="value-donut mb-3 mt-3">
+                                        <div class="dot-100 mr-2 bg-blue-100"></div>
+                                        <div class="d-flex">
+                                            <div class="t-200 mr-1">Active:</div>
+                                            <div class="t-200">{{ number_format($documentActive) }}</div>
+                                        </div>
+                                    </span>
+                                    <span class="value-donut mb-3">
+                                        <div class="dot-100 mr-2 bg-gold-100"></div>
+                                        <div class="d-flex">
+                                            <div class="t-200 mr-1">Due Soon</div>
+                                            <div class="t-200">{{ number_format($documentDue) }}</div>
+                                        </div>
+                                    </span>
+                                    <span class="value-donut mb-3">
+                                        <div class="dot-100 mr-2 bg-red-100"></div>
+                                        <div class="d-flex">
+                                            <div class="t-200 mr-1">Expired</div>
+                                            <div class="t-200">{{ number_format($documentExpired) }}</div>
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-12 col-lg-4">
+
+                    <div class="right-side-home-3">
+                        <div class="top-finance-heading">
+                            <span class="title-250 adjust-title">Maintenance Summary</span>
+                        </div>
                         <div class="row">
-                            <div class="col-sm-6 col-md-12">
-                                <div class="right-side-home h-auto">
-                                    <div class="top-finance-heading pl-4 pr-2">
-                                        <span class="title-250">User Overview</span>
-                                        <a href="add-user" class="addBtn-100">ADD NEW</a>
-                                    </div>
-                                    <div class="row">
-                                        <div
-                                            class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
-                                            <canvas id="myChart3" style="max-width:100%"></canvas>
+                            <div class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
+                                <canvas id="myChart2" class="mt-4"></canvas>
+                            </div>
+                            <div
+                                class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column align-items-center justify-content-center">
+                                <div>
+                                    <span class="value-donut mb-2 mt-3">
+                                        <div class="dot-100 mr-2 bg-green-400"></div>
+                                        <div class="d-flex">
+                                            <div class="t-200 mr-1">Active:</div>
+                                            <div class="t-200"> {{ number_format($maintenaceActive) }}</div>
                                         </div>
-                                        <div
-                                            class="col-sm-6 col-md-6 col-lg-6 d-flex flex-column align-items-center justify-cotent-center mt-2">
-                                            <div>
-                                                <span class="value-donut mb-2 mt-4">
-                                                    <div class="dot-100 mr-2 bg-orange-100"></div>
-                                                    <div>
-                                                        <div class="t-100">Active Accounts</div>
-                                                        <div class="t-200">
-                                                            {{ $totalUsers->count() - $totalUsers->where('status', 5)->count() }}
-                                                        </div>
-                                                    </div>
-                                                </span>
-                                                <span class="value-donut mb-2">
-                                                    <div class="dot-100 mr-2 bg-orange-200"></div>
-                                                    <div>
-                                                        <div class="t-100">In-Active Accounts</div>
-                                                        <div class="t-200">
-
-                                                            {{ $totalUsers->where('status', 5)->count() + 300 }}
-                                                        </div>
-                                                    </div>
-                                                </span>
-                                            </div>
+                                    </span>
+                                    <span class="value-donut mb-3">
+                                        <div class="dot-100 mr-2 bg-gold-100"></div>
+                                        <div class="d-flex">
+                                            <div class="t-200 mr-1">Due Soon</div>
+                                            <div class="t-200">{{ number_format($maintenanceDue) }}</div>
                                         </div>
-                                    </div>
-
-
+                                    </span>
+                                    <span class="value-donut mb-3">
+                                        <div class="dot-100 mr-2 bg-red-100"></div>
+                                        <div class="d-flex">
+                                            <div class="t-200 mr-1">Overdue</div>
+                                            <div class="t-200"> {{ number_format($overDue) }}</div>
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-12">
-                                <div class="right-side-home-2" style="padding-bottom: 500px">
-                                    <div class="top-finance-heading pl-4 pr-2">
-                                        <span class="title-250">Fleet Overview</span>
-                                        <a href="add-vehicle" class="addBtn-100">ADD NEW</a>
-                                    </div>
-                                    <div class="row">
-                                        <div
-                                            class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
-                                            <canvas id="myChart4" style="max-width:100%"></canvas>
-                                        </div>
+                        </div>
+                    </div>
 
-                                        <div
-                                            class="col-sm-6 col-md-6 col-lg-6 d-flex justify-content-center align-items-center">
-                                            <div>
-                                                <span class="value-donut mb-1 mt-4">
-                                                    <div class="dot-100 mr-2 bg-green-100"></div>
-                                                    <div>
-                                                        <div class="t-100">Total Assigned</div>
-                                                        <div class="t-200">
-                                                            {{ $totalAssigned }}</div>
-                                                    </div>
-                                                </span>
-                                                <span class="value-donut mb-1">
-                                                    <div class="dot-100 mr-2 bg-green-200"></div>
-                                                    <div>
-                                                        <div class="t-100">Un- Assigned</div>
-                                                        <div class="t-200">{{ $unAssigned }}</div>
-                                                    </div>
-                                                </span>
-                                                <span class="value-donut mb-4">
-                                                    <div class="dot-100 mr-2 bg-green-300"></div>
-                                                    <div>
-                                                        <div class="t-100">Others</div>
-                                                        <div class="t-200">0</div>
-                                                    </div>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="right-side-home-4">
+                        <div class="top-finance-heading">
+                            <span class="title-250">Fleet Overview</span>
+                            <a href="add-vehicle" class="addBtn-100">ADD NEW</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-6 col-lg-6 p-3 d-flex flex-column justify-content-center">
+                                <canvas id="myChart4"></canvas>
+                            </div>
 
-                                    {{-- <div class="base-right-side">
-                                        <div class="base-22">
-                                            <span class="dot-1"></span>
-                                            <div class="base-inner-val">
-                                                <span class="base-inner-100">Offline Vehicles</span>
-                                                <span class="base-inner-200">0</span>
-                                            </div>
+                            <div class="col-sm-6 col-md-6 col-lg-6 d-flex justify-content-center align-items-center">
+                                <div>
+                                    <span class="value-donut mb-1 mt-3">
+                                        <div class="dot-100 mr-2 bg-green-100"></div>
+                                        <div>
+                                            <div class="t-100">Total Assigned</div>
+                                            <div class="t-200">
+                                                {{ $totalAssigned }}</div>
                                         </div>
-                                        <div class="base-22">
-                                            <span class="dot-2"></span>
-                                            <div class="base-inner-val">
-                                                <span class="base-inner-100">Offline Vehicles</span>
-                                                <span class="base-inner-200">0</span>
-                                            </div>
+                                    </span>
+                                    <span class="value-donut mb-1">
+                                        <div class="dot-100 mr-2 bg-green-200"></div>
+                                        <div>
+                                            <div class="t-100">Un- Assigned</div>
+                                            <div class="t-200">{{ $unAssigned }}</div>
                                         </div>
-                                    </div> --}}
+                                    </span>
+                                    <span class="value-donut mb-4">
+                                        <div class="dot-100 mr-2 bg-green-300"></div>
+                                        <div>
+                                            <div class="t-100">Others</div>
+                                            <div class="t-200">0</div>
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -298,9 +259,10 @@
         <!-- end content -->
     </div>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <script src="{{ asset('assets/js/chart.js') }} "></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    {{-- <script src="{{ asset('assets/js/chart.js') }} "></script> --}}
 
 
     <script>
@@ -330,25 +292,18 @@
                 scales: {
                     xAxes: [{
                         gridLines: {
-                            drawOnChartArea: false
+                            drawOnChartArea: true
                         }
                     }],
                     yAxes: [{
                         gridLines: {
-                            drawOnChartArea: false
+                            drawOnChartArea: true
                         }
                     }]
                 }
             }
         });
     </script>
-
-
-    //
-
-    //
-
-
     <script type="text/javascript">
         google.charts.load("current", {
             packages: ["corechart"]
@@ -430,7 +385,7 @@
 
 
     <script>
-        var yValues = [{{$documentActive}}, {{$documentDue}}, {{$documentExpired}}];
+        var yValues = [{{ $documentActive }}, {{ $documentDue }}, {{ $documentExpired }}];
         var barColors = [
             "#79D2DE",
             "#FFB619",
@@ -451,19 +406,8 @@
                 }
             }
         });
-    </script>
 
-
-
-
-
-
-
-
-
-
-    <script>
-        var yValues = [{{$maintenaceActive}}, {{$maintenanceDue}}, {{$overDue}}];
+        var yValues = [{{ $maintenaceActive }}, {{ $maintenanceDue }}, {{ $overDue }}];
         var barColors = [
             "#87DE79",
             "#FFB619",
@@ -479,14 +423,10 @@
                 }]
             },
             options: {
-                title: {
-                    display: true
-                }
+                cutoutPercentage: 60,
             }
         });
-    </script>
 
-    <script>
         var yValues = [80, 49];
         var barColors = [
             "#FFAC32",
@@ -502,14 +442,10 @@
                 }]
             },
             options: {
-                title: {
-                    display: true
-                }
+                cutoutPercentage: 60,
             }
         });
-    </script>
 
-    <script>
         var yValues = [80, 49, 120];
         var barColors = [
             "#44953D",
@@ -526,9 +462,8 @@
                 }]
             },
             options: {
-                title: {
-                    display: true
-                }
+                cutoutPercentage: 60,
+
             }
         });
     </script>

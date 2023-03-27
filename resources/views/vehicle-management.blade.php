@@ -2,32 +2,29 @@
 @section('content')
     @php
         if (Auth()->user()->user_type_name == 'Demo') {
-          
             $maintenaceActive = 2011;
             $maintenanceDue = 705;
             $overDue = 43;
-        
+
             $documentExpired = 540;
             $documentDue = 1700;
             $documentActive = 6033;
-             $totalAssigned = $allVehicle->count() - $noDriver + 991;
-             $unAssigned = $noDriver - 276;
-        $totalFuel = $totalAssigned  * 0.7* ($totalMiles / 100000);
- 
+            $totalAssigned = $allVehicle->count() - $noDriver + 991;
+            $unAssigned = $noDriver - 276;
+            $totalFuel = $totalAssigned * 0.7 * ($totalMiles / 100000);
         } else {
-        
             $maintenaceActive = 1;
             $maintenanceDue = 1;
             $overDue = 1;
-         $unAssigned = $noDriver;
+            $unAssigned = $noDriver;
             $documentExpired = 0;
             $documentDue = 0;
             $documentActive = 0;
             $totalAssigned = $allVehicle->count() - $noDriver;
-             $totalFuel = 0;
+            $totalFuel = 0;
         }
     @endphp
-    
+
     <div class="content-page" style="background: #fff;">
         <div class="content">
             <!-- Start Content-->
@@ -49,7 +46,9 @@
                     </li> --}}
                     <li class="vehicle-list-track"> <a href="track-web">TRACK WEB</a> </li>
                     <li class="vehicle-list-card"><a href="motor-card">MOTOR CARD</a></li>
-                    {{-- <li class="vehicle-list-card">MOTOR CARD</li> --}}
+                    <li class="vehicle-list-card">
+                        <a href="high-way">HIGH WAY</a>
+                    </li>
                 </ul>
 
                 <!-- overview -->
@@ -272,7 +271,10 @@
                 };
             </script>
 
+            <script src="http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
             <script>
                 var yValues = [80, 49, 120];
                 var barColors = [
@@ -290,16 +292,15 @@
                         }]
                     },
                     options: {
-                        title: {
-                            display: true
-                        }
+                        cutoutPercentage: 60,
+
                     }
                 });
             </script>
 
 
             <script>
-                var yValues = [{{$maintenaceActive}}, {{$maintenanceDue}}, {{$overDue}}];
+                var yValues = [{{ $maintenaceActive }}, {{ $maintenanceDue }}, {{ $overDue }}];
                 var barColors = [
                     "#87DE79",
                     "#FFB619",
@@ -323,7 +324,7 @@
             </script>
 
             <script>
-                var yValues = [{{$documentActive}}, {{$documentDue}}, {{$documentExpired}}];
+                var yValues = [{{ $documentActive }}, {{ $documentDue }}, {{ $documentExpired }}];
                 var barColors = [
                     "#79D2DE",
                     "#FFB619",

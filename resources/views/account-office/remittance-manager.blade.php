@@ -29,7 +29,7 @@
 
             @include('account-office.section.remittance-row')
             <div class="card">
-                <table id="datatable-buttons" class="table nowrap table-responsive"
+                <table id="datatable-buttons" class="table nowrap"
                     style=" border-collapse: collapse;  border-spacing: 0; width: 100%;">
 
                     @include('account-office.section.remittance-manager-table-links')
