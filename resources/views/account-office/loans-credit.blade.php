@@ -30,7 +30,7 @@
             @include('account-office.section.loans-row')
 
             <div class="card">
-                <table id="datatable-buttons" class="table table-responsive wrap"
+                <table id="datatable-buttons" class="table wrap"
                     style=" border-collapse: collapse;  border-spacing: 0; width: 100%;">
 
                     @include('account-office.section.loans-credit-table-links')

@@ -85,13 +85,12 @@
                 </div>
                 <!-- fleet -->
                 <div class="finance_transaction_table">
-                    {{-- first section --}}
                     <div class="index_finance_transaction_section">
                         <div class="finance_section">
                             <span class="top-text">Deposit by category</span>
                             <div class="chart_total_deposit mb-2 mt-1">
                                 <div class="canvas-chart">
-                                    <canvas id="myChart" style="max-width:180px"></canvas>
+                                    <canvas id="myChart"></canvas>
                                     <div class="count-chart">
                                         <span>total deposit</span>
                                         <span>₦500M</span>
@@ -890,9 +889,9 @@
         });
     </script>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <script src="{{ asset('assets/js/chart.js') }} "></script>
     <script>
@@ -914,10 +913,7 @@
                 }]
             },
             options: {
-                title: {
-                    display: false,
-                    text: "World Wide Wine Production 2018"
-                }
+                cutoutPercentage: 60,
             }
         });
     </script>

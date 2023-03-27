@@ -1,12 +1,12 @@
 @charset "UTF-8";
 /* @import url('https://rsms.me/inter/inter.css'); */
 /* @import url(https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700&amp;display=swap); */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap'); */
 
 :root {
     --deepPurple: #08102E;
     --orange: #fd7e14;
-    --text-inter: 'Inter var', sans-serif;
+    /* --text-inter: 'Inter var', sans-serif; */
 }
 
 html {
@@ -6329,9 +6329,9 @@ thead {
 
 .activeBtn,
 .saveBtn {
-    width: 200px;
-    height: 56px;
-    border-radius: 8px;
+    /* width: 200px; */
+    /* height: 56px; */
+    /* border-radius: 8px; */
     font-weight: bold;
 }
 
@@ -6339,6 +6339,14 @@ thead {
     background: #4A4AFF;
     border: none;
     color: #fff;
+    padding: 10px 20px;
+    width: 85px;
+    height: 36px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
 .activeBtn {
@@ -6658,11 +6666,11 @@ thead {
     align-items: center;
     border: none;
     outline: none;
-    width: 150px;
-    height: 50px;
+    width: 183px;
+    height: 40px;
     background: #4A4AFF;
     box-shadow: 0px 20.501px 68.3368px rgba(160, 163, 189, 0.1);
-    border-radius: 8px;
+    border-radius: 5px;
 }
 
 .addBtn-200 {

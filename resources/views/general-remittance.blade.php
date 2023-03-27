@@ -66,7 +66,7 @@
                                 </div>
 
                                 <div class="date-range">Date range</div>
-                                
+
                                 <div class="form-group mb-1">
                                     <label for="">Start Date</label>
                                     <input type="date" name="">
@@ -105,7 +105,7 @@
                     <div class="summary-remite-in">
                         <div class="summary-in align-items-center">
                             <div class="left-summary">
-                                <canvas id="myChart" style="max-width:150px"></canvas>
+                                <canvas id="myChart" style="transform: translate(0,0)"></canvas>
                             </div>
                             <div class="figurechart">
                                 <p>total deposit</p>
@@ -301,8 +301,9 @@
         <div class="shade-bg-100"></div>
         <!-- end content -->
     </div>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <script src="{{ asset('assets/js/chart.js') }} "></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
         var yValues = [55, 49, 10, 25];
         var barColors = [
@@ -341,7 +342,7 @@
         });
         closeFilterSection.addEventListener('click', () => {
             // contentPage.classList.remove("bg-shade");
-            shadeBg.classList.add('d-none');    
+            shadeBg.classList.add('d-none');
             filterSec.classList.add('d-none');
         });
 
